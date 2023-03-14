@@ -15,8 +15,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examiner.API", "Examiner.AP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examiner.Users.Application", "Examiner.Users.Application\Examiner.Users.Application.csproj", "{28373328-5CFA-49FD-A408-6B365BF322D3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examiner.Tests", "..\tests\Examiner.Tests\Examiner.Tests.csproj", "{56334A74-C6D7-4700-BD83-95BAF64352A7}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,9 +48,5 @@ Global
 		{28373328-5CFA-49FD-A408-6B365BF322D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28373328-5CFA-49FD-A408-6B365BF322D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28373328-5CFA-49FD-A408-6B365BF322D3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{56334A74-C6D7-4700-BD83-95BAF64352A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{56334A74-C6D7-4700-BD83-95BAF64352A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{56334A74-C6D7-4700-BD83-95BAF64352A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{56334A74-C6D7-4700-BD83-95BAF64352A7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
