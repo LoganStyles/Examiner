@@ -1,17 +1,46 @@
+using System.Text;
 using Examiner.Authentication.Application.Interfaces;
 using Examiner.Authentication.Application.Jwt;
 using Examiner.Authentication.Application.Services;
 using Examiner.Infrastructure.Contexts;
+using Examiner.Infrastructure.Helpers;
 using Examiner.Infrastructure.UnitOfWork;
 using Examiner.Infrastructure.UnitOfWork.Interfaces;
 using Examiner.Users.Application.Interfaces;
 using Examiner.Users.Application.Services;
-
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+static string BuildConnectionString(string databaseUrl)
+{
+    var databaseUri = new Uri(databaseUrl);
+    var userInfo = databaseUri.UserInfo.Split(':');
+    var connection = new StringBuilder();
+    connection.Append($"server={databaseUri.Host};");
+    connection.Append($"port={databaseUri.Port};");
+
+    var database = databaseUri.LocalPath.TrimStart('/');
+    connection.Append($"database={database};");
+    var user = userInfo[0];
+    connection.Append($"user={user};");
+    var password = userInfo[1];
+    connection.Append($"password={password}");
+
+    return connection.ToString();
+}
+
 // Add services to the container.
-builder.Services.AddDbContext<ExaminerContext>();
+builder.Services.AddDbContext<ExaminerContext>(
+    options =>
+    {
+        var databaseUrl = Environment.GetEnvironmentVariable("MYSQL_URL");
+        var connectionString = builder.Configuration.GetConnectionString("ExaminerConn");
+
+        var connection = string.IsNullOrEmpty(databaseUrl) ? connectionString : BuildConnectionString(databaseUrl);
+        options.UseMySql(connection, ServerVersion.AutoDetect(connection));
+    });
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
@@ -46,6 +75,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+var scope = app.Services.CreateScope();
+await DataHelper.ManageDataAsync(scope.ServiceProvider);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
