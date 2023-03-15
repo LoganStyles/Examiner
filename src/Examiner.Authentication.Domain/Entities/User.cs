@@ -52,4 +52,6 @@ public class User : BaseEntity
 
     public bool IsActive { get; set; }
 
+    public CodeVerification? CodeVerification { get; set; }
+
 }

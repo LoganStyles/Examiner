@@ -10,12 +10,22 @@ public class UnitOfWork : IUnitOfWork
 {
     private readonly ExaminerContext _dbContext;
     private UserRepository<User>? _userRepository;
+    private CodeVerificationRepository<CodeVerification>? _codeVerificationRepository;
+    private CodeVerificationHistoryRepository<CodeVerificationHistory>? _codeVerificationHistoryRepository;
 
     public UnitOfWork(ExaminerContext dbContext)
     {
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     }
     public IUserRepository UserRepository => _userRepository ?? (_userRepository = new UserRepository<User>(_dbContext));
+
+    public ICodeVerificationRepository CodeVerificationRepository => 
+    _codeVerificationRepository ?? 
+    (_codeVerificationRepository = new CodeVerificationRepository<CodeVerification>(_dbContext));
+
+    public ICodeVerificationHistoryRepository CodeVerificationHistoryRepository => 
+    _codeVerificationHistoryRepository ?? 
+    (_codeVerificationHistoryRepository = new CodeVerificationHistoryRepository<CodeVerificationHistory>(_dbContext));
 
     public async Task CompleteAsync()
     {
