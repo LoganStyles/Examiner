@@ -127,5 +127,23 @@ public class UserController : ControllerBase
         else
             return NotFound(result);
     }
+    
+    /// <summary>
+    /// Fetches a user
+    /// </summary>
+    /// <param name="email">The email of the user to be fetched</param>
+    /// <returns>Fetches a user or not found ActionResult</returns>
+    [HttpGet("{email:string}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<GenericResponse>> GetUserByEmailAsync(string email)
+    {
+
+        var result = await _userService.GetUserByEmail(email);
+        if (result.Success)
+            return Ok(result);
+        else
+            return NotFound(result);
+    }
 
 }

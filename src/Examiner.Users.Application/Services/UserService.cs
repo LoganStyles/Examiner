@@ -24,52 +24,33 @@ public class UserService : IUserService
     }
 
     /// <summary>
-    /// Fetches a collection of users
+    /// Fetches a user by email
     /// </summary>
-    /// <param name="requiredStatus"></param>
+    /// <param name="email">The email of the user to fetch</param>
     /// <returns>An object holding data indicating the success or failure of fetching the users</returns>
-    public Task<GenericResponse> Get(string requiredStatus = "", string? requiredOrder = null, string includeProperties = "", int? take = null, int? skip = null)
+    public async Task<GenericResponse> GetUserByEmail(string email)
     {
-        throw new NotImplementedException();
-        // try
-        // {
-        //     Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null;
+        try
+        {
+            Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null;
+            Expression<Func<User, bool>>? filter = (u => u.Email == email);
 
-        //     //filter - active or inactive
-        //     Expression<Func<User, bool>>? filter = (u => u.AuthorizerId != null);
-        //     if (!String.IsNullOrWhiteSpace(requiredStatus))
-        //     {
-        //         UserAccountStatus status;
-        //         if (Enum.TryParse(requiredStatus, out status))
-        //         {
-        //             if (status.Equals(UserAccountStatus.Active))
-        //                 filter = (u => u.AuthorizerId != null && u.Active == true);
-        //             else
-        //                 filter = (u => u.AuthorizerId != null && u.Active == false);
-        //         }
-        //     }
+            var users = await _unitOfWork.UserRepository.Get(filter, orderBy, string.Empty, null, null);
+            if (users.Count() > 0)
+            {
+                var response = ObjectMapper.Mapper.Map<UserResponse>(users.FirstOrDefault());
+                response.Success = true;
+                response.ResultMessage = "Fetching user was successful";
+                return response;
+            }
+            return GenericResponse.Result(false, "No user found");
 
-        //     var users = await _unitOfWork.UserRepository.Get(filter, orderBy, includeProperties, take, skip);
-        //     if (users.Count() > 0)
-        //     {
-        //         UsersResponse response = new();
-        //         response.Users = new List<UserDto>();
-        //         foreach (var user in users)
-        //         {
-        //             var userDto = ObjectMapper.Mapper.Map<UserDto>(users);
-        //             response.Users.Add(userDto);
-        //         }
-        //         response.Success = true;
-        //         response.ResultMessage = "Fetching users was successful";
-        //         return response;
-        //     }
-        //     return GenericResponse.Result(true, "No users found");
-        // }
-        // catch (Exception ex)
-        // {
-        //     _logger.LogError("Error fetching user - ", ex.Message);
-        //     return GenericResponse.Result(false, ex.Message);
-        // }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error fetching user - ", ex.Message);
+            return GenericResponse.Result(false, ex.Message);
+        }
     }
 
     /// <summary>
