@@ -133,7 +133,7 @@ public class UserController : ControllerBase
     /// </summary>
     /// <param name="email">The email of the user to be fetched</param>
     /// <returns>Fetches a user or not found ActionResult</returns>
-    [HttpGet("{email:string}")]
+    [HttpGet("{email}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<GenericResponse>> GetUserByEmailAsync(string email)
