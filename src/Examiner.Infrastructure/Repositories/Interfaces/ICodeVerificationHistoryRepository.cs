@@ -1,5 +1,5 @@
-using Examiner.Authentication.Domain.Entities;
 using Examiner.Common.Interfaces;
+using Examiner.Domain.Entities.Notifications.Emails;
 
 namespace Examiner.Infrastructure.Repositories.Interfaces;
 

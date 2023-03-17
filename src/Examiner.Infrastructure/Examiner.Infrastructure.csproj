@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Examiner.Authentication.Domain\Examiner.Authentication.Domain.csproj" />
+    <ProjectReference Include="..\Examiner.Domain\Examiner.Domain.csproj" />
   </ItemGroup>
 
 </Project>

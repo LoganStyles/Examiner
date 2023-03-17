@@ -1,4 +1,5 @@
-using Examiner.Authentication.Domain.Entities;
+using Examiner.Domain.Entities.Notifications.Emails;
+using Examiner.Domain.Entities.Users;
 using Examiner.Infrastructure.Contexts;
 using Examiner.Infrastructure.Repositories;
 using Examiner.Infrastructure.Repositories.Interfaces;
@@ -12,6 +13,7 @@ public class UnitOfWork : IUnitOfWork
     private UserRepository<User>? _userRepository;
     private CodeVerificationRepository<CodeVerification>? _codeVerificationRepository;
     private CodeVerificationHistoryRepository<CodeVerificationHistory>? _codeVerificationHistoryRepository;
+    private EmailVerificationRepository<EmailVerification>? _emailVerificationRepository;
 
     public UnitOfWork(ExaminerContext dbContext)
     {
@@ -26,6 +28,10 @@ public class UnitOfWork : IUnitOfWork
     public ICodeVerificationHistoryRepository CodeVerificationHistoryRepository => 
     _codeVerificationHistoryRepository ?? 
     (_codeVerificationHistoryRepository = new CodeVerificationHistoryRepository<CodeVerificationHistory>(_dbContext));
+    
+    public IEmailVerificationRepository EmailVerificationRepository => 
+    _emailVerificationRepository ?? 
+    (_emailVerificationRepository = new EmailVerificationRepository<EmailVerification>(_dbContext));
 
     public async Task CompleteAsync()
     {

@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using Examiner.Authentication.Domain.Entities;
 using Examiner.Infrastructure.Repositories.Base;
 using Examiner.Infrastructure.Repositories.Interfaces;
+using Examiner.Domain.Entities.Users;
 
 namespace Examiner.Infrastructure.Repositories;
 

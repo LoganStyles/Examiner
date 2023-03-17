@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Examiner.Infrastructure.Repositories;
 
-public class CodeVerificationRepository<T> : BaseRepository<CodeVerification>, ICodeVerificationRepository
+public class EmailVerificationRepository<T> : BaseRepository<EmailVerification>, IEmailVerificationRepository
 {
     /// <summary>
-    /// CodeVerificationRepository Constructor
+    /// EmailVerificationRepository Constructor
     /// </summary>
     /// <param name="dbContext"> The database context</param>
-    public CodeVerificationRepository(DbContext context) : base(context) { }
+    public EmailVerificationRepository(DbContext context) : base(context) { }
 }

@@ -9,6 +9,7 @@ public interface IUnitOfWork : IAsyncDisposable
     IUserRepository UserRepository { get; }
     ICodeVerificationRepository CodeVerificationRepository { get; }
     ICodeVerificationHistoryRepository CodeVerificationHistoryRepository { get; }
+    IEmailVerificationRepository EmailVerificationRepository { get; }
 
     #endregion
 

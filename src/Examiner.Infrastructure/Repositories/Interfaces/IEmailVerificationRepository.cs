@@ -4,6 +4,6 @@ using Examiner.Domain.Entities.Notifications.Emails;
 namespace Examiner.Infrastructure.Repositories.Interfaces;
 
 /// <summary>
-/// Contract for CodeVerificationRepository
+/// Contract for EmailVerificationRepository
 /// </summary>
-public interface ICodeVerificationRepository : IBaseRepository<CodeVerification> { }
+public interface IEmailVerificationRepository : IBaseRepository<EmailVerification> { }
