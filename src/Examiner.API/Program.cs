@@ -1,13 +1,13 @@
 using System.Text;
-using Examiner.Authentication.Application.Interfaces;
-using Examiner.Authentication.Application.Jwt;
-using Examiner.Authentication.Application.Services;
+using Examiner.Application.Authentication.Interfaces;
+using Examiner.Application.Authentication.Jwt;
+using Examiner.Application.Authentication.Services;
+using Examiner.Application.Users.Interfaces;
+using Examiner.Application.Users.Services;
 using Examiner.Infrastructure.Contexts;
 using Examiner.Infrastructure.Helpers;
 using Examiner.Infrastructure.UnitOfWork;
 using Examiner.Infrastructure.UnitOfWork.Interfaces;
-using Examiner.Users.Application.Interfaces;
-using Examiner.Users.Application.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

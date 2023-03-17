@@ -13,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Examiner.Authentication.Application\Examiner.Authentication.Application.csproj" />
-    <ProjectReference Include="..\Examiner.Users.Application\Examiner.Users.Application.csproj" />
+    <ProjectReference Include="..\Examiner.Application.Authentication\Examiner.Application.Authentication.csproj" />
+    <ProjectReference Include="..\Examiner.Application.Users\Examiner.Application.Users.csproj" />
   </ItemGroup>
 
 </Project>

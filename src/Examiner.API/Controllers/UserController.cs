@@ -1,7 +1,8 @@
-using Examiner.Authentication.Application.Interfaces;
-using Examiner.Authentication.Domain.Dtos;
+using Examiner.Application.Authentication.Interfaces;
+using Examiner.Application.Users.Interfaces;
 using Examiner.Common.Dtos;
-using Examiner.Users.Application.Interfaces;
+using Examiner.Domain.Dtos.Authentication;
+using Examiner.Domain.Dtos.Users;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Examiner.API.Controllers;
