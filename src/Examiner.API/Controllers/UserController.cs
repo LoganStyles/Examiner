@@ -20,6 +20,7 @@ public class UserController : ControllerBase
     private readonly IAuthenticationService _authenticationService;
     private readonly IUserService _userService;
     private const string PASSWORDS_DO_NOT_MATCH="Passwords do not match!";
+    private const string ROLE_TUTOR="Tutor";
 
     public UserController(IAuthenticationService authenticationService, IUserService userService)
     {
@@ -33,9 +34,9 @@ public class UserController : ControllerBase
     /// <param name="request">An object holding registration request data</param>
     /// <returns>Redirects to the registered user or returns bad request</returns>
     [HttpPost("signup")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [AllowAnonymous]
     public async Task<ActionResult<GenericResponse>> RegisterAsync(
         [FromBody] RegisterUserRequest request
     )
@@ -71,10 +72,10 @@ public class UserController : ControllerBase
     /// <param name="request">An object holding authentication request data</param>
     /// <returns>A generic Response indicating success or failure of the authentication request</returns>
     [HttpPost("login")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [AllowAnonymous]
     public async Task<ActionResult<GenericResponse>> LoginAsync([FromBody] AuthenticationRequest request)
     {
         if (!ModelState.IsValid)
@@ -96,8 +97,9 @@ public class UserController : ControllerBase
     /// <returns>A generic Response indicating success or failure of the change password request</returns>
     [HttpPut("resetPassword")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<GenericResponse>> ChangePasswordAsync([FromBody] ChangePasswordRequest request)
     {
         if (!ModelState.IsValid)
@@ -120,6 +122,7 @@ public class UserController : ControllerBase
     /// <returns>Fetches a user or not found ActionResult</returns>
     [HttpGet("{Id:Guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<GenericResponse>> GetByIdAsync(Guid Id)
     {
@@ -138,6 +141,7 @@ public class UserController : ControllerBase
     /// <returns>Fetches a user or not found ActionResult</returns>
     [HttpGet("{email}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<GenericResponse>> GetUserByEmailAsync(string email)
     {
