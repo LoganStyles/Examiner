@@ -3,6 +3,7 @@ using Examiner.Application.Users.Interfaces;
 using Examiner.Common.Dtos;
 using Examiner.Domain.Dtos.Authentication;
 using Examiner.Domain.Dtos.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Examiner.API.Controllers;
@@ -13,11 +14,12 @@ namespace Examiner.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-// [Authorize]
+[Authorize]
 public class UserController : ControllerBase
 {
     private readonly IAuthenticationService _authenticationService;
     private readonly IUserService _userService;
+    private const string PASSWORDS_DO_NOT_MATCH="Passwords do not match!";
 
     public UserController(IAuthenticationService authenticationService, IUserService userService)
     {
@@ -26,14 +28,14 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    /// Registers a user
+    /// Registers a user (Tutor or candidate)
     /// </summary>
     /// <param name="request">An object holding registration request data</param>
-    /// <returns>Redirects to the registered user or bad request</returns>
+    /// <returns>Redirects to the registered user or returns bad request</returns>
     [HttpPost("signup")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    // [AllowAnonymous]
+    [AllowAnonymous]
     public async Task<ActionResult<GenericResponse>> RegisterAsync(
         [FromBody] RegisterUserRequest request
     )
@@ -44,7 +46,7 @@ public class UserController : ControllerBase
         }
 
         if (request.Password != request.ConfirmPassword)
-            return BadRequest("Passwords do not match!");
+            return BadRequest(PASSWORDS_DO_NOT_MATCH);
 
         var result = await _authenticationService.RegisterAsync(request);
         if (result.Success == true)
@@ -67,12 +69,12 @@ public class UserController : ControllerBase
     /// Authenticates a user
     /// </summary>
     /// <param name="request">An object holding authentication request data</param>
-    /// <returns>A GenericResponse</returns>
+    /// <returns>A generic Response indicating success or failure of the authentication request</returns>
     [HttpPost("login")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    // [AllowAnonymous]
+    [AllowAnonymous]
     public async Task<ActionResult<GenericResponse>> LoginAsync([FromBody] AuthenticationRequest request)
     {
         if (!ModelState.IsValid)
@@ -91,7 +93,7 @@ public class UserController : ControllerBase
     /// Changes or resets a user's password. it requires authentication.
     /// </summary>
     /// <param name="request">An object holding change password request data</param>
-    /// <returns>A GenericResponse</returns>
+    /// <returns>A generic Response indicating success or failure of the change password request</returns>
     [HttpPut("resetPassword")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -102,7 +104,7 @@ public class UserController : ControllerBase
             return BadRequest(ModelState);
 
         if (request.NewPassword != request.ConfirmNewPassword)
-            return BadRequest("New Passwords do not match!");
+            return BadRequest(PASSWORDS_DO_NOT_MATCH);
 
         var result = await _authenticationService.ChangePasswordAsync(request);
         if (!result.Success)
