@@ -1,4 +1,3 @@
-using Examiner.Common.Interfaces;
 using Examiner.Domain.Entities.Users;
 
 namespace Examiner.Infrastructure.Repositories.Interfaces;

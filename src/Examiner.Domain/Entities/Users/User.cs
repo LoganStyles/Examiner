@@ -1,8 +1,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using Examiner.Common.Entities;
-using Examiner.Domain.Entities.Notifications.Emails;
+using Examiner.Domain.Entities.Authentication;
 using Examiner.Domain.Models;
 
 namespace Examiner.Domain.Entities.Users;

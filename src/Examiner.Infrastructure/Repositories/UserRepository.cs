@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Examiner.Infrastructure.Repositories.Base;
 using Examiner.Infrastructure.Repositories.Interfaces;
 using Examiner.Domain.Entities.Users;
 

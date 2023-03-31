@@ -2,6 +2,10 @@ using Examiner.Infrastructure.Repositories.Interfaces;
 
 namespace Examiner.Infrastructure.UnitOfWork.Interfaces;
 
+/// <summary>
+/// Describes contract for unit of work
+/// </summary>
+
 public interface IUnitOfWork : IAsyncDisposable
 {
     #region Properties
@@ -9,7 +13,7 @@ public interface IUnitOfWork : IAsyncDisposable
     IUserRepository UserRepository { get; }
     ICodeVerificationRepository CodeVerificationRepository { get; }
     ICodeVerificationHistoryRepository CodeVerificationHistoryRepository { get; }
-    IEmailVerificationRepository EmailVerificationRepository { get; }
+    IKickboxVerificationRepository KickboxVerificationRepository { get; }
 
     #endregion
 
