@@ -3,7 +3,6 @@ using Examiner.Application.Notifications.Helpers;
 using Examiner.Application.Notifications.Interfaces;
 using Examiner.Authentication.Domain.Mappings;
 using Examiner.Domain.Dtos;
-using Examiner.Domain.Dtos.Notifications;
 using Examiner.Domain.Entities.Notifications.Emails;
 using Examiner.Infrastructure.UnitOfWork.Interfaces;
 using Kickbox;
@@ -48,9 +47,9 @@ public class KickboxVerificationService : IVerificationService
     /// </summary>
     /// <param name="email">A string representing the email to be verified</param>
     /// <returns>A KickboxResponse indicating the success or failure of the verification</returns>
-    public async Task<KickboxResponse> IsVerified(string email)
+    public async Task<GenericResponse> IsVerified(string email)
     {
-        var response = new KickboxResponse(false, INVALID_EMAIL);
+        var response = new GenericResponse(false, INVALID_EMAIL);
         try
         {
 
@@ -90,7 +89,7 @@ public class KickboxVerificationService : IVerificationService
         catch (Exception ex)
         {
             _logger.LogError($"Error verifying {email} - ", ex.Message);
-            throw ex;
+            throw;
         }
     }
 
@@ -183,8 +182,8 @@ public class KickboxVerificationService : IVerificationService
         throw new NotImplementedException();
     }
 
-    Task<GenericResponse> IVerificationService.IsVerified(string channel)
-    {
-        return Task.FromResult((GenericResponse)this.IsVerified(channel).Result);
-    }
+    // Task<GenericResponse> IVerificationService.IsVerified(string channel)
+    // {
+    //     return Task.FromResult((GenericResponse)this.IsVerified(channel).Result);
+    // }
 }
