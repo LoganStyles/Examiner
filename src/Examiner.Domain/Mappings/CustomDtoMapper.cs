@@ -21,6 +21,7 @@ public class CustomDtoMapper : Profile
 
         CreateMap<User, UserResponse>();
         
-        CreateMap<KickboxResponse, KickboxVerification>();
+        // CreateMap<KickboxResponse, KickboxResponseDto>();
+        // CreateMap<KickboxResponseDto, KickboxVerification>();
     }
 }

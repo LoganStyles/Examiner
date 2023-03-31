@@ -15,7 +15,7 @@ public class KickboxVerification : BaseEntity
     public int Code { get; set; }
 
     [StringLength(20)]
-    public string Result { get; set; } = null!;
+    public string Result { get; set; } = null!;// be guided while using this property, since the name clashes with a property of the GenericResponse object
 
     [StringLength(20)]
     public string Reason { get; set; } = null!;
@@ -42,7 +42,7 @@ public class KickboxVerification : BaseEntity
     [StringLength(100)]
     public string Domain { get; set; } = null!;
 
-    public bool Success { get; set; }
+    public bool Success { get; set; } // be guided while using this property, since the name clashes with the GenericResponse object
 
     // [EmailAddress]
     // public string? EmailReturned { get; set; }

@@ -47,51 +47,50 @@ public class KickboxVerificationService : IVerificationService
     /// Determines if a user's email is verified
     /// </summary>
     /// <param name="email">A string representing the email to be verified</param>
-    /// <returns>A GenericResponse indicating the success or failure of the verification</returns>
-    public async Task<GenericResponse> IsVerified(string email)
+    /// <returns>A KickboxResponse indicating the success or failure of the verification</returns>
+    public async Task<KickboxResponse> IsVerified(string email)
     {
+        var response = new KickboxResponse(false, INVALID_EMAIL);
         try
         {
-            var response = new GenericResponse(false, INVALID_EMAIL);
 
-            if (IsValidFormat(email))
+            if (!IsValidFormat(email))
+                return response;
+
+            var existingKickboxVerificationList = await _unitOfWork.KickboxVerificationRepository
+            .Get(
+                (verification => verification.Email == email && verification.Success)
+                , null, "", null, null);
+
+            var verification = existingKickboxVerificationList.LastOrDefault();
+            if (verification is not null)
             {
-
-                var existingKickboxVerificationList = await _unitOfWork.KickboxVerificationRepository
-                .Get(
-                    (verification => verification.Email == email && verification.Success)
-                    , null, "", null, null);
-
-                var verification = existingKickboxVerificationList.LastOrDefault();
-                if (verification is not null)
-                {
-                    // An existing verification is found
-                    response.Success = verification.IsValidEmail;
-                    response.ResultMessage = verification.SupportingMessage;
-                }
-                else
-                {
-                    // no previous verification exists so perform a new one
-                    var verificationResult = await Verify(email);
-                    // save only if request went through & returned
-                    if (verificationResult.Success)
-                    {
-                        response.Success = verificationResult.IsValidEmail;
-                        response.ResultMessage = verificationResult.SupportingMessage;
-
-                        // insert into table for future verification requests
-                        await _unitOfWork.KickboxVerificationRepository.AddAsync(verificationResult);
-                        await _unitOfWork.CompleteAsync();
-                    }
-                }
+                // An existing verification is found
+                response.Success = verification.IsValidEmail;
+                response.ResultMessage = verification.SupportingMessage;
+                return response;
             }
 
+            // no previous verification exists so perform a new one
+            var verificationResult = await Verify(email);
+            response.ResultMessage = verificationResult.SupportingMessage;
+            // save only if request went through & returned
+            // here - verificationResult.Success means we accessed kickbox successfully
+            // i.e verificationResult.Success differs from response.Success
+            if (verificationResult.Success)
+            {
+                response.Success = verificationResult.IsValidEmail;
+                // insert into table for future verification requests
+                await _unitOfWork.KickboxVerificationRepository.AddAsync(verificationResult);
+                await _unitOfWork.CompleteAsync();
+            }
             return response;
+
         }
         catch (Exception ex)
         {
             _logger.LogError($"Error verifying {email} - ", ex.Message);
-            return GenericResponse.Result(false, ex.Message);
+            throw ex;
         }
     }
 
@@ -121,6 +120,9 @@ public class KickboxVerificationService : IVerificationService
                 }
                 else
                 {
+                    /* since verification.Result can have multiple values,
+                    i am adding verification.SupportingMessage to provide more 
+                    clarity in determining a valid email */
 
                     if (verification.Result.ToLower() == RISKY)
                         verification.SupportingMessage = RISKY;
@@ -179,5 +181,10 @@ public class KickboxVerificationService : IVerificationService
     public Task<GenericResponse> IsValid(string channel)
     {
         throw new NotImplementedException();
+    }
+
+    Task<GenericResponse> IVerificationService.IsVerified(string channel)
+    {
+        return Task.FromResult((GenericResponse)this.IsVerified(channel).Result);
     }
 }

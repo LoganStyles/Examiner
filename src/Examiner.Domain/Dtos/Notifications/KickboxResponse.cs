@@ -5,35 +5,43 @@ namespace Examiner.Domain.Dtos.Notifications;
 /// <summary>
 /// Describes a kickbox response object
 /// </summary>
-public class KickboxResponse
+public class KickboxResponse: GenericResponse
 {
-    public string Message { get; set; } = null!;
 
-    public int Code { get; set; }
+    public KickboxResponse() : base(false, null)
+    {
 
-    public string Result { get; set; } = null!;
+    }
 
-    public string Reason { get; set; } = null!;
+    public KickboxResponse(bool success, string? message) : base(success, message) { }
 
-    public bool Role { get; set; }
+    // public string Message { get; set; } = null!;
 
-    public bool Free { get; set; }
+    // public int Code { get; set; }
 
-    public bool Disposable { get; set; }
+    // public string Result { get; set; } = null!;
 
-    public bool AcceptAll { get; set; }
+    // public string Reason { get; set; } = null!;
 
-    public string DidYouMean { get; set; } = null!;
+    // public bool Role { get; set; }
 
-    public double Sendex { get; set; }
+    // public bool Free { get; set; }
 
-    [Required(ErrorMessage = "{0} is a mandatory field")]
-    [EmailAddress]
-    public string Email { get; set; } = null!;
+    // public bool Disposable { get; set; }
 
-    public string User { get; set; } = null!;
+    // public bool AcceptAll { get; set; }
 
-    public string Domain { get; set; } = null!;
+    // public string DidYouMean { get; set; } = null!;
 
-    public bool Success { get; set; }
+    // public double Sendex { get; set; }
+
+    // [Required(ErrorMessage = "{0} is a mandatory field")]
+    // [EmailAddress]
+    // public string Email { get; set; } = null!;
+
+    // public string User { get; set; } = null!;
+
+    // public string Domain { get; set; } = null!;
+
+    // public bool Success { get; set; }
 }
