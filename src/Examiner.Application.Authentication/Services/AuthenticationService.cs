@@ -1,10 +1,12 @@
 using System.Text;
 using Examiner.Application.Authentication.Interfaces;
+using Examiner.Application.Notifications.Interfaces;
+using Examiner.Application.Notifications.Services;
 using Examiner.Authentication.Domain.Mappings;
-using Examiner.Common.Dtos;
+using Examiner.Domain.Dtos;
 using Examiner.Domain.Dtos.Authentication;
 using Examiner.Domain.Dtos.Users;
-using Examiner.Domain.Entities.Notifications.Emails;
+using Examiner.Domain.Entities.Authentication;
 using Examiner.Domain.Entities.Users;
 using Examiner.Domain.Models;
 using Examiner.Infrastructure.UnitOfWork.Interfaces;
@@ -13,21 +15,32 @@ using BC = BCrypt.Net.BCrypt;
 
 namespace Examiner.Application.Authentication.Services;
 
+/// <summary>
+/// Implements registration, authentication, & password reset
+/// </summary>
 public class AuthenticationService : IAuthenticationService
 {
 
     private readonly IJwtTokenHandler _jwtTokenHandler;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<AuthenticationService> _logger;
+    private readonly ICodeService _codeService;
+    private readonly IEmailService _emailService;
+
+    private const string USER_REGISTRATION_SUCCESSFUL = "Registering user was successful, and verification code sent successfully";
 
     public AuthenticationService(
         IJwtTokenHandler jwtTokenHandler,
         IUnitOfWork unitOfWork,
-        ILogger<AuthenticationService> logger)
+        ILogger<AuthenticationService> logger,
+        ICodeService codeService,
+        IEmailService emailService)
     {
         _jwtTokenHandler = jwtTokenHandler;
         _unitOfWork = unitOfWork;
         _logger = logger;
+        _codeService = codeService;
+        _emailService = emailService;
     }
 
     /// <summary>
@@ -100,19 +113,9 @@ public class AuthenticationService : IAuthenticationService
                 if (!BC.Verify(request.OldPassword, userFound.PasswordHash))
                     return GenericResponse.Result(false, respMsg.Append("failed: Invalid Email or password!").ToString());
 
-                // if (!userFound.Id.Equals(request.AuthorizerId))
-                // {
-                //     //A different user is making this request so verify the role
-                //     if (!await IsAuthorizedForThisUserAsync(Guid.Parse(request.AuthorizerId), userFound.Role))
-                //         return GenericResponse.Result(false, respMsg.Append("failed: Invalid authorizer!").ToString());
-                // }
-
                 // change of password has been authorized
                 userFound.PasswordHash = BC.HashPassword(request.NewPassword);
                 userFound.LastModified = DateTime.Now;
-                // if admin changes password also make account active otherwise don't change active status
-                // if (userFound.Role.Equals(Role.Administrator))
-                //     userFound.Active = true;
 
                 await _unitOfWork.UserRepository.Update(userFound);
                 await _unitOfWork.CompleteAsync();
@@ -154,22 +157,38 @@ public class AuthenticationService : IAuthenticationService
                 var newUser = ObjectMapper.Mapper.Map<User>(request);
                 if (newUser is not null)
                 {
-                    var existingUserList = await _unitOfWork.UserRepository
-                    .Get(u => u.Email.Equals(newUser.Email), null, "", null, null);
+                    // does this email already exist?, if yes prevent registration
+                    var existingUserList = await _unitOfWork.UserRepository.Get(u => u.Email.Equals(newUser.Email), null, "", null, null);
                     if (existingUserList.Count() > 0)
                         return GenericResponse.Result(false, "Registration failed: The Email already exists");
 
-                    newUser.IsActive = true;
-                    await _unitOfWork.UserRepository.AddAsync(newUser);
-                    await _unitOfWork.CompleteAsync();
+                    // fetch a code for this new user
+                    var codeGenerationResponse = await _codeService.GetCode();
+                    if (!codeGenerationResponse.Success)
+                        return GenericResponse.Result(false, codeGenerationResponse.ResultMessage);
 
-                    var response = ObjectMapper.Mapper.Map<UserResponse>(newUser);
-                    response.Success = true;
-                    response.ResultMessage = "Registering user was successful";
+                    // send the code with message service
+                    var codeSendingResponse = await _emailService.SendMessage(newUser.Email, codeGenerationResponse.Code!);
+                    if (!codeSendingResponse.Success)
+                        return GenericResponse.Result(false, codeSendingResponse.ResultMessage);
+                    else
+                    {
+                        var codeVerification = new CodeVerification()
+                        {
+                            Code = codeGenerationResponse.Code!,
+                            UserId = newUser.Id,
+                            IsSent = true
+                        };
+                        // save user & code only if we were able to send code 
+                        await _unitOfWork.CodeVerificationRepository.AddAsync(codeVerification);
+                        await _unitOfWork.UserRepository.AddAsync(newUser);
+                        await _unitOfWork.CompleteAsync();
 
-                    // send verification code to user's email
-
-                    return response;
+                        var response = ObjectMapper.Mapper.Map<UserResponse>(newUser);
+                        response.Success = true;
+                        response.ResultMessage = USER_REGISTRATION_SUCCESSFUL;
+                        return response;
+                    }
                 }
                 else
                 {
@@ -202,60 +221,5 @@ public class AuthenticationService : IAuthenticationService
         && password.Any(p => !char.IsLetterOrDigit(p))
         && password.Any(char.IsDigit);
     }
-
-    /// <summary>
-    /// Sends a verification code to a newly registered user
-    /// </summary>
-    /// <param name="email">The email address of the user</param>
-    /// <returns>An object indicating the success or failure of an attempt to email a verification code</returns>
-    private async Task<GenericResponse> SendVerificationCode(User user)
-    {
-        // if email is verified, send code
-        var verifiedEmailResult = await GetVerifiedEmail(user.Email);
-        if (verifiedEmailResult.Success)
-        {
-            //generate code
-            var newCode = await GenerateCode();
-
-            //send code
-
-            //save code
-            var codeVerification = new CodeVerification()
-            {
-                Code = newCode,
-                UserId = user.Id
-            };
-            await _unitOfWork.CodeVerificationRepository.AddAsync(codeVerification);
-            await _unitOfWork.CompleteAsync();
-            return new GenericResponse(true, "Verification: code sent successfully");
-        }
-        // else send unable to verify email add msg
-        else
-        {
-            // we may add the reason for email not verifying
-            return new GenericResponse(false, "Verification: unable to verify user email");
-        }
-    }
-
-    private async Task<GenericResponse> GetVerifiedEmail(string email)
-    {
-        //check if email exists in verification table
-        //if not verify the email & LOG The results
-        //send response
-        throw new NotImplementedException();
-    }
-
-    private async Task<string> GenerateCode()
-    {
-
-        string newRandom = new Random().Next(0, 1000000).ToString("D6");
-        if (newRandom.Distinct<char>().Count<char>() == 1)
-            newRandom = await this.GenerateCode();
-        return newRandom;
-    }
-
-
-
-
 
 }

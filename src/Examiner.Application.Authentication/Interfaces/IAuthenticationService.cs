@@ -1,10 +1,10 @@
-using Examiner.Common.Dtos;
+using Examiner.Domain.Dtos;
 using Examiner.Domain.Dtos.Authentication;
 
 namespace Examiner.Application.Authentication.Interfaces;
 
 /// <summary>
-/// Describes basic operations of an authentication service
+/// Contract for registering, authenticating, & password reset
 /// </summary>
 public interface IAuthenticationService{
     Task<GenericResponse> RegisterAsync(RegisterUserRequest request);

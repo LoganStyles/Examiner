@@ -3,7 +3,7 @@ using Examiner.Domain.Dtos.Authentication;
 namespace Examiner.Application.Authentication.Interfaces;
 
 /// <summary>
-/// Generates an authentication token
+/// Contract for generating a JWT token
 /// </summary>
 public interface IJwtTokenHandler
 {

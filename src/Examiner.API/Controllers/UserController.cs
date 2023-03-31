@@ -1,6 +1,6 @@
 using Examiner.Application.Authentication.Interfaces;
 using Examiner.Application.Users.Interfaces;
-using Examiner.Common.Dtos;
+using Examiner.Domain.Dtos;
 using Examiner.Domain.Dtos.Authentication;
 using Examiner.Domain.Dtos.Users;
 using Microsoft.AspNetCore.Authorization;

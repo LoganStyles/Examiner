@@ -8,13 +8,14 @@ using Microsoft.IdentityModel.Tokens;
 namespace Examiner.Application.Authentication.Jwt;
 
 /// <summary>
-/// Generates an authentication token
+/// Generates an authentication token with the user's role & email
 /// </summary>
 public class JwtTokenHandler : IJwtTokenHandler
 {
 
     public const string JWT_SECURITY_KEY = "yoe9393832616ad6b-ab51-40d7-9492-8f6116f90f92jNxUizBwUW7a673f57-2ce9-4783-b578-37b70e86bf6fVOqPfff()lYliu#Q9fCqy49c8zjTR0a9o8u/Wa16i94QPbe1ffeb7-7b52--fe3964c26210+/8eHYqm8nCeAw/pk3jBLu4wAipjnmJkw==_=@1HHW";
     private const int JWT_TOKEN_VALIDITY_MINS = 20;
+    private const string SUCCESS_RESPONSE="Authenticating user was successful";
 
     public JwtTokenHandler()
     {
@@ -47,7 +48,7 @@ public class JwtTokenHandler : IJwtTokenHandler
         return new AuthenticationResponse
         {
             Success = true,
-            ResultMessage = "Authenticating user was successful",
+            ResultMessage = SUCCESS_RESPONSE,
             Email = request.Email,
             JwtToken = token,
             ExpiresIn = (int)tokenExpiryTimeStamp.Subtract(DateTime.Now).TotalSeconds

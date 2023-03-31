@@ -1,16 +1,16 @@
 using System.Linq.Expressions;
-using Examiner.Common.Dtos;
 using Examiner.Domain.Dtos.Users;
 using Examiner.Domain.Entities.Users;
 using Examiner.Infrastructure.UnitOfWork.Interfaces;
 using Microsoft.Extensions.Logging;
 using Examiner.Authentication.Domain.Mappings;
 using Examiner.Application.Users.Interfaces;
+using Examiner.Domain.Dtos;
 
 namespace Examiner.Application.Users.Services;
 
 /// <summary>
-/// Provides user specific operations
+/// Implements contract for fetching user details
 /// </summary>
 public class UserService : IUserService
 {

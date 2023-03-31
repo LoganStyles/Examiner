@@ -1,4 +1,4 @@
-using Examiner.Common.Dtos;
+using Examiner.Domain.Dtos;
 
 namespace Examiner.Domain.Dtos.Authentication;
 

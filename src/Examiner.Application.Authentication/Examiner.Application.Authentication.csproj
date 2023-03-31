@@ -1,7 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-<ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Examiner.Infrastructure\Examiner.Infrastructure.csproj" />
+    <ProjectReference Include="..\Examiner.Application.Notifications\Examiner.Application.Notifications.csproj" />
   </ItemGroup>
 
   <ItemGroup>
