@@ -1,5 +1,4 @@
-using Examiner.Domain.Entities.Notifications.Emails;
-using Examiner.Infrastructure.Repositories.Base;
+using Examiner.Domain.Entities.Authentication;
 using Examiner.Infrastructure.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
