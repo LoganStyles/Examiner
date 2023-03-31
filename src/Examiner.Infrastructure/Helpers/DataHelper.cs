@@ -4,6 +4,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Examiner.Infrastructure.Helpers;
 
+/// <summary>
+/// Performs operations that sync local database with remote storage
+/// </summary>
+
 public static class DataHelper
 {
 
