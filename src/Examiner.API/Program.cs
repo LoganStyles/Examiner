@@ -2,6 +2,8 @@ using System.Text;
 using Examiner.Application.Authentication.Interfaces;
 using Examiner.Application.Authentication.Jwt;
 using Examiner.Application.Authentication.Services;
+using Examiner.Application.Notifications.Interfaces;
+using Examiner.Application.Notifications.Services;
 using Examiner.Application.Users.Interfaces;
 using Examiner.Application.Users.Services;
 using Examiner.Infrastructure.Contexts;
@@ -44,7 +46,10 @@ builder.Services.AddDbContext<ExaminerContext>(
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<ICodeService, CodeService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IVerificationService, KickboxVerificationService>();
 
 builder.Services.AddSingleton<IJwtTokenHandler, JwtTokenHandler>();
 builder.Services.AddCustomJwtAuthentication();
