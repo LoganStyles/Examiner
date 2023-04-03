@@ -11,50 +11,64 @@ using Examiner.Infrastructure.Helpers;
 using Examiner.Infrastructure.UnitOfWork;
 using Examiner.Infrastructure.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using MySqlConnector;
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
+var services = builder.Services;
 
 
 static string BuildConnectionString(string databaseUrl)
 {
     var databaseUri = new Uri(databaseUrl);
+    var database = databaseUri.LocalPath.TrimStart('/');
     var userInfo = databaseUri.UserInfo.Split(':');
-    var connection = new StringBuilder();
+    var user = userInfo[0];
+    var password = userInfo[1];
+
+    var connection = new StringBuilder(5);
     connection.Append($"server={databaseUri.Host};");
     connection.Append($"port={databaseUri.Port};");
-
-    var database = databaseUri.LocalPath.TrimStart('/');
     connection.Append($"database={database};");
-    var user = userInfo[0];
     connection.Append($"user={user};");
-    var password = userInfo[1];
     connection.Append($"password={password}");
 
     return connection.ToString();
 }
 
 // Add services to the container.
-builder.Services.AddDbContext<ExaminerContext>(
+services.AddDbContext<ExaminerContext>(
     options =>
     {
+        // production environment
         var databaseUrl = Environment.GetEnvironmentVariable("MYSQL_URL");
-        var connectionString = builder.Configuration.GetConnectionString("ExaminerConn");
+
+        // for development environment
+        var connectionString = string.Empty;
+        var appConnectionString = builder.Configuration.GetConnectionString("ExaminerConn");
+        if (appConnectionString is not null)
+        {
+            var connStrBuilder = new MySqlConnectionStringBuilder(appConnectionString);
+            connStrBuilder.UserID = builder.Configuration["ExaminerCon:user"];
+            connStrBuilder.Password = builder.Configuration["ExaminerCon:password"];
+            connectionString = connStrBuilder.ConnectionString;
+        }
 
         var connection = string.IsNullOrEmpty(databaseUrl) ? connectionString : BuildConnectionString(databaseUrl);
         options.UseMySql(connection, ServerVersion.AutoDetect(connection));
     });
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-builder.Services.AddScoped<ICodeService, CodeService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IEmailService, EmailService>();
-builder.Services.AddScoped<IVerificationService, KickboxVerificationService>();
+services.AddScoped<IAuthenticationService, AuthenticationService>();
+services.AddScoped<ICodeService, CodeService>();
+services.AddScoped<IUserService, UserService>();
+services.AddScoped<IEmailService, EmailService>();
+services.AddScoped<IVerificationService, KickboxVerificationService>();
 
-builder.Services.AddSingleton<IJwtTokenHandler, JwtTokenHandler>();
-builder.Services.AddCustomJwtAuthentication();
+services.AddSingleton<IJwtTokenHandler, JwtTokenHandler>();
+services.AddCustomJwtAuthentication();
 
-builder.Services.AddControllers(options =>
+services.AddControllers(options =>
 {
     options.SuppressAsyncSuffixInActionNames = false;
 }).ConfigureApiBehaviorOptions(options =>
@@ -76,8 +90,8 @@ builder.Services.AddControllers(options =>
     };
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+services.AddEndpointsApiExplorer();
+services.AddSwaggerGen();
 
 var app = builder.Build();
 

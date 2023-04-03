@@ -28,6 +28,8 @@ public class AuthenticationService : IAuthenticationService
     private readonly IEmailService _emailService;
 
     private const string USER_REGISTRATION_SUCCESSFUL = "Registering user was successful, and verification code sent successfully";
+    private const string USER_REGISTRATION_FAILED = "Registering user failed: ";
+    private const string CODE_VERIFICATION_MESSAGE_SUBJECT = "Code Verification";
 
     public AuthenticationService(
         IJwtTokenHandler jwtTokenHandler,
@@ -148,7 +150,7 @@ public class AuthenticationService : IAuthenticationService
         try
         {
             if (!IsValidPassword(request.Password))
-                return GenericResponse.Result(false, "Registration failed: Invalid password provided");
+                return GenericResponse.Result(false, USER_REGISTRATION_FAILED + "Invalid password provided");
 
             Role userRole;
             if (Enum.TryParse(request.Role, out userRole))
@@ -160,22 +162,25 @@ public class AuthenticationService : IAuthenticationService
                     // does this email already exist?, if yes prevent registration
                     var existingUserList = await _unitOfWork.UserRepository.Get(u => u.Email.Equals(newUser.Email), null, "", null, null);
                     if (existingUserList.Count() > 0)
-                        return GenericResponse.Result(false, "Registration failed: The Email already exists");
+                        return GenericResponse.Result(false, USER_REGISTRATION_FAILED + "The Email already exists");
 
                     // fetch a code for this new user
                     var codeGenerationResponse = await _codeService.GetCode();
-                    if (!codeGenerationResponse.Success)
-                        return GenericResponse.Result(false, codeGenerationResponse.ResultMessage);
+                    if (!codeGenerationResponse.Success || codeGenerationResponse.Code is null)
+                        return GenericResponse.Result(false, USER_REGISTRATION_FAILED + codeGenerationResponse.ResultMessage);
 
                     // send the code with message service
-                    var codeSendingResponse = await _emailService.SendMessage(newUser.Email, codeGenerationResponse.Code!);
+                    var verificationCode = codeGenerationResponse.Code;
+                    string message = $"Your verification code is <b>{verificationCode}</b>";
+
+                    var codeSendingResponse = await _emailService.SendMessage("", newUser.Email, CODE_VERIFICATION_MESSAGE_SUBJECT, message);
                     if (!codeSendingResponse.Success)
-                        return GenericResponse.Result(false, codeSendingResponse.ResultMessage);
+                        return GenericResponse.Result(false, USER_REGISTRATION_FAILED + codeSendingResponse.ResultMessage);
                     else
                     {
                         var codeVerification = new CodeVerification()
                         {
-                            Code = codeGenerationResponse.Code!,
+                            Code = verificationCode,
                             UserId = newUser.Id,
                             IsSent = true
                         };
@@ -193,19 +198,19 @@ public class AuthenticationService : IAuthenticationService
                 else
                 {
                     return GenericResponse.Result(false,
-                    "Registration failed: Invalid user request provided");
+                    USER_REGISTRATION_FAILED + "Invalid user request provided");
                 }
             }
             else
             {
-                return GenericResponse.Result(false, "Registering user failed: Invalid user role provided");
+                return GenericResponse.Result(false, USER_REGISTRATION_FAILED + "Invalid user role provided");
             }
         }
         catch (Exception ex)
         {
             // fetch inner exceptions if exist
             _logger.LogError("Error registering user - ", ex.Message);
-            return GenericResponse.Result(false, ex.Message);
+            return GenericResponse.Result(false, USER_REGISTRATION_FAILED + ex.Message);
         }
     }
 
