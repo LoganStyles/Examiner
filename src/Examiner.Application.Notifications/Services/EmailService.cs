@@ -23,7 +23,9 @@ public class EmailService : IEmailService
     private const string SMTP_HOST = "smtp.gmail.com";
     private const int SMTP_PORT = 587;
 
-    public EmailService(IVerificationService verificationService, ILogger<EmailService> logger, IConfiguration configuration)
+    public EmailService(IVerificationService verificationService, 
+    ILogger<EmailService> logger, 
+    IConfiguration configuration)
     {
         _verificationService = verificationService;
         _logger = logger;
@@ -36,7 +38,9 @@ public class EmailService : IEmailService
     /// <param name="email">The email address to send to</param>
     /// <param name="message">The message to be sent</param>
     /// <returns>An GenericResponse object indicating the success or failure of an attempt to email a message</returns>
-    public async Task<GenericResponse> SendMessage(string receiverName, string email, string subject, string htmlMessage)
+    public async Task<GenericResponse> SendMessage(string receiverName, 
+    string email, string subject, 
+    string htmlMessage)
     {
 
         var resultResponse = GenericResponse.Result(false, FAILED_VERIFICATION);

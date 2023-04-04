@@ -1,7 +1,6 @@
 using System.Text;
 using Examiner.Application.Authentication.Interfaces;
 using Examiner.Application.Notifications.Interfaces;
-using Examiner.Application.Notifications.Services;
 using Examiner.Authentication.Domain.Mappings;
 using Examiner.Domain.Dtos;
 using Examiner.Domain.Dtos.Authentication;
