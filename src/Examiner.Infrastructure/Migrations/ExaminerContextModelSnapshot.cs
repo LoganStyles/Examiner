@@ -56,7 +56,7 @@ namespace Examiner.Infrastructure.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("CodeVerifications");
+                    b.ToTable("CodeVerifications", (string)null);
                 });
 
             modelBuilder.Entity("Examiner.Domain.Entities.Authentication.CodeVerificationHistory", b =>
@@ -79,7 +79,7 @@ namespace Examiner.Infrastructure.Migrations
 
                     b.HasIndex("CodeVerificationId");
 
-                    b.ToTable("CodeVerificationHistories");
+                    b.ToTable("CodeVerificationHistories", (string)null);
                 });
 
             modelBuilder.Entity("Examiner.Domain.Entities.Notifications.Emails.KickboxVerification", b =>
@@ -148,7 +148,7 @@ namespace Examiner.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("KickboxVerifications");
+                    b.ToTable("KickboxVerifications", (string)null);
                 });
 
             modelBuilder.Entity("Examiner.Domain.Entities.Users.User", b =>
@@ -203,7 +203,7 @@ namespace Examiner.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Examiner.Domain.Entities.Authentication.CodeVerification", b =>

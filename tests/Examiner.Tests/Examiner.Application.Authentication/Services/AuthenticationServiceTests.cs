@@ -25,6 +25,7 @@ public class AuthenticationServiceTests
 
     private const string EMAIL_SENDING_FAILED = "unable to send email";
     private const string EMAIL_SENDING_SUCCESSFUL = "Email sent successfully";
+    private const string USER_REGISTRATION_FAILED = "Registering user failed: ";
     private const string USER_REGISTRATION_SUCCESSFUL = "Registering user was successful, and verification code sent successfully";
     private const string CODE_GENERATION_FAILED = "Unable to generate verification code";
 
@@ -99,14 +100,14 @@ public class AuthenticationServiceTests
         Assert.False(result.Success);
         Assert.Contains(CODE_GENERATION_FAILED, result.ResultMessage);
     }
-    
+
     [Fact]
     public async Task RegisterAsync_WhenVerificationCodeIsNotSent_Fails()
     {
         var request = UserMock.RegisterTutorWithValidPassword();
         var emptyResult = UserMock.GetEmptyListOfExistingUsers();
         var codeGenerationResponse = new CodeGenerationResponse(true, It.IsAny<string>());
-        var codeSendingResultResponse = GenericResponse.Result(false, EMAIL_SENDING_FAILED);
+        var codeSendingResultResponse = GenericResponse.Result(false, USER_REGISTRATION_FAILED);
 
         _unitOfWork
             .Setup(
@@ -122,11 +123,12 @@ public class AuthenticationServiceTests
             .Returns(() => emptyResult);
 
         _codeService.Setup(code => code.GetCode()).ReturnsAsync(() => codeGenerationResponse);
-        _emailService.Setup(msg => msg.SendMessage(request.Email, It.IsAny<string>())).ReturnsAsync(() => codeSendingResultResponse);
+        _emailService.Setup(msg => msg.SendMessage("", request.Email, It.IsAny<string>(), It.IsAny<string>()))
+        .ReturnsAsync(() => codeSendingResultResponse);
 
         var result = await _authService.RegisterAsync(request);
         Assert.False(result.Success);
-        Assert.Contains(EMAIL_SENDING_FAILED, result.ResultMessage);
+        Assert.Contains(USER_REGISTRATION_FAILED, result.ResultMessage);
     }
 
     [Fact]
@@ -134,29 +136,24 @@ public class AuthenticationServiceTests
     {
         var request = UserMock.RegisterTutorWithValidPassword();
         var emptyResult = UserMock.GetEmptyListOfExistingUsers();
-        var codeGenerationResponse = new CodeGenerationResponse(true, It.IsAny<string>());
-        var codeSendingResultResponse = GenericResponse.Result(true, EMAIL_SENDING_SUCCESSFUL);
-
-        _unitOfWork
-            .Setup(
-                unit =>
-                    unit.UserRepository.Get(
-                        It.IsAny<Expression<Func<User, bool>>?>(),
-                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
-                        It.IsAny<string>(),
-                        It.IsAny<int?>(),
-                        It.IsAny<int?>()
-                    )
-            )
-            .Returns(() => emptyResult);
+        var codeGenerationResponse = new CodeGenerationResponse(true, It.IsAny<string>()){Code="780000"};
+        
+        var codeSendingResultResponse = GenericResponse.Result(true, It.IsAny<string>());
 
         _codeService.Setup(code => code.GetCode()).ReturnsAsync(() => codeGenerationResponse);
-        _emailService.Setup(msg => msg.SendMessage(request.Email, It.IsAny<string>())).ReturnsAsync(() => codeSendingResultResponse);
+        _emailService.Setup(msg => msg.SendMessage("", request.Email, It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(() => codeSendingResultResponse);
         _unitOfWork.Setup(unit => unit.CodeVerificationRepository.AddAsync(It.IsAny<CodeVerification>())).ReturnsAsync(It.IsAny<CodeVerification>());
+        _unitOfWork.Setup(unit => unit.UserRepository.Get(
+                                It.IsAny<Expression<Func<User, bool>>?>(),
+                                It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                                It.IsAny<string>(),
+                                It.IsAny<int?>(),
+                                It.IsAny<int?>()
+                            )).Returns(() => emptyResult);
 
         var result = await _authService.RegisterAsync(request);
         Assert.True(result.Success);
-        Assert.Contains("verification code sent successfully", result.ResultMessage);
+        Assert.Contains(USER_REGISTRATION_SUCCESSFUL, result.ResultMessage);
     }
 
     [Fact]
