@@ -141,7 +141,7 @@ public class AuthenticationService : IAuthenticationService
             return GenericResponse.Result(false, ex.Message);
         }
     }
-    
+
     /// <summary>
     /// Set a user's role
     /// </summary>
@@ -152,23 +152,28 @@ public class AuthenticationService : IAuthenticationService
         try
         {
             Role userRole;
-            
+            if (Enum.TryParse(request.Role, out userRole))
+            {
+                var userList = await _unitOfWork.UserRepository.Get(u => u.Email.Equals(request.Email), null, "", null, null);
 
-            var userList = await _unitOfWork.UserRepository.Get(u => u.Email.Equals(request.Email), null, "", null, null);
+                var userFound = userList.FirstOrDefault();
+                if (userFound is null)
+                    return GenericResponse.Result(false, ROLE + FAILED + USER_NOT_FOUND);
 
-            var userFound = userList.FirstOrDefault();
-            if (userFound is null)
-                return GenericResponse.Result(false, ROLE + FAILED + USER_NOT_FOUND);
+                userFound.Role = userRole;
 
-            
+                await _unitOfWork.UserRepository.Update(userFound);
+                await _unitOfWork.CompleteAsync();
 
-            await _unitOfWork.UserRepository.Update(userFound);
-            await _unitOfWork.CompleteAsync();
-
-            var response = ObjectMapper.Mapper.Map<UserResponse>(userFound);
-            response.Success = true;
-            response.ResultMessage = ROLE + SUCCESSFUL;
-            return response;
+                var response = ObjectMapper.Mapper.Map<UserResponse>(userFound);
+                response.Success = true;
+                response.ResultMessage = ROLE + SUCCESSFUL;
+                return response;
+            }
+            else
+            {
+                return GenericResponse.Result(false, ROLE + INVALID_REQUEST);
+            }
 
         }
         catch (Exception ex)

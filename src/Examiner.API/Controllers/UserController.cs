@@ -19,8 +19,8 @@ public class UserController : ControllerBase
 {
     private readonly IAuthenticationService _authenticationService;
     private readonly IUserService _userService;
-    private const string PASSWORDS_DO_NOT_MATCH="Passwords do not match!";
-    private const string ROLE_TUTOR="Tutor";
+    private const string PASSWORDS_DO_NOT_MATCH = "Passwords do not match!";
+    private const string ROLE_TUTOR = "Tutor";
 
     public UserController(IAuthenticationService authenticationService, IUserService userService)
     {
@@ -114,26 +114,23 @@ public class UserController : ControllerBase
 
         return Ok(result);
     }
-   
+
     /// <summary>
-    /// Changes or resets a user's password. it requires authentication.
+    /// sets a user's role. it requires authentication.
     /// </summary>
-    /// <param name="request">An object holding change password request data</param>
-    /// <returns>A generic Response indicating success or failure of the change password request</returns>
-    [HttpPut("resetPassword")]
+    /// <param name="request">An object holding role request data</param>
+    /// <returns>A generic Response indicating success or failure of the role request change</returns>
+    [HttpPut("selectRole")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<GenericResponse>> ChangePasswordAsync([FromBody] ChangePasswordRequest request)
+    public async Task<ActionResult<GenericResponse>> SelectRoleAsync([FromBody] SelectRoleRequest request)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        if (request.NewPassword != request.ConfirmNewPassword)
-            return BadRequest(PASSWORDS_DO_NOT_MATCH);
-
-        var result = await _authenticationService.ChangePasswordAsync(request);
+        var result = await _authenticationService.SelectRole(request);
         if (!result.Success)
             return NotFound(result);
 
@@ -158,7 +155,7 @@ public class UserController : ControllerBase
         else
             return NotFound(result);
     }
-    
+
     /// <summary>
     /// Fetches a user
     /// </summary>
