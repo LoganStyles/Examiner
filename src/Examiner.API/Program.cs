@@ -49,8 +49,8 @@ services.AddDbContext<ExaminerContext>(
         if (appConnectionString is not null)
         {
             var connStrBuilder = new MySqlConnectionStringBuilder(appConnectionString);
-            connStrBuilder.UserID = builder.Configuration["ExaminerCon:user"];
-            connStrBuilder.Password = builder.Configuration["ExaminerCon:password"];
+            connStrBuilder.UserID = builder.Configuration["MYSQL_USER"];
+            connStrBuilder.Password = builder.Configuration["MYSQL_PASSWORD"];
             connectionString = connStrBuilder.ConnectionString;
         }
 

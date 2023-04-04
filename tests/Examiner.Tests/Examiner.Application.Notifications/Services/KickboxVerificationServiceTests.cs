@@ -1,12 +1,10 @@
 using System.Linq.Expressions;
-using Examiner.Application.Notifications.Helpers;
 using Examiner.Application.Notifications.Services;
 using Examiner.Domain.Entities.Notifications.Emails;
-using Examiner.Infrastructure.Repositories;
 using Examiner.Infrastructure.UnitOfWork.Interfaces;
 using Examiner.Tests.MockData;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using Moq;
 
 namespace Examiner.Tests.Examiner.Application.Notifications.Services;
@@ -17,7 +15,7 @@ public class KickboxVerificationServiceTests
     private readonly Mock<IUnitOfWork> _unitOfWork;
     private readonly NullLogger<KickboxVerificationService> _logger;
     private readonly KickboxVerificationService _kickboxVerificationService;
-    private readonly Mock<IOptions<AppSettings>> _appSettings;
+    private readonly Mock<IConfiguration> _configuration;
 
     public const string UNKNOWN = "Unknown (Destination mail server may be temporarily unavailable)";
     public const string INSUFFICIENT_BALANCE = "Unable to complete verification at this moment, possibly due to insufficient balance";
@@ -33,9 +31,9 @@ public class KickboxVerificationServiceTests
     public KickboxVerificationServiceTests()
     {
         _unitOfWork = new();
-        _appSettings = new();
         _logger = new();
-        _kickboxVerificationService = new(_logger, _appSettings.Object, _unitOfWork.Object);
+        _configuration = new();
+        _kickboxVerificationService = new(_logger, _unitOfWork.Object,_configuration.Object);
     }
 
     [Fact]
@@ -63,7 +61,7 @@ public class KickboxVerificationServiceTests
                     )
                     .Returns(() => existingResult);
 
-        var result = await _kickboxVerificationService.IsVerified(existingResult.Result.FirstOrDefault()!.Email);
+        var result = await _kickboxVerificationService.IsVerified(existingResult.Result.FirstOrDefault()!.Email!);
         Assert.NotEqual(INVALID_EMAIL, result.ResultMessage);
     }
 

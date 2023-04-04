@@ -1,13 +1,12 @@
 using System.Text.RegularExpressions;
-using Examiner.Application.Notifications.Helpers;
 using Examiner.Application.Notifications.Interfaces;
 using Examiner.Authentication.Domain.Mappings;
 using Examiner.Domain.Dtos;
 using Examiner.Domain.Entities.Notifications.Emails;
 using Examiner.Infrastructure.UnitOfWork.Interfaces;
 using Kickbox;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Examiner.Application.Notifications.Services;
 
@@ -19,27 +18,29 @@ public class KickboxVerificationService : IVerificationService
 
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<KickboxVerificationService> _logger;
-    private readonly AppSettings _appSettings;
+    private readonly IConfiguration _configuration;
 
-    public const string UNKNOWN = "Unknown (Destination mail server may be temporarily unavailable)";
-    public const string INSUFFICIENT_BALANCE = "Unable to complete verification at this moment, possibly due to insufficient balance";
-    public const string DELIVERABLE = "deliverable";
-    public const string UNDELIVERABLE = "undeliverable";
-    public const string RISKY = "risky";
-    public const string MAIL_UNKNOWN = "unknown";
-    public const string ACCEPTED_EMAIL = "accepted_email";
-    public const string VALID_EMAIL = "Email Address is valid";
-    public const string INVALID_EMAIL = "Invalid Email Address Supplied";
-    public const string UNKNOWN_EMAIL = "Unable to verify Email Address Supplied";
+    private const string UNKNOWN = "Unknown (Destination mail server may be temporarily unavailable)";
+    private const string INSUFFICIENT_BALANCE = "Unable to complete verification at this moment, possibly due to insufficient balance";
+    private const string DELIVERABLE = "deliverable";
+    private const string UNDELIVERABLE = "undeliverable";
+    private const string RISKY = "risky";
+    private const string MAIL_UNKNOWN = "unknown";
+    private const string ACCEPTED_EMAIL = "accepted_email";
+    private const string VALID_EMAIL = "Email Address is valid";
+    private const string VALID_EMAIL_FORMAT = "Email Address has valid format";
+    private const string INVALID_EMAIL = "Invalid Email Address Supplied";
+    private const string UNKNOWN_EMAIL = "Unable to verify Email Address Supplied";
+
 
     public KickboxVerificationService(
         ILogger<KickboxVerificationService> logger,
-        IOptions<AppSettings> appSettings,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IConfiguration configuration)
     {
         _logger = logger;
-        _appSettings = appSettings.Value;
         _unitOfWork = unitOfWork;
+        _configuration = configuration;
     }
 
     /// <summary>
@@ -74,7 +75,7 @@ public class KickboxVerificationService : IVerificationService
             var verificationResult = await Verify(email);
             response.ResultMessage = verificationResult.SupportingMessage;
             // save only if request went through & returned
-            // here - verificationResult.Success means we accessed kickbox successfully
+            // also - verificationResult.Success means we accessed kickbox successfully
             // i.e verificationResult.Success differs from response.Success
             if (verificationResult.Success)
             {
@@ -101,21 +102,24 @@ public class KickboxVerificationService : IVerificationService
     private async Task<KickboxVerification> Verify(string email)
     {
 
-        var kickBoxApi = new KickBoxApi(_appSettings.KickboxKey);
+        var kickboxKey = string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("KICKBOX_PROD_KEY"))
+        ? _configuration["KICKBOX_PROD_KEY"] : Environment.GetEnvironmentVariable("KICKBOX_PROD_KEY");
+        var kickBoxApi = new KickBoxApi(kickboxKey);
         var verification = new KickboxVerification();
 
         try
         {
-            var verificationResponse = await kickBoxApi.VerifyWithResponse("emmaist23@gmail.com");
+            var kickboxResponse = await kickBoxApi.VerifyWithResponse(email);
 
-            if (verificationResponse is not null)
+            if (kickboxResponse is not null)
             {
-                verification = ObjectMapper.Mapper.Map<KickboxVerification>(verificationResponse);
+                verification = ObjectMapper.Mapper.Map<KickboxVerification>(kickboxResponse);
 
                 if (!verification.Success)
                 {
                     // request did not go through probably due to insufficient balance
                     verification.SupportingMessage = INSUFFICIENT_BALANCE;
+                    return verification;
                 }
                 else
                 {
@@ -123,13 +127,14 @@ public class KickboxVerificationService : IVerificationService
                     i am adding verification.SupportingMessage to provide more 
                     clarity in determining a valid email */
 
-                    if (verification.Result.ToLower() == RISKY)
+                    if (verification.Result is not null && verification.Result.ToLower() == RISKY)
                         verification.SupportingMessage = RISKY;
 
-                    else if (verification.Result.ToLower() == UNDELIVERABLE)
+                    else if (verification.Result is not null && verification.Result.ToLower() == UNDELIVERABLE)
                         verification.SupportingMessage = UNDELIVERABLE;
 
-                    else if (verification.Result.ToLower() == DELIVERABLE && verification.Reason.ToLower() == ACCEPTED_EMAIL)
+                    else if (verification.Result is not null && verification.Result.ToLower() == DELIVERABLE
+                    && verification.Reason is not null && verification.Reason.ToLower() == ACCEPTED_EMAIL)
                     {
                         verification.SupportingMessage = VALID_EMAIL;
                         verification.IsValidEmail = true;
@@ -179,11 +184,11 @@ public class KickboxVerificationService : IVerificationService
 
     public Task<GenericResponse> IsValid(string channel)
     {
-        throw new NotImplementedException();
+        var validStatus = this.IsValidFormat(channel);
+        if (validStatus)
+            return Task.FromResult(GenericResponse.Result(true, VALID_EMAIL_FORMAT));
+        else
+            return Task.FromResult(GenericResponse.Result(false, INVALID_EMAIL));
     }
 
-    // Task<GenericResponse> IVerificationService.IsVerified(string channel)
-    // {
-    //     return Task.FromResult((GenericResponse)this.IsVerified(channel).Result);
-    // }
 }
