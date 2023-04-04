@@ -18,6 +18,7 @@ public class AuthenticationResponse : GenericResponse
     }
 
     public string? Email { get; set; }
+    public string? Role { get; set; }
     public string? JwtToken { get; set; }
     public int ExpiresIn { get; set; }
 }

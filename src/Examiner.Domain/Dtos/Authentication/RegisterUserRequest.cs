@@ -13,9 +13,6 @@ public record RegisterUserRequest(
 
     [Required]
     [MinLength(6)]
-    string ConfirmPassword,
+    string ConfirmPassword
 
-    [Required]
-    [StringLength(20,MinimumLength =5,ErrorMessage ="The {0} value must be between {1} and {2} characters" )]
-    string Role
 );

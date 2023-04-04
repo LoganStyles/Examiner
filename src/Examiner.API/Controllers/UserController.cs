@@ -29,7 +29,7 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    /// Registers a user (Tutor or candidate)
+    /// Registers a user (without a role)
     /// </summary>
     /// <param name="request">An object holding registration request data</param>
     /// <returns>Redirects to the registered user or returns bad request</returns>
@@ -90,6 +90,31 @@ public class UserController : ControllerBase
             return Unauthorized(result);
     }
 
+    /// <summary>
+    /// Changes or resets a user's password. it requires authentication.
+    /// </summary>
+    /// <param name="request">An object holding change password request data</param>
+    /// <returns>A generic Response indicating success or failure of the change password request</returns>
+    [HttpPut("resetPassword")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<GenericResponse>> ChangePasswordAsync([FromBody] ChangePasswordRequest request)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        if (request.NewPassword != request.ConfirmNewPassword)
+            return BadRequest(PASSWORDS_DO_NOT_MATCH);
+
+        var result = await _authenticationService.ChangePasswordAsync(request);
+        if (!result.Success)
+            return NotFound(result);
+
+        return Ok(result);
+    }
+   
     /// <summary>
     /// Changes or resets a user's password. it requires authentication.
     /// </summary>

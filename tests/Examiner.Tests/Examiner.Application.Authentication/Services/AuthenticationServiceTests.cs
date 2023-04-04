@@ -25,8 +25,11 @@ public class AuthenticationServiceTests
 
     private const string EMAIL_SENDING_FAILED = "unable to send email";
     private const string EMAIL_SENDING_SUCCESSFUL = "Email sent successfully";
-    private const string USER_REGISTRATION_FAILED = "Registering user failed: ";
-    private const string USER_REGISTRATION_SUCCESSFUL = "Registering user was successful, and verification code sent successfully";
+    private const string FAILED = "failed: ";
+    private const string SUCCESSFUL = "successful ";
+    private const string VERIFICATION_CODE_SENT_SUCCESS = "verification code sent successfully";
+    private const string REGISTRATION = "Registeration ";
+    // private const string USER_REGISTRATION_SUCCESSFUL = "Registering user was successful, and verification code sent successfully";
     private const string CODE_GENERATION_FAILED = "Unable to generate verification code";
 
 
@@ -107,7 +110,7 @@ public class AuthenticationServiceTests
         var request = UserMock.RegisterTutorWithValidPassword();
         var emptyResult = UserMock.GetEmptyListOfExistingUsers();
         var codeGenerationResponse = new CodeGenerationResponse(true, It.IsAny<string>());
-        var codeSendingResultResponse = GenericResponse.Result(false, USER_REGISTRATION_FAILED);
+        var codeSendingResultResponse = GenericResponse.Result(false, REGISTRATION + FAILED);
 
         _unitOfWork
             .Setup(
@@ -128,7 +131,7 @@ public class AuthenticationServiceTests
 
         var result = await _authService.RegisterAsync(request);
         Assert.False(result.Success);
-        Assert.Contains(USER_REGISTRATION_FAILED, result.ResultMessage);
+        Assert.Contains(REGISTRATION + FAILED, result.ResultMessage);
     }
 
     [Fact]
@@ -136,8 +139,8 @@ public class AuthenticationServiceTests
     {
         var request = UserMock.RegisterTutorWithValidPassword();
         var emptyResult = UserMock.GetEmptyListOfExistingUsers();
-        var codeGenerationResponse = new CodeGenerationResponse(true, It.IsAny<string>()){Code="780000"};
-        
+        var codeGenerationResponse = new CodeGenerationResponse(true, It.IsAny<string>()) { Code = "780000" };
+
         var codeSendingResultResponse = GenericResponse.Result(true, It.IsAny<string>());
 
         _codeService.Setup(code => code.GetCode()).ReturnsAsync(() => codeGenerationResponse);
@@ -153,7 +156,7 @@ public class AuthenticationServiceTests
 
         var result = await _authService.RegisterAsync(request);
         Assert.True(result.Success);
-        Assert.Contains(USER_REGISTRATION_SUCCESSFUL, result.ResultMessage);
+        Assert.Contains(REGISTRATION + SUCCESSFUL + VERIFICATION_CODE_SENT_SUCCESS, result.ResultMessage);
     }
 
     [Fact]

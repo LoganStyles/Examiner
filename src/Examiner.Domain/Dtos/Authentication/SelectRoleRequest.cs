@@ -2,15 +2,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Examiner.Domain.Dtos.Authentication;
 
-/// <summary>
-/// Specifies data for an authentication request
-/// </summary>
-public record AuthenticationRequest(
+public record SelectRoleRequest(
+
     [Required]
     [EmailAddress]
     string Email,
 
     [Required]
-    [MinLength(6)]
-    string Password
+    [StringLength(20,MinimumLength =5,ErrorMessage ="The {0} value must be between {1} and {2} characters" )]
+    string Role
 );

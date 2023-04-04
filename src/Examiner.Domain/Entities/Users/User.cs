@@ -43,7 +43,9 @@ public class User : BaseEntity
     [Required]
     public string PasswordHash { get; set; } = null!;
 
-    public Role Role { get; set; }
+    public Role? Role { get; set; }
+
+    // public bool HasRole => Role;
 
     [JsonIgnore]
     public DateTime? LastPasswordReset { get; set; }

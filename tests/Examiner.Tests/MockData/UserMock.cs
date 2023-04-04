@@ -1,4 +1,3 @@
-using Examiner.Domain.Models;
 using Examiner.Domain.Dtos.Authentication;
 using Examiner.Domain.Entities.Users;
 using BC = BCrypt.Net.BCrypt;
@@ -12,16 +11,16 @@ public static class UserMock
     #region Registration
     public static RegisterUserRequest RegisterTutorWithInvalidPassword()
     {
-        return new RegisterUserRequest("e@gmail.com", "string", "string", "Tutor");
+        return new RegisterUserRequest("e@gmail.com", "string", "string");
     }
 
     public static RegisterUserRequest RegisterTutorWithValidPassword()
     {
-        return new RegisterUserRequest("e@gmail.com", "strin(1)G", "strin(1)G", "Tutor");
+        return new RegisterUserRequest("e@gmail.com", "strin(1)G", "strin(1)G");
     }
     public static RegisterUserRequest RegisterTutorWithNonMatchingPassword()
     {
-        return new RegisterUserRequest("e@gmail.com", "strin()G", "strin(1)G", "Tutor");
+        return new RegisterUserRequest("e@gmail.com", "strin()G", "strin(1)G");
     }
 
     public static User GetValidTutor()
@@ -33,7 +32,6 @@ public static class UserMock
             LastName = "felix",
             Email = "e@gmail.com",
             PasswordHash = BC.HashPassword("strin(1)G"),
-            Role = Role.Tutor,
             IsActive = true
         };
     }
@@ -46,7 +44,6 @@ public static class UserMock
             LastName = "felix",
             Email = "e@gmail.com",
             PasswordHash = BC.HashPassword("strin(1)G"),
-            Role = Role.Tutor,
             IsActive = true
         };
 
@@ -81,7 +78,6 @@ public static class UserMock
                         LastName = "felix",
                         Email = "e@gmail.com",
                         PasswordHash = BC.HashPassword("strin(1)G"),
-                        Role = Role.Tutor,
                         IsActive = true
                     }
                 }

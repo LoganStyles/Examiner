@@ -26,8 +26,7 @@ public class JwtTokenHandler : IJwtTokenHandler
         var tokenExpiryTimeStamp = DateTime.Now.AddMinutes(JWT_TOKEN_VALIDITY_MINS);
         var tokenKey = Encoding.ASCII.GetBytes(JWT_SECURITY_KEY);
         var claimsIdentity = new ClaimsIdentity(new List<Claim>{
-            new Claim(JwtRegisteredClaimNames.Name, request.Email),
-            new Claim(ClaimTypes.Role, request.Role)
+            new Claim(JwtRegisteredClaimNames.Name, request.Email)
         });
 
         var signingCredentials = new SigningCredentials(
