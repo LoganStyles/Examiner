@@ -7,5 +7,5 @@ namespace Examiner.Application.Notifications.Interfaces;
 /// </summary>
 public interface IMessageService
 {
-    Task<GenericResponse> SendMessage(string channel, string message);
+    Task<GenericResponse> SendMessage(string receiver, string channel, string subject, string message);
 }
