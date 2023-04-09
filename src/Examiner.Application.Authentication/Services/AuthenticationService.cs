@@ -211,28 +211,27 @@ public class AuthenticationService : IAuthenticationService
 
             // send the code with message service
             string message = $"Your verification code is <b>{codeGenerationResponse.Code}</b>";
-            // var codeSendingResponse = await _emailService.SendMessage("", newUser.Email, CODE_VERIFICATION_MESSAGE_SUBJECT, message);
-            // if (!codeSendingResponse.Success)
-            // if ()
-            //     return GenericResponse.Result(false, REGISTRATION + FAILED + codeSendingResponse.ResultMessage);
-            // else
-            // {
-            // var codeVerification = new CodeVerification()
-            // {
-            //     Code = codeGenerationResponse.Code,
-            //     UserId = newUser.Id,
-            //     IsSent = true
-            // };
-            // save user & code only if we were able to send code 
-            // await _unitOfWork.CodeVerificationRepository.AddAsync(codeVerification);
-            await _unitOfWork.UserRepository.AddAsync(newUser);
-            await _unitOfWork.CompleteAsync();
+            var codeSendingResponse = await _emailService.SendMessage("", newUser.Email, CODE_VERIFICATION_MESSAGE_SUBJECT, message);
+            if (!codeSendingResponse.Success)
+                return GenericResponse.Result(false, REGISTRATION + FAILED + codeSendingResponse.ResultMessage);
+            else
+            {
+                var codeVerification = new CodeVerification()
+                {
+                    Code = codeGenerationResponse.Code,
+                    UserId = newUser.Id,
+                    IsSent = true
+                };
+                // save user & code only if we were able to send code 
+                await _unitOfWork.CodeVerificationRepository.AddAsync(codeVerification);
+                await _unitOfWork.UserRepository.AddAsync(newUser);
+                await _unitOfWork.CompleteAsync();
 
-            var response = ObjectMapper.Mapper.Map<UserResponse>(newUser);
-            response.Success = true;
-            response.ResultMessage = REGISTRATION + SUCCESSFUL + VERIFICATION_CODE_SENT_SUCCESS;
-            return response;
-            // }
+                var response = ObjectMapper.Mapper.Map<UserResponse>(newUser);
+                response.Success = true;
+                response.ResultMessage = REGISTRATION + SUCCESSFUL + VERIFICATION_CODE_SENT_SUCCESS;
+                return response;
+            }
 
         }
         catch (Exception ex)
