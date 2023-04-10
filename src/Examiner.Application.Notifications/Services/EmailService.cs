@@ -39,11 +39,11 @@ public class EmailService : IEmailService
     /// <param name="message">The message to be sent</param>
     /// <returns>An GenericResponse object indicating the success or failure of an attempt to email a message</returns>
     public async Task<GenericResponse> SendMessage(string receiverName, 
-    string email, string subject, 
-    string htmlMessage)
+    string email, string subject, string htmlMessage)
     {
 
         var resultResponse = GenericResponse.Result(false, FAILED_VERIFICATION);
+
         if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(htmlMessage))
             return resultResponse;
 
