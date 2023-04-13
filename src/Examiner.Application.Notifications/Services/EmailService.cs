@@ -1,4 +1,5 @@
 using Examiner.Application.Notifications.Interfaces;
+using Examiner.Common;
 using Examiner.Domain.Dtos;
 using MailKit.Net.Smtp;
 using MailKit.Security;
@@ -14,17 +15,13 @@ public class EmailService : IEmailService
     private readonly ILogger<EmailService> _logger;
     private readonly IConfiguration _configuration;
 
-
-    private const string FAILED_VERIFICATION = "Email address is not verified";
-    private const string EMAIL_SENDING_FAILED = "unable to send email";
-    private const string EMAIL_SENDING_SUCCESSFUL = "Email sent successfully";
     private const string SENDER_NAME = "Examina Co.";
     private const string SENDER_EMAIL_ADDRESS = "ch9labsbybincom@gmail.com";
     private const string SMTP_HOST = "smtp.gmail.com";
     private const int SMTP_PORT = 587;
 
-    public EmailService(IVerificationService verificationService, 
-    ILogger<EmailService> logger, 
+    public EmailService(IVerificationService verificationService,
+    ILogger<EmailService> logger,
     IConfiguration configuration)
     {
         _verificationService = verificationService;
@@ -37,12 +34,12 @@ public class EmailService : IEmailService
     /// </summary>
     /// <param name="email">The email address to send to</param>
     /// <param name="message">The message to be sent</param>
-    /// <returns>An GenericResponse object indicating the success or failure of an attempt to email a message</returns>
-    public async Task<GenericResponse> SendMessage(string receiverName, 
+    /// <returns>An GenericResponse object indicating the success or failure of an attempt to send an email message</returns>
+    public async Task<GenericResponse> SendMessage(string receiverName,
     string email, string subject, string htmlMessage)
     {
 
-        var resultResponse = GenericResponse.Result(false, FAILED_VERIFICATION);
+        var resultResponse = GenericResponse.Result(false, string.Concat(AppMessages.EMAIL, " ", AppMessages.SENDING, " ", AppMessages.FAILED));
 
         if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(htmlMessage))
             return resultResponse;
@@ -52,15 +49,16 @@ public class EmailService : IEmailService
             var verificationResult = await _verificationService.IsVerified(email);
             if (!verificationResult.Success)
             {
-                resultResponse.ResultMessage = verificationResult.ResultMessage;
+                resultResponse.ResultMessage += $" ({verificationResult.ResultMessage})";
                 return resultResponse;
             }
 
             // send message to email, 
-            resultResponse.ResultMessage = EMAIL_SENDING_FAILED;
-            /* we will store a record of an email sent */
+            /* we will store a record of an email sent 
+             also we will need to determine if the email was actually sent
+             */
             SendEmail(receiverName, email, subject, htmlMessage);
-            resultResponse.ResultMessage = EMAIL_SENDING_SUCCESSFUL;
+            resultResponse.ResultMessage = string.Concat(AppMessages.EMAIL, " ", AppMessages.SENDING, " ", AppMessages.SUCCESSFUL);
             resultResponse.Success = true;
             return resultResponse;
         }
@@ -88,11 +86,11 @@ public class EmailService : IEmailService
         using (var smtp = new SmtpClient())
         {
             var smtpUsername = (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("SMTP_USERNAME")))
-            ?Environment.GetEnvironmentVariable("SMTP_USERNAME"):_configuration["SMTP_USERNAME"];
+            ? Environment.GetEnvironmentVariable("SMTP_USERNAME") : _configuration["SMTP_USERNAME"];
 
             var smtpPassword = (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("SMTP_PASSWORD")))
-            ?Environment.GetEnvironmentVariable("SMTP_PASSWORD"):_configuration["SMTP_PASSWORD"];
-            
+            ? Environment.GetEnvironmentVariable("SMTP_PASSWORD") : _configuration["SMTP_PASSWORD"];
+
             smtp.Connect(SMTP_HOST, SMTP_PORT, SecureSocketOptions.StartTls);
 
             smtp.Authenticate(smtpUsername, smtpPassword);

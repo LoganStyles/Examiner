@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using Examiner.Application.Notifications.Interfaces;
 using Examiner.Authentication.Domain.Mappings;
+using Examiner.Common;
 using Examiner.Domain.Dtos;
 using Examiner.Domain.Entities.Notifications.Emails;
 using Examiner.Infrastructure.UnitOfWork.Interfaces;
@@ -27,10 +28,10 @@ public class KickboxVerificationService : IVerificationService
     private const string RISKY = "risky";
     private const string MAIL_UNKNOWN = "unknown";
     private const string ACCEPTED_EMAIL = "accepted_email";
-    private const string VALID_EMAIL = "Email Address is valid";
-    private const string VALID_EMAIL_FORMAT = "Email Address has valid format";
-    private const string INVALID_EMAIL = "Invalid Email Address Supplied";
-    private const string UNKNOWN_EMAIL = "Unable to verify Email Address Supplied";
+    // private const string VALID_EMAIL = "Email Address is valid";
+    // private const string VALID_EMAIL_FORMAT = "Email Address has valid format";
+    // 
+    // private const string UNKNOWN_EMAIL = "Unable to verify Email Address Supplied";
 
 
     public KickboxVerificationService(
@@ -50,12 +51,15 @@ public class KickboxVerificationService : IVerificationService
     /// <returns>A KickboxResponse indicating the success or failure of the verification</returns>
     public async Task<GenericResponse> IsVerified(string email)
     {
-        var response = new GenericResponse(false, INVALID_EMAIL);
+        var response = new GenericResponse(false, string.Concat(AppMessages.EMAIL, " ", AppMessages.NOT_VERIFIED));
         try
         {
 
             if (!IsValidFormat(email))
+            {
+                response.ResultMessage = string.Concat(AppMessages.EMAIL, " ", AppMessages.INVALID_FORMAT);
                 return response;
+            }
 
             var existingKickboxVerificationList = await _unitOfWork.KickboxVerificationRepository
             .Get(
@@ -65,22 +69,27 @@ public class KickboxVerificationService : IVerificationService
             var verification = existingKickboxVerificationList.LastOrDefault();
             if (verification is not null)
             {
-                // An existing verification is found
                 response.Success = verification.IsValidEmail;
-                response.ResultMessage = verification.SupportingMessage;
+                // modify the resultMessage if email exists
+                if (response.Success)
+                    response.ResultMessage = verification.SupportingMessage;
+
                 return response;
             }
 
             // no previous verification exists so perform a new one
             var verificationResult = await Verify(email);
-            response.ResultMessage = verificationResult.SupportingMessage;
             // save only if request went through & returned
             // also - verificationResult.Success means we accessed kickbox successfully
             // i.e verificationResult.Success differs from response.Success
             if (verificationResult.Success)
             {
                 response.Success = verificationResult.IsValidEmail;
-                // insert into table for future verification requests
+                // modify the resultMessage if email exists
+                if (response.Success)
+                    response.ResultMessage = verificationResult.SupportingMessage;
+
+                // save verification result for future verification requests
                 await _unitOfWork.KickboxVerificationRepository.AddAsync(verificationResult);
                 await _unitOfWork.CompleteAsync();
             }
@@ -103,7 +112,9 @@ public class KickboxVerificationService : IVerificationService
     {
 
         var kickboxKey = string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("KICKBOX_PROD_KEY"))
-        ? _configuration["KICKBOX_PROD_KEY"] : Environment.GetEnvironmentVariable("KICKBOX_PROD_KEY");
+        ? _configuration["KICKBOX_PROD_KEY"]
+        : Environment.GetEnvironmentVariable("KICKBOX_PROD_KEY");
+
         var kickBoxApi = new KickBoxApi(kickboxKey);
         var verification = new KickboxVerification();
 
@@ -136,7 +147,7 @@ public class KickboxVerificationService : IVerificationService
                     else if (verification.Result is not null && verification.Result.ToLower() == DELIVERABLE
                     && verification.Reason is not null && verification.Reason.ToLower() == ACCEPTED_EMAIL)
                     {
-                        verification.SupportingMessage = VALID_EMAIL;
+                        verification.SupportingMessage = string.Concat(AppMessages.EMAIL, " ", AppMessages.EXISTS);
                         verification.IsValidEmail = true;
                     }
                     else
@@ -186,9 +197,9 @@ public class KickboxVerificationService : IVerificationService
     {
         var validStatus = this.IsValidFormat(channel);
         if (validStatus)
-            return Task.FromResult(GenericResponse.Result(true, VALID_EMAIL_FORMAT));
+            return Task.FromResult(GenericResponse.Result(true, string.Concat(AppMessages.EMAIL, " ", AppMessages.VALID)));
         else
-            return Task.FromResult(GenericResponse.Result(false, INVALID_EMAIL));
+            return Task.FromResult(GenericResponse.Result(false, string.Concat(AppMessages.EMAIL, " ", AppMessages.INVALID_FORMAT)));
     }
 
 }
