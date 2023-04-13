@@ -1,6 +1,7 @@
 using Examiner.Application.Authentication.Interfaces;
 using Examiner.Domain.Dtos;
 using Examiner.Domain.Dtos.Authentication;
+using Examiner.Common;
 using Examiner.Infrastructure.UnitOfWork.Interfaces;
 using Microsoft.Extensions.Logging;
 
@@ -11,8 +12,7 @@ public class CodeService : ICodeService
 
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CodeService> _logger;
-    private const string CODE_GENERATION_FAILED = "Unable to generate verification code";
-    private const string CODE_GENERATION_SUCCESSFUL = "verification code generated successfully";
+
 
     public CodeService(IUnitOfWork unitOfWork, ILogger<CodeService> logger)
     {
@@ -28,17 +28,18 @@ public class CodeService : ICodeService
     public async Task<CodeGenerationResponse> GetCode()
     {
 
-        CodeGenerationResponse resultResponse = new CodeGenerationResponse(false, CODE_GENERATION_FAILED);
+        CodeGenerationResponse resultResponse = new CodeGenerationResponse(
+            false,$"{AppMessages.CODE_GENERATION} {AppMessages.FAILED}");
 
         var verificationCode = await Generate();
         if (!string.IsNullOrWhiteSpace(verificationCode))
         {
             // check if a code exists whose expired value is false
-            var existingCodeList = await _unitOfWork.CodeVerificationRepository.Get(u => u.Code.Equals(verificationCode) && u.Expired==false, null, "", null, null);
+            var existingCodeList = await _unitOfWork.CodeVerificationRepository.Get(u => u.Code.Equals(verificationCode) && u.Expired == false, null, "", null, null);
             if (existingCodeList.Count() > 0)
                 await GetCode();
 
-            resultResponse.ResultMessage = CODE_GENERATION_SUCCESSFUL;
+            resultResponse.ResultMessage = $"{AppMessages.CODE_GENERATION} {AppMessages.SUCCESSFUL}";
             resultResponse.Success = true;
             resultResponse.Code = verificationCode;
         }

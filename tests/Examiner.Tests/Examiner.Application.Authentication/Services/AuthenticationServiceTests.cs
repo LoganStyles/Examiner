@@ -8,6 +8,7 @@ using Examiner.Domain.Entities.Authentication;
 using Examiner.Domain.Entities.Users;
 using Examiner.Infrastructure.UnitOfWork.Interfaces;
 using Examiner.Tests.MockData;
+using Examiner.Common;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 
@@ -22,16 +23,6 @@ public class AuthenticationServiceTests
     private readonly NullLogger<AuthenticationService> _logger;
     private readonly Mock<ICodeService> _codeService;
     private readonly Mock<IEmailService> _emailService;
-
-    private const string EMAIL_SENDING_FAILED = "unable to send email";
-    private const string EMAIL_SENDING_SUCCESSFUL = "Email sent successfully";
-    private const string FAILED = "failed: ";
-    private const string SUCCESSFUL = "successful ";
-    private const string VERIFICATION_CODE_SENT_SUCCESS = "verification code sent successfully";
-    private const string REGISTRATION = "Registeration ";
-    // private const string USER_REGISTRATION_SUCCESSFUL = "Registering user was successful, and verification code sent successfully";
-    private const string CODE_GENERATION_FAILED = "Unable to generate verification code";
-
 
     public AuthenticationServiceTests()
     {
@@ -74,7 +65,7 @@ public class AuthenticationServiceTests
 
         var result = await _authService.RegisterAsync(request);
         Assert.False(result.Success);
-        Assert.Contains("failed", result.ResultMessage);
+        Assert.Contains(AppMessages.INVALID_PASSWORD, result.ResultMessage);
     }
 
     [Fact]
@@ -82,7 +73,7 @@ public class AuthenticationServiceTests
     {
         var request = UserMock.RegisterTutorWithValidPassword();
         var emptyResult = UserMock.GetEmptyListOfExistingUsers();
-        var codeGenerationResponse = new CodeGenerationResponse(false, CODE_GENERATION_FAILED);
+        var codeGenerationResponse = new CodeGenerationResponse(false, $"{AppMessages.CODE_GENERATION} {AppMessages.FAILED}");
 
         _unitOfWork
             .Setup(
@@ -101,7 +92,7 @@ public class AuthenticationServiceTests
 
         var result = await _authService.RegisterAsync(request);
         Assert.False(result.Success);
-        Assert.Contains(CODE_GENERATION_FAILED, result.ResultMessage);
+        Assert.Contains($"{AppMessages.CODE_GENERATION} {AppMessages.FAILED}", result.ResultMessage);
     }
 
     [Fact]
@@ -109,8 +100,8 @@ public class AuthenticationServiceTests
     {
         var request = UserMock.RegisterTutorWithValidPassword();
         var emptyResult = UserMock.GetEmptyListOfExistingUsers();
-        var codeGenerationResponse = new CodeGenerationResponse(true, It.IsAny<string>());
-        var codeSendingResultResponse = GenericResponse.Result(false, REGISTRATION + FAILED);
+        var codeGenerationResponse = CodeVerificationMock.GetSuccessfulCodeGenerationResponse();
+        var codeSendingResultResponse = GenericResponse.Result(false, $"{AppMessages.EMAIL} {AppMessages.SENDING} {AppMessages.FAILED}");
 
         _unitOfWork
             .Setup(
@@ -125,13 +116,13 @@ public class AuthenticationServiceTests
             )
             .Returns(() => emptyResult);
 
-        _codeService.Setup(code => code.GetCode()).ReturnsAsync(() => codeGenerationResponse);
+        _codeService.Setup(code => code.GetCode()).Returns(() => codeGenerationResponse);
         _emailService.Setup(msg => msg.SendMessage("", request.Email, It.IsAny<string>(), It.IsAny<string>()))
         .ReturnsAsync(() => codeSendingResultResponse);
 
         var result = await _authService.RegisterAsync(request);
         Assert.False(result.Success);
-        Assert.Contains(REGISTRATION + FAILED, result.ResultMessage);
+        Assert.Contains($"{AppMessages.EMAIL} {AppMessages.SENDING} {AppMessages.FAILED}", result.ResultMessage);
     }
 
     [Fact]
@@ -156,7 +147,7 @@ public class AuthenticationServiceTests
 
         var result = await _authService.RegisterAsync(request);
         Assert.True(result.Success);
-        Assert.Contains(REGISTRATION + SUCCESSFUL + VERIFICATION_CODE_SENT_SUCCESS, result.ResultMessage);
+        Assert.Contains($"{AppMessages.REGISTRATION} {AppMessages.SUCCESSFUL}", result.ResultMessage);
     }
 
     [Fact]
@@ -177,7 +168,7 @@ public class AuthenticationServiceTests
 
         var result = await _authService.RegisterAsync(request);
         Assert.False(result.Success);
-        Assert.Contains("Email already exists", result.ResultMessage);
+        Assert.Contains($"{AppMessages.EMAIL} {AppMessages.EXISTS}", result.ResultMessage);
     }
 
     [Fact]

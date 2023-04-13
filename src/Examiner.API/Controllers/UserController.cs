@@ -3,6 +3,7 @@ using Examiner.Application.Users.Interfaces;
 using Examiner.Domain.Dtos;
 using Examiner.Domain.Dtos.Authentication;
 using Examiner.Domain.Dtos.Users;
+using Examiner.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,8 +20,7 @@ public class UserController : ControllerBase
 {
     private readonly IAuthenticationService _authenticationService;
     private readonly IUserService _userService;
-    private const string PASSWORDS_DO_NOT_MATCH = "Passwords do not match!";
-    private const string ROLE_TUTOR = "Tutor";
+    
 
     public UserController(IAuthenticationService authenticationService, IUserService userService)
     {
@@ -47,7 +47,7 @@ public class UserController : ControllerBase
         }
 
         if (request.Password != request.ConfirmPassword)
-            return BadRequest(PASSWORDS_DO_NOT_MATCH);
+            return BadRequest(AppMessages.PASSWORDS_DO_NOT_MATCH);
 
         var result = await _authenticationService.RegisterAsync(request);
         if (result.Success == true)
@@ -106,7 +106,7 @@ public class UserController : ControllerBase
             return BadRequest(ModelState);
 
         if (request.NewPassword != request.ConfirmNewPassword)
-            return BadRequest(PASSWORDS_DO_NOT_MATCH);
+            return BadRequest(AppMessages.PASSWORDS_DO_NOT_MATCH);
 
         var result = await _authenticationService.ChangePasswordAsync(request);
         if (!result.Success)

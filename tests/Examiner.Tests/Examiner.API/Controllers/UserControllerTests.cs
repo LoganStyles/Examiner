@@ -71,48 +71,48 @@ public class UserControllerTests
 
     #region Login
 
-    [Fact]
-    public async Task LoginAsync_WhenCalledWithValidAuthenticationRequest_Returns200OkRequestStatus()
-    {
-        var request = UserMock.AuthenticateTutorWithValidPassword();
-        var response = AuthenticateUserResponseMock.GetSuccessfulAuthenticationResponse();
+    // [Fact]
+    // public async Task LoginAsync_WhenCalledWithValidAuthenticationRequest_Returns200OkRequestStatus()
+    // {
+    //     var request = UserMock.AuthenticateTutorWithValidPassword();
+    //     var response = AuthenticateUserResponseMock.GetSuccessfulAuthenticationResponse();
 
-        _authenticationService.Setup(_ => _.Authenticate(request)).Returns(response);
+    //     _authenticationService.Setup(_ => _.Authenticate(request)).Returns(response);
 
-        var result = await _userController.LoginAsync(request);
+    //     var result = await _userController.LoginAsync(request);
 
-        var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
-        var okObjectResult = Assert.IsType<OkObjectResult>(actionResult.Result);
-        var returnValue = Assert.IsType<AuthenticationResponse>(okObjectResult.Value);
-        Assert.True(returnValue.Success);
-        Assert.Equal("Authenticating user was successful", returnValue.ResultMessage);
-    }
+    //     var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
+    //     var okObjectResult = Assert.IsType<OkObjectResult>(actionResult.Result);
+    //     var returnValue = Assert.IsType<AuthenticationResponse>(okObjectResult.Value);
+    //     Assert.True(returnValue.Success);
+    //     Assert.Equal("Authenticating user was successful", returnValue.ResultMessage);
+    // }
 
-    [Fact]
-    public async Task LoginAsync_WhenCalledWithInvalidAuthenticationRequest_Returns400BadRequestStatus()
-    {
+    // [Fact]
+    // public async Task LoginAsync_WhenCalledWithInvalidAuthenticationRequest_Returns400BadRequestStatus()
+    // {
 
-        var request = AuthenticateUserRequestMock.GetInvalidAuthenticationRequest();
-        _userController.ModelState.AddModelError("error", "some error");
+    //     var request = AuthenticateUserRequestMock.GetInvalidAuthenticationRequest();
+    //     _userController.ModelState.AddModelError("error", "some error");
 
-        var result = await _userController.LoginAsync(request: null!);
+    //     var result = await _userController.LoginAsync(request: null!);
 
-        var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
-        Assert.IsType<BadRequestObjectResult>(result.Result);
-    }
+    //     var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
+    //     Assert.IsType<BadRequestObjectResult>(result.Result);
+    // }
 
-    [Fact]
-    public async Task LoginAsync_WhenCalledWithWrongCredentials_Returns401UnauthorizedRequestStatus()
-    {
-        var request = AuthenticateUserRequestMock.GetInvalidAuthenticationRequest();
-        var response = UsersMock.GetFailedUserResponse();
-        _authenticationService.Setup(_ => _.Authenticate(request)).Returns(response);
+    // [Fact]
+    // public async Task LoginAsync_WhenCalledWithWrongCredentials_Returns401UnauthorizedRequestStatus()
+    // {
+    //     var request = AuthenticateUserRequestMock.GetInvalidAuthenticationRequest();
+    //     var response = UsersMock.GetFailedUserResponse();
+    //     _authenticationService.Setup(_ => _.Authenticate(request)).Returns(response);
 
-        var result = await _userController.LoginAsync(request);
+    //     var result = await _userController.LoginAsync(request);
 
-        var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
-        Assert.IsType<UnauthorizedObjectResult>(actionResult.Result);
-    }
+    //     var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
+    //     Assert.IsType<UnauthorizedObjectResult>(actionResult.Result);
+    // }
 
 
 

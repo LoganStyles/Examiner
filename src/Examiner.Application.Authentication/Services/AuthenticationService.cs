@@ -9,6 +9,7 @@ using Examiner.Domain.Entities.Authentication;
 using Examiner.Domain.Entities.Users;
 using Examiner.Domain.Models;
 using Examiner.Infrastructure.UnitOfWork.Interfaces;
+using Examiner.Common;
 using Microsoft.Extensions.Logging;
 using BC = BCrypt.Net.BCrypt;
 
@@ -25,25 +26,6 @@ public class AuthenticationService : IAuthenticationService
     private readonly ILogger<AuthenticationService> _logger;
     private readonly ICodeService _codeService;
     private readonly IEmailService _emailService;
-
-    private const string REGISTRATION = "Registeration ";
-    private const string AUTHENTICATION = "Authentication ";
-    private const string CHANGE_PASSWORD = "Change password ";
-    private const string ROLE = "Role select ";
-    private const string CODE_VERIFICATION_MESSAGE_SUBJECT = "Code Verification";
-    private const string SUCCESSFUL = "successful ";
-    private const string FAILED = "failed: ";
-    private const string VERIFICATION_CODE_SENT_SUCCESS = "verification code sent successfully";
-    private const string EMAIL_EXISTS = "The Email already exists";
-    private const string USER_NOT_FOUND = "User not found!";
-    private const string USER_NOT_ACTIVE = "User is not active!";
-    private const string USER_HAS_NO_ROLE = "User has no role";
-    private const string USER_ACCOUNT_NOT_VERIFIED = "User has not verified account";
-    private const string INVALID_EMAIL_PASSWORD = "Invalid email or password";
-    private const string INVALID_PASSWORD = "Invalid password";
-    private const string INVALID_REQUEST = "Invalid request";
-    private const string UNABLE_TO_AUTHENTICATE_USER = "Unable to authenticate user";
-    private const string UNABLE_TO_GENERATE_TOKEN = "Unable to generate token for user";
 
     public AuthenticationService(
         IJwtTokenHandler jwtTokenHandler,
@@ -73,27 +55,31 @@ public class AuthenticationService : IAuthenticationService
 
             var userFound = userList.FirstOrDefault();
             if (userFound is null)
-                return GenericResponse.Result(false, AUTHENTICATION + FAILED + USER_NOT_FOUND);
+                return GenericResponse.Result(false, $"{AppMessages.USER} {AppMessages.NOT_EXIST}");
 
             if (!BC.Verify(request.Password, userFound.PasswordHash))
-                return GenericResponse.Result(false, AUTHENTICATION + FAILED + INVALID_EMAIL_PASSWORD);
-
-            if (userFound.Role is null)
-                return GenericResponse.Result(false, AUTHENTICATION + FAILED + USER_HAS_NO_ROLE);
-
-            // check if user has verified email
-            if (!userFound.IsActive)
-                return GenericResponse.Result(false, AUTHENTICATION + FAILED + USER_ACCOUNT_NOT_VERIFIED);
-
+                return GenericResponse.Result(false, AppMessages.INVALID_EMAIL_PASSWORD);
 
             #region get token
             var authenticationResponse = _jwtTokenHandler.GenerateJwtToken(request);
-            if (authenticationResponse is null)
-                return GenericResponse.Result(false, AUTHENTICATION + FAILED + UNABLE_TO_GENERATE_TOKEN);
+            if (authenticationResponse is null || !authenticationResponse.Success)
+                return GenericResponse.Result(false, AppMessages.UNABLE_TO_GENERATE_TOKEN);
             else
             {
-                // update the response with the user's role
-                authenticationResponse.Role = userFound.Role.ToString();
+                if (!userFound.IsActive)
+                {
+                    authenticationResponse.ResultMessage = $"{AppMessages.USER} {AppMessages.ACCOUNT_NOT_VERIFIED}";
+                    return authenticationResponse;
+                }
+                else if (userFound.Role is null)
+                {
+                    authenticationResponse.ResultMessage = $"{AppMessages.USER} {AppMessages.HAS_NO_ROLE}";
+                    return authenticationResponse;
+                }
+                else
+                    // update the response with the user's role
+                    authenticationResponse.Role = userFound.Role.ToString();
+
                 return authenticationResponse;
             }
             #endregion
@@ -120,10 +106,10 @@ public class AuthenticationService : IAuthenticationService
 
             var userFound = userList.FirstOrDefault();
             if (userFound is null)
-                return GenericResponse.Result(false, CHANGE_PASSWORD + FAILED + USER_NOT_FOUND);
+                return GenericResponse.Result(false, $"{AppMessages.USER} {AppMessages.NOT_EXIST}");
 
             if (!BC.Verify(request.OldPassword, userFound.PasswordHash))
-                return GenericResponse.Result(false, CHANGE_PASSWORD + FAILED + INVALID_EMAIL_PASSWORD);
+                return GenericResponse.Result(false, AppMessages.INVALID_EMAIL_PASSWORD);
 
             // change of password has been authorized
             userFound.PasswordHash = BC.HashPassword(request.NewPassword);
@@ -134,7 +120,7 @@ public class AuthenticationService : IAuthenticationService
 
             var response = ObjectMapper.Mapper.Map<UserResponse>(userFound);
             response.Success = true;
-            response.ResultMessage = CHANGE_PASSWORD + SUCCESSFUL;
+            response.ResultMessage = $"{AppMessages.CHANGE_PASSWORD} {AppMessages.SUCCESSFUL}";
             return response;
 
         }
@@ -149,7 +135,7 @@ public class AuthenticationService : IAuthenticationService
     /// Set a user's role
     /// </summary>
     /// <param name="request">An object holding email & role request data</param>
-    /// <returns>An object holding data indicating the success or failure of a user's authentication</returns>
+    /// <returns>An object holding data indicating the success or failure of a user's role update</returns>
     public async Task<GenericResponse> SelectRole(SelectRoleRequest request)
     {
         try
@@ -161,7 +147,8 @@ public class AuthenticationService : IAuthenticationService
 
                 var userFound = userList.FirstOrDefault();
                 if (userFound is null)
-                    return GenericResponse.Result(false, ROLE + FAILED + USER_NOT_FOUND);
+                    return GenericResponse.Result(false,
+                    string.Concat(AppMessages.ROLE, " ", AppMessages.FAILED, " ", AppMessages.USER, " ", AppMessages.NOT_EXIST));
 
                 userFound.Role = userRole;
 
@@ -170,12 +157,12 @@ public class AuthenticationService : IAuthenticationService
 
                 var response = ObjectMapper.Mapper.Map<UserResponse>(userFound);
                 response.Success = true;
-                response.ResultMessage = ROLE + SUCCESSFUL;
+                response.ResultMessage = AppMessages.ROLE + AppMessages.SUCCESSFUL;
                 return response;
             }
             else
             {
-                return GenericResponse.Result(false, ROLE + INVALID_REQUEST);
+                return GenericResponse.Result(false, AppMessages.INVALID_REQUEST);
             }
 
         }
@@ -195,28 +182,28 @@ public class AuthenticationService : IAuthenticationService
     {
         try
         {
-            if (!IsValidPassword(request.Password))
-                return GenericResponse.Result(false, REGISTRATION + FAILED + INVALID_PASSWORD);
-
             var newUser = ObjectMapper.Mapper.Map<User>(request);
             if (newUser is null)
-                return GenericResponse.Result(false, REGISTRATION + FAILED + INVALID_REQUEST);
+                return GenericResponse.Result(false, AppMessages.INVALID_REQUEST);
+
+            if (!IsValidPassword(request.Password))
+                return GenericResponse.Result(false, AppMessages.INVALID_PASSWORD);
 
             // does this email already exist?, if yes prevent registration
             var existingUserList = await _unitOfWork.UserRepository.Get(u => u.Email.Equals(newUser.Email), null, "", null, null);
             if (existingUserList.Count() > 0)
-                return GenericResponse.Result(false, REGISTRATION + FAILED + EMAIL_EXISTS);
+                return GenericResponse.Result(false, $"{AppMessages.EMAIL} {AppMessages.EXISTS}");
 
             // fetch a code for this new user
             var codeGenerationResponse = await _codeService.GetCode();
             if (!codeGenerationResponse.Success || codeGenerationResponse.Code is null)
-                return GenericResponse.Result(false, REGISTRATION + FAILED + codeGenerationResponse.ResultMessage);
+                return GenericResponse.Result(false, codeGenerationResponse.ResultMessage);
 
             // send the code with message service
             string message = $"Your verification code is <b>{codeGenerationResponse.Code}</b>";
-            var codeSendingResponse = await _emailService.SendMessage("", newUser.Email, CODE_VERIFICATION_MESSAGE_SUBJECT, message);
+            var codeSendingResponse = await _emailService.SendMessage("", newUser.Email, AppMessages.CODE_VERIFICATION, message);
             if (!codeSendingResponse.Success)
-                return GenericResponse.Result(false, REGISTRATION + FAILED + codeSendingResponse.ResultMessage);
+                return GenericResponse.Result(false, codeSendingResponse.ResultMessage);
             else
             {
                 var codeVerification = new CodeVerification()
@@ -232,7 +219,7 @@ public class AuthenticationService : IAuthenticationService
 
                 var response = ObjectMapper.Mapper.Map<UserResponse>(newUser);
                 response.Success = true;
-                response.ResultMessage = REGISTRATION + SUCCESSFUL + VERIFICATION_CODE_SENT_SUCCESS;
+                response.ResultMessage = $"{AppMessages.REGISTRATION} {AppMessages.SUCCESSFUL}";
                 return response;
             }
 
@@ -241,7 +228,7 @@ public class AuthenticationService : IAuthenticationService
         {
             // fetch inner exceptions if exist
             _logger.LogError("Error registering user - ", ex.Message);
-            return GenericResponse.Result(false, REGISTRATION + FAILED + ex.Message);
+            return GenericResponse.Result(false, $"{AppMessages.REGISTRATION} {AppMessages.FAILED} {ex.Message}");
         }
     }
 
