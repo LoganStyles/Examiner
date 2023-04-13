@@ -1,4 +1,5 @@
 using System.Text;
+using Examiner.Application.Authentication;
 using Examiner.Application.Authentication.Interfaces;
 using Examiner.Application.Authentication.Jwt;
 using Examiner.Application.Authentication.Services;
@@ -57,6 +58,8 @@ services.AddDbContext<ExaminerContext>(
         var connection = string.IsNullOrEmpty(databaseUrl) ? connectionString : BuildConnectionString(databaseUrl);
         options.UseMySql(connection, ServerVersion.AutoDetect(connection));
     });
+
+ConfigurationHelper.Initialize(configuration);
 services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 services.AddScoped<IAuthenticationService, AuthenticationService>();
