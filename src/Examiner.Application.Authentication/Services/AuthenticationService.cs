@@ -43,6 +43,7 @@ public class AuthenticationService : IAuthenticationService
     private const string INVALID_PASSWORD = "Invalid password";
     private const string INVALID_REQUEST = "Invalid request";
     private const string UNABLE_TO_AUTHENTICATE_USER = "Unable to authenticate user";
+    private const string UNABLE_TO_GENERATE_TOKEN = "Unable to generate token for user";
 
     public AuthenticationService(
         IJwtTokenHandler jwtTokenHandler,
@@ -74,19 +75,21 @@ public class AuthenticationService : IAuthenticationService
             if (userFound is null)
                 return GenericResponse.Result(false, AUTHENTICATION + FAILED + USER_NOT_FOUND);
 
+            if (!BC.Verify(request.Password, userFound.PasswordHash))
+                return GenericResponse.Result(false, AUTHENTICATION + FAILED + INVALID_EMAIL_PASSWORD);
+
             if (userFound.Role is null)
                 return GenericResponse.Result(false, AUTHENTICATION + FAILED + USER_HAS_NO_ROLE);
 
+            // check if user has verified email
             if (!userFound.IsActive)
                 return GenericResponse.Result(false, AUTHENTICATION + FAILED + USER_ACCOUNT_NOT_VERIFIED);
 
-            if (!BC.Verify(request.Password, userFound.PasswordHash))
-                return GenericResponse.Result(false, AUTHENTICATION + FAILED + INVALID_EMAIL_PASSWORD);
 
             #region get token
             var authenticationResponse = _jwtTokenHandler.GenerateJwtToken(request);
             if (authenticationResponse is null)
-                return GenericResponse.Result(false, AUTHENTICATION + FAILED + UNABLE_TO_AUTHENTICATE_USER);
+                return GenericResponse.Result(false, AUTHENTICATION + FAILED + UNABLE_TO_GENERATE_TOKEN);
             else
             {
                 // update the response with the user's role

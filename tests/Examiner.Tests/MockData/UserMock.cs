@@ -2,6 +2,7 @@ using Examiner.Domain.Dtos.Authentication;
 using Examiner.Domain.Entities.Users;
 using BC = BCrypt.Net.BCrypt;
 using Examiner.Domain.Dtos.Users;
+using Examiner.Domain.Dtos;
 
 namespace Examiner.Tests.MockData;
 
@@ -83,6 +84,28 @@ public static class UserMock
                 }
             ).AsEnumerable()
         );
+    }
+
+    #endregion
+
+    #region Login
+
+    public static AuthenticationRequest AuthenticateTutorWithValidPassword()
+    {
+        return new AuthenticationRequest("e@gmail.com", "strin(1)G");
+    }
+
+    public static Task<GenericResponse> GetSuccessfulAuthenticationResponse()
+    {
+        return Task.FromResult((GenericResponse)new AuthenticationResponse
+        {
+            Success = true,
+            ResultMessage = "Authenticating user was successful",
+            Email = "adam",
+            JwtToken = "token",
+            ExpiresIn = 20
+
+        });
     }
 
     #endregion
