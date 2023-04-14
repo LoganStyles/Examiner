@@ -71,15 +71,14 @@ public class AuthenticationService : IAuthenticationService
                     authenticationResponse.ResultMessage = $"{AppMessages.USER} {AppMessages.ACCOUNT_NOT_VERIFIED}";
                     return authenticationResponse;
                 }
-                else if (userFound.Role is null)
+                if (userFound.Role is null)
                 {
                     authenticationResponse.ResultMessage = $"{AppMessages.USER} {AppMessages.HAS_NO_ROLE}";
                     return authenticationResponse;
                 }
-                else
-                    // update the response with the user's role
-                    authenticationResponse.Role = userFound.Role.ToString();
 
+                // update the response with the user's role
+                authenticationResponse.Role = userFound.Role.ToString();
                 return authenticationResponse;
             }
             #endregion

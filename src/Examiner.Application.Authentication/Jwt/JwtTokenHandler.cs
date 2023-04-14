@@ -55,7 +55,7 @@ public class JwtTokenHandler : IJwtTokenHandler
         var token = jwtSecurityTokenHandler.WriteToken(securityToken);
 
         response.Success = true;
-        response.ResultMessage = AppMessages.AUTHENTICATION + AppMessages.SUCCESSFUL;
+        response.ResultMessage = $"{AppMessages.AUTHENTICATION} {AppMessages.SUCCESSFUL}";
         response.Email = request.Email;
         response.JwtToken = token;
         response.ExpiresIn = (int)tokenExpiryTimeStamp.Subtract(DateTime.Now).TotalSeconds;

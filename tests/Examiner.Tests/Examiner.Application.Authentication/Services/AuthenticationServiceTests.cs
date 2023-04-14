@@ -197,6 +197,143 @@ public class AuthenticationServiceTests
 
     #region Login
 
+    [Fact]
+    public async Task Authenticate_AnExistingUser_Succeeds()
+    {
+        var validUser = UserMock.GetAListOfNewlyRegisteredValidTutors();
+
+        _unitOfWork
+            .Setup(
+                unit =>
+                    unit.UserRepository.Get(
+                        It.IsAny<Expression<Func<User, bool>>?>(),
+                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                        It.IsAny<string>(),
+                        It.IsAny<int?>(),
+                        It.IsAny<int?>()
+                    )
+            )
+            .Returns(() => validUser);
+
+        var validAuthenticationResponse = UserMock.GetValidAuthenticationResponse();
+        var request = UserMock.AuthenticateTutorWithValidPassword();
+        _jwtTokenHandler.Setup(jwt => jwt.GenerateJwtToken(request)).Returns(validAuthenticationResponse);
+
+        var result = await _authService.Authenticate(request);
+
+        Assert.True(result.Success);
+        // Assert.Contains("successful", result.ResultMessage);
+        _jwtTokenHandler.Verify(jwt => jwt.GenerateJwtToken(request), Times.Once);
+    }
+
+    [Fact]
+    public async Task Authenticate_ByNonActiveUser_Succeeds()
+    {
+        var nonActiveUser = UserMock.GetAListOfNewlyRegisteredValidTutors();
+        _unitOfWork
+            .Setup(
+                unit =>
+                    unit.UserRepository.Get(
+                        It.IsAny<Expression<Func<User, bool>>?>(),
+                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                        It.IsAny<string>(),
+                        It.IsAny<int?>(),
+                        It.IsAny<int?>()
+                    )
+            )
+            .Returns(() => nonActiveUser);
+
+        var request = UserMock.AuthenticateTutorWithValidPassword();
+        var nonActiveUserResponse = UserMock.GetValidAuthenticationResponse();
+        _jwtTokenHandler.Setup(jwt => jwt.GenerateJwtToken(request)).Returns(nonActiveUserResponse);
+
+        var result = await _authService.Authenticate(request);
+
+        Assert.True(result.Success);
+        Assert.Contains($"{AppMessages.USER} {AppMessages.ACCOUNT_NOT_VERIFIED}", result.ResultMessage);
+    }
+
+    [Fact]
+    public async Task Authenticate_ByNonRoleUser_Succeeds()
+    {
+        var nonRoleUser = UserMock.GetAListOfNewlyRegisteredValidTutorsWithoutRole();
+        _unitOfWork
+            .Setup(
+                unit =>
+                    unit.UserRepository.Get(
+                        It.IsAny<Expression<Func<User, bool>>?>(),
+                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                        It.IsAny<string>(),
+                        It.IsAny<int?>(),
+                        It.IsAny<int?>()
+                    )
+            )
+            .Returns(() => nonRoleUser);
+
+        var request = UserMock.AuthenticateTutorWithValidPassword();
+        var nonRoleUserResponse = UserMock.GetValidAuthenticationResponse();
+        _jwtTokenHandler.Setup(jwt => jwt.GenerateJwtToken(request)).Returns(nonRoleUserResponse);
+
+        var result = await _authService.Authenticate(request);
+
+        Assert.True(result.Success);
+        Assert.Contains($"{AppMessages.USER} {AppMessages.HAS_NO_ROLE}", result.ResultMessage);
+    }
+
+
+    [Fact]
+    public async Task Authenticate_ByNonExistingUser_Fails()
+    {
+        var invalidUser = UserMock.GetEmptyListOfExistingUsers();
+
+        _unitOfWork
+            .Setup(
+                unit =>
+                    unit.UserRepository.Get(
+                        It.IsAny<Expression<Func<User, bool>>?>(),
+                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                        It.IsAny<string>(),
+                        It.IsAny<int?>(),
+                        It.IsAny<int?>()
+                    )
+            )
+            .Returns(() => invalidUser);
+
+        var request = UserMock.AuthenticateTutorWithValidPassword();
+
+        var result = await _authService.Authenticate(request);
+
+        _jwtTokenHandler.Verify(jwt => jwt.GenerateJwtToken(request), Times.Never);
+        Assert.False(result.Success);
+        Assert.Contains(AppMessages.NOT_EXIST, result.ResultMessage);
+    }
+    
+    [Fact]
+    public async Task Authenticate_WithNonExistingCredentials_Fails()
+    {
+        var invalidUser = UserMock.GetAListOfNewlyRegisteredValidTutors();
+
+        _unitOfWork
+            .Setup(
+                unit =>
+                    unit.UserRepository.Get(
+                        It.IsAny<Expression<Func<User, bool>>?>(),
+                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                        It.IsAny<string>(),
+                        It.IsAny<int?>(),
+                        It.IsAny<int?>()
+                    )
+            )
+            .Returns(() => invalidUser);
+
+        var request = UserMock.AuthenticateTutorWithNonExistingPassword();
+
+        var result = await _authService.Authenticate(request);
+
+        _jwtTokenHandler.Verify(jwt => jwt.GenerateJwtToken(request), Times.Never);
+        Assert.False(result.Success);
+        Assert.Contains(AppMessages.INVALID_EMAIL_PASSWORD, result.ResultMessage);
+    }
 
 
     #endregion
