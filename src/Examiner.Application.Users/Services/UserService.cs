@@ -3,9 +3,10 @@ using Examiner.Domain.Dtos.Users;
 using Examiner.Domain.Entities.Users;
 using Examiner.Infrastructure.UnitOfWork.Interfaces;
 using Microsoft.Extensions.Logging;
-using Examiner.Authentication.Domain.Mappings;
 using Examiner.Application.Users.Interfaces;
 using Examiner.Domain.Dtos;
+using Examiner.Common;
+using Examiner.Authentication.Domain.Mappings;
 
 namespace Examiner.Application.Users.Services;
 
@@ -28,7 +29,7 @@ public class UserService : IUserService
     /// </summary>
     /// <param name="email">The email of the user to fetch</param>
     /// <returns>An object holding data indicating the success or failure of fetching the users</returns>
-    public async Task<GenericResponse> GetUserByEmail(string email)
+    public async Task<User?> GetUserByEmail(string email)
     {
         try
         {
@@ -38,20 +39,51 @@ public class UserService : IUserService
             var users = await _unitOfWork.UserRepository.Get(filter, orderBy, string.Empty, null, null);
             if (users.Count() > 0)
             {
-                var response = ObjectMapper.Mapper.Map<UserResponse>(users.FirstOrDefault());
-                response.Success = true;
-                response.ResultMessage = "Fetching user was successful";
-                return response;
+                return users.FirstOrDefault();
+                // var response = ObjectMapper.Mapper.Map<UserResponse>();
+                // response.Success = true;
+                // response.ResultMessage = $"{AppMessages.USER} {AppMessages.EXISTS}";
+                // return response;
             }
-            return GenericResponse.Result(false, "No user found");
+            return null;
 
         }
         catch (Exception ex)
         {
             _logger.LogError("Error fetching user - ", ex.Message);
-            return GenericResponse.Result(false, ex.Message);
+            // return GenericResponse.Result(false, ex.Message);
+            throw;
         }
     }
+    // /// <summary>
+    // /// Fetches a user by email
+    // /// </summary>
+    // /// <param name="email">The email of the user to fetch</param>
+    // /// <returns>An object holding data indicating the success or failure of fetching the users</returns>
+    // public async Task<GenericResponse> GetUserByEmail(string email)
+    // {
+    //     try
+    //     {
+    //         Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null;
+    //         Expression<Func<User, bool>>? filter = (u => u.Email == email);
+
+    //         var users = await _unitOfWork.UserRepository.Get(filter, orderBy, string.Empty, null, null);
+    //         if (users.Count() > 0)
+    //         {
+    //             var response = ObjectMapper.Mapper.Map<UserResponse>(users.FirstOrDefault());
+    //             response.Success = true;
+    //             response.ResultMessage = $"{AppMessages.USER} {AppMessages.EXISTS}";
+    //             return response;
+    //         }
+    //         return GenericResponse.Result(false, $"{AppMessages.USER} {AppMessages.NOT_EXIST}");
+
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError("Error fetching user - ", ex.Message);
+    //         return GenericResponse.Result(false, ex.Message);
+    //     }
+    // }
 
     /// <summary>
     /// Fetches a user by Id
@@ -67,10 +99,10 @@ public class UserService : IUserService
             {
                 var response = ObjectMapper.Mapper.Map<UserResponse>(user);
                 response.Success = true;
-                response.ResultMessage = "Fetching user was successful";
+                response.ResultMessage = $"{AppMessages.USER} {AppMessages.EXISTS}";
                 return response;
             }
-            return GenericResponse.Result(false, "Fetching user failed");
+            return GenericResponse.Result(false, $"{AppMessages.USER} {AppMessages.NOT_EXIST}");
         }
         catch (Exception ex)
         {

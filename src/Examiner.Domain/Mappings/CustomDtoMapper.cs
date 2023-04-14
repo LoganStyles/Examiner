@@ -2,6 +2,7 @@
 using AutoMapper;
 using Examiner.Domain.Dtos.Authentication;
 using Examiner.Domain.Dtos.Users;
+using Examiner.Domain.Entities.Authentication;
 using Examiner.Domain.Entities.Notifications.Emails;
 using Examiner.Domain.Entities.Users;
 using Kickbox.Models;
@@ -20,6 +21,7 @@ public class CustomDtoMapper : Profile
         .ForMember(dest => dest.PasswordHash, map => map.MapFrom(src => BC.HashPassword(src.Password)));
 
         CreateMap<User, UserResponse>();
+        CreateMap<CodeVerification, CodeVerificationResponse>();
         CreateMap<ExtendedKickBoxResponse, KickboxVerification>();
     }
 }

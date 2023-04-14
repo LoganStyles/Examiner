@@ -20,12 +20,14 @@ public class UserController : ControllerBase
 {
     private readonly IAuthenticationService _authenticationService;
     private readonly IUserService _userService;
-    
+    private readonly ICodeService _codeService;
 
-    public UserController(IAuthenticationService authenticationService, IUserService userService)
+
+    public UserController(IAuthenticationService authenticationService, IUserService userService, ICodeService codeService)
     {
         _authenticationService = authenticationService;
         _userService = userService;
+        _codeService = codeService;
     }
 
     /// <summary>
@@ -138,6 +140,63 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
+    /// verifies a code. it requires authentication.
+    /// </summary>
+    /// <param name="request">An object holding role request data</param>
+    /// <returns>A generic Response indicating success or failure of the role request change</returns>
+    [HttpPut("verifyCode")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<GenericResponse>> CodeVerificationAsync([FromBody] CodeVerificationRequest request)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var existingUser = await _userService.GetUserByEmail(request.Email);
+        if (existingUser is null)
+            return NotFound($"{AppMessages.USER} {AppMessages.NOT_EXIST}");
+
+        var existingCode = await _codeService.GetCodeVerification(request.Code);
+        if (existingCode is null)
+            return NotFound($"{AppMessages.CODE_VERIFICATION} {AppMessages.NOT_EXIST}");
+
+
+        var result = await _codeService.VerifyCode(existingUser, existingCode);
+        if (!result.Success)
+            return NotFound(result);
+
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// verifies a code. it requires authentication.
+    /// </summary>
+    /// <param name="request">An object holding role request data</param>
+    /// <returns>A generic Response indicating success or failure of the role request change</returns>
+    [HttpPost("resendCode")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<GenericResponse>> ResendVerificationCodeAsync([FromBody] ResendVerificationCodeRequest request)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var existingUser = await _userService.GetUserByEmail(request.Email);
+        if (existingUser is null)
+            return NotFound($"{AppMessages.USER} {AppMessages.NOT_EXIST}");
+
+        var result = await _authenticationService.ResendVerificationCodeAsync(existingUser);
+        if (!result.Success)
+            return NotFound(result);
+
+        return Ok(result);
+    }
+
+    /// <summary>
     /// Fetches a user
     /// </summary>
     /// <param name="Id">The Id of the user to be fetched</param>
@@ -169,10 +228,10 @@ public class UserController : ControllerBase
     {
 
         var result = await _userService.GetUserByEmail(email);
-        if (result.Success)
+        if (result is not null)
             return Ok(result);
         else
-            return NotFound(result);
+            return NotFound($"{AppMessages.USER} {AppMessages.NOT_EXIST}");
     }
 
 }

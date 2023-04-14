@@ -16,6 +16,7 @@ public class CodeVerification : BaseEntity
     public Guid UserId { get; set; }
     public User User {get; set;} = null!;
 
+    public int Attempts { get; set; }
     public bool Expired { get; set; }
 
     public bool IsSent { get; set; }

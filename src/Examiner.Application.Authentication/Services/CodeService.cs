@@ -4,6 +4,10 @@ using Examiner.Domain.Dtos.Authentication;
 using Examiner.Common;
 using Examiner.Infrastructure.UnitOfWork.Interfaces;
 using Microsoft.Extensions.Logging;
+using Examiner.Domain.Entities.Authentication;
+using System.Linq.Expressions;
+using Examiner.Authentication.Domain.Mappings;
+using Examiner.Domain.Entities.Users;
 
 namespace Examiner.Application.Authentication.Services;
 
@@ -29,7 +33,7 @@ public class CodeService : ICodeService
     {
 
         CodeGenerationResponse resultResponse = new CodeGenerationResponse(
-            false,$"{AppMessages.CODE_GENERATION} {AppMessages.FAILED}");
+            false, $"{AppMessages.CODE_GENERATION} {AppMessages.FAILED}");
 
         var verificationCode = await Generate();
         if (!string.IsNullOrWhiteSpace(verificationCode))
@@ -43,6 +47,116 @@ public class CodeService : ICodeService
             resultResponse.Success = true;
             resultResponse.Code = verificationCode;
         }
+        return resultResponse;
+    }
+
+    /// <summary>
+    /// Confirms if a code exists
+    /// </summary>
+    /// <param name="code">The code to fetch</param>
+    /// <returns>An object holding data indicating the success or failure of fetching the users</returns>
+    public async Task<CodeVerification?> GetCodeVerification(string code)
+    {
+        // var response = new CodeVerificationResponse(false, $"{AppMessages.CODE_VERIFICATION} {AppMessages.NOT_EXIST}");
+        try
+        {
+            Func<IQueryable<CodeVerification>, IOrderedQueryable<CodeVerification>>? orderBy = null;
+            Expression<Func<CodeVerification, bool>>? filter = (c => c.Code == code);
+
+            var codeList = await _unitOfWork.CodeVerificationRepository.Get(filter, orderBy, string.Empty, null, null);
+            if (codeList.Count() > 0)
+            {
+                return codeList.FirstOrDefault();
+                // response = ObjectMapper.Mapper.Map<CodeVerificationResponse>();
+                // response.Success = true;
+                // response.ResultMessage = $"{AppMessages.CODE_VERIFICATION} {AppMessages.EXISTS}";
+                // return response;
+            }
+            return null;
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error fetching code - ", ex.Message);
+            // response.ResultMessage=ex.Message;
+            // return response;
+            throw;
+        }
+    }
+    /// <summary>
+    /// Confirms if a code exists
+    /// </summary>
+    /// <param name="code">The code to fetch</param>
+    /// <returns>An object holding data indicating the success or failure of fetching the users</returns>
+    // public async Task<CodeVerificationResponse> ConfirmCodeExists(string code)
+    // {
+    //     var response = new CodeVerificationResponse(false, $"{AppMessages.CODE_VERIFICATION} {AppMessages.NOT_EXIST}");
+    //     try
+    //     {
+    //         Func<IQueryable<CodeVerification>, IOrderedQueryable<CodeVerification>>? orderBy = null;
+    //         Expression<Func<CodeVerification, bool>>? filter = (c => c.Code == code);
+
+    //         var codeList = await _unitOfWork.CodeVerificationRepository.Get(filter, orderBy, string.Empty, null, null);
+    //         if (codeList.Count() > 0)
+    //         {
+    //             response = ObjectMapper.Mapper.Map<CodeVerificationResponse>(codeList.FirstOrDefault());
+    //             response.Success = true;
+    //             response.ResultMessage = $"{AppMessages.CODE_VERIFICATION} {AppMessages.EXISTS}";
+    //             return response;
+    //         }
+    //         return response;
+
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError("Error fetching code - ", ex.Message);
+    //         response.ResultMessage=ex.Message;
+    //         return response;
+    //     }
+    // }
+
+    /// <summary>
+    /// Verifies a code
+    /// </summary>
+    /// <returns>An GenericResponse object indicating the success or failure of an attempt to send a verification code to a user</returns>
+    public async Task<GenericResponse> VerifyCode(User user, CodeVerification codeVerification)
+    {
+
+        GenericResponse resultResponse = new GenericResponse(
+            false, $"{AppMessages.CODE_VERIFICATION} {AppMessages.FAILED}");
+
+        if (user.CodeVerification is null)
+            return resultResponse;
+
+        // has code expired
+        if (codeVerification.Expired)
+        {
+            resultResponse.ResultMessage = $"{AppMessages.CODE_VERIFICATION} {AppMessages.EXPIRED}";
+            return resultResponse;
+        }
+
+        if (user.CodeVerification.Code == codeVerification.Code)
+        {
+            user.CodeVerification.HasVerified = true;
+            user.CodeVerification.VerifiedAt = DateTime.Now;
+            user.IsActive = true;
+
+            resultResponse.Success = true;
+            resultResponse.ResultMessage = $"{AppMessages.CODE_VERIFICATION} {AppMessages.SUCCESSFUL}";
+        }
+        else
+        {
+            user.CodeVerification.Attempts += 1;
+            if (user.CodeVerification.Attempts >= 3)
+            {
+                user.CodeVerification.Expired = true;
+                resultResponse.ResultMessage = $"{AppMessages.CODE_VERIFICATION} {AppMessages.EXPIRED}";
+            }
+        }
+
+        await _unitOfWork.UserRepository.Update(user);
+        await _unitOfWork.CompleteAsync();
+
         return resultResponse;
     }
 

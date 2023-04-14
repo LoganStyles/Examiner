@@ -1,5 +1,6 @@
 using Examiner.Domain.Dtos;
 using Examiner.Domain.Dtos.Authentication;
+using Examiner.Domain.Entities.Users;
 
 namespace Examiner.Application.Authentication.Interfaces;
 
@@ -11,4 +12,5 @@ public interface IAuthenticationService{
     Task<GenericResponse> Authenticate(AuthenticationRequest request);
     Task<GenericResponse> ChangePasswordAsync(ChangePasswordRequest request);
     Task<GenericResponse> SelectRoleAsync(SelectRoleRequest request);
+    Task<GenericResponse> ResendVerificationCodeAsync(User user);
 }

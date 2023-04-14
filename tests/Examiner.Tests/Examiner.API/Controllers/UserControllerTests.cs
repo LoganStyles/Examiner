@@ -16,13 +16,15 @@ public class UserControllerTests
 
     private readonly Mock<IAuthenticationService> _authenticationService;
     private readonly Mock<IUserService> _userService;
+    private readonly Mock<ICodeService> _codeService;
     private readonly UserController _userController;
 
     public UserControllerTests()
     {
         _authenticationService = new();
         _userService = new();
-        _userController = new UserController(_authenticationService.Object, _userService.Object);
+        _codeService = new();
+        _userController = new UserController(_authenticationService.Object, _userService.Object,_codeService.Object);
     }
 
     #region Registrations

@@ -1,4 +1,5 @@
 using Examiner.Domain.Dtos;
+using Examiner.Domain.Entities.Users;
 
 namespace Examiner.Application.Users.Interfaces;
 
@@ -8,7 +9,8 @@ namespace Examiner.Application.Users.Interfaces;
 public interface IUserService
 {
     Task<GenericResponse> GetByIdAsync(Guid Id);
-    Task<GenericResponse> GetUserByEmail(string email);
+    Task<User?> GetUserByEmail(string email);
+    // Task<GenericResponse> GetUserByEmail(string email);
     // Task<GenericResponse> Get(
     //     string requiredStatus = "",
     //     string? requiredOrder = null,

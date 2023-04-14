@@ -234,6 +234,55 @@ public class AuthenticationService : IAuthenticationService
     }
 
     /// <summary>
+    /// Resends code to user
+    /// </summary>
+    /// <param name="user">An object holding user data</param>
+    /// <returns>An object holding a registered user as well data  indicating the success or failure of the registration</returns>
+    public async Task<GenericResponse> ResendVerificationCodeAsync(User user)
+    {
+        try
+        {
+            if (user is null)
+                return GenericResponse.Result(false, $"{AppMessages.USER} {AppMessages.NOT_EXIST}");
+
+            // fetch a code for this new user
+            var codeGenerationResponse = await _codeService.GetCode();
+            if (!codeGenerationResponse.Success || codeGenerationResponse.Code is null)
+                return GenericResponse.Result(false, codeGenerationResponse.ResultMessage);
+
+            // send the code with message service
+            string message = $"Your verification code is <b>{codeGenerationResponse.Code}</b>";
+            var codeSendingResponse = await _emailService.SendMessage("", user.Email, AppMessages.CODE_VERIFICATION, message);
+            if (!codeSendingResponse.Success)
+                return GenericResponse.Result(false, codeSendingResponse.ResultMessage);
+            else
+            {
+                var codeVerification = new CodeVerification()
+                {
+                    Code = codeGenerationResponse.Code,
+                    UserId = user.Id,
+                    IsSent = true
+                };
+                // save user & code only if we were able to send code 
+                await _unitOfWork.CodeVerificationRepository.AddAsync(codeVerification);
+                await _unitOfWork.CompleteAsync();
+
+                var response = ObjectMapper.Mapper.Map<UserResponse>(user);
+                response.Success = true;
+                response.ResultMessage = $"{AppMessages.CODE_RESEND} {AppMessages.SUCCESSFUL}";
+                return response;
+            }
+
+        }
+        catch (Exception ex)
+        {
+            // fetch inner exceptions if exist
+            _logger.LogError("Error code resend - ", ex.Message);
+            return GenericResponse.Result(false, $"{AppMessages.CODE_RESEND} {AppMessages.FAILED} {ex.Message}");
+        }
+    }
+
+    /// <summary>
     /// Registers a user
     /// </summary>
     /// <param name="request">An object holding registration request data</param>

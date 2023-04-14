@@ -10,6 +10,7 @@ public static class AppMessages
     public const string ROLE = "Role select";
     public const string CODE_VERIFICATION = "Code verification";
     public const string CODE_GENERATION = "Code generation";
+    public const string CODE_RESEND = "Code resend";
     public const string EMAIL = "Email";
     public const string ROLE_TUTOR = "Tutor";
     public const string USER = "User";
@@ -19,6 +20,7 @@ public static class AppMessages
 
     public const string SUCCESSFUL = "successful";
     public const string FAILED = "failed";
+    public const string EXPIRED = "expired";
     public const string INVALID_REQUEST = "Invalid request body";
     public const string EXISTS = "exists";
     public const string NOT_EXIST = "does not exist";
