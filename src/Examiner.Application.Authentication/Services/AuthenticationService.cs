@@ -110,6 +110,9 @@ public class AuthenticationService : IAuthenticationService
             if (!BC.Verify(request.OldPassword, userFound.PasswordHash))
                 return GenericResponse.Result(false, AppMessages.INVALID_EMAIL_PASSWORD);
 
+            if (!IsValidPassword(request.NewPassword))
+                return GenericResponse.Result(false, AppMessages.INVALID_PASSWORD);
+
             // change of password has been authorized
             userFound.PasswordHash = BC.HashPassword(request.NewPassword);
             userFound.LastModified = DateTime.Now;
@@ -135,7 +138,7 @@ public class AuthenticationService : IAuthenticationService
     /// </summary>
     /// <param name="request">An object holding email & role request data</param>
     /// <returns>An object holding data indicating the success or failure of a user's role update</returns>
-    public async Task<GenericResponse> SelectRole(SelectRoleRequest request)
+    public async Task<GenericResponse> SelectRoleAsync(SelectRoleRequest request)
     {
         try
         {
@@ -146,8 +149,7 @@ public class AuthenticationService : IAuthenticationService
 
                 var userFound = userList.FirstOrDefault();
                 if (userFound is null)
-                    return GenericResponse.Result(false,
-                    string.Concat(AppMessages.ROLE, " ", AppMessages.FAILED, " ", AppMessages.USER, " ", AppMessages.NOT_EXIST));
+                    return GenericResponse.Result(false, $"{AppMessages.USER} {AppMessages.NOT_EXIST}");
 
                 userFound.Role = userRole;
 
@@ -156,7 +158,7 @@ public class AuthenticationService : IAuthenticationService
 
                 var response = ObjectMapper.Mapper.Map<UserResponse>(userFound);
                 response.Success = true;
-                response.ResultMessage = AppMessages.ROLE + AppMessages.SUCCESSFUL;
+                response.ResultMessage = $"{AppMessages.ROLE} {AppMessages.SUCCESSFUL}";
                 return response;
             }
             else

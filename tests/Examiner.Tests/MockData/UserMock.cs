@@ -95,7 +95,7 @@ public static class UserMock
     {
         return new AuthenticationRequest("emma@gmail.com", "strin(1)G");
     }
-    
+
     public static AuthenticationRequest AuthenticateTutorWithNonExistingPassword()
     {
         return new AuthenticationRequest("emma@gmail.com", "strin(2)G");
@@ -123,10 +123,14 @@ public static class UserMock
     {
         return Task.FromResult(new GenericResponse(false, $"{AppMessages.USER} {AppMessages.NOT_EXIST}"));
     }
-    
+
     public static Task<GenericResponse> GetInvalidUserCredentialsUserResponse()
     {
         return Task.FromResult(new GenericResponse(false, $"{AppMessages.INVALID_EMAIL_PASSWORD}"));
+    }
+    public static Task<GenericResponse> GetInvalidRequestGenericResponse()
+    {
+        return Task.FromResult(new GenericResponse(false, $"{AppMessages.INVALID_REQUEST}"));
     }
 
     public static Task<IEnumerable<User>> GetAListOfNewlyRegisteredValidTutors()
@@ -146,7 +150,7 @@ public static class UserMock
             ).AsEnumerable()
         );
     }
-    
+
     public static Task<IEnumerable<User>> GetAListOfNewlyRegisteredValidTutorsWithoutRole()
     {
         return Task.FromResult(
@@ -176,9 +180,51 @@ public static class UserMock
             ExpiresIn = 20
         };
     }
+    public static Task<GenericResponse> GetValidUserResponse()
+    {
+        return Task.FromResult(new GenericResponse(true, $"{AppMessages.CHANGE_PASSWORD} {AppMessages.SUCCESSFUL}"));
+    }
+    public static Task<GenericResponse> GetValidRoleSelectGenericResponse()
+    {
+        return Task.FromResult(new GenericResponse(true, $"{AppMessages.ROLE} {AppMessages.SUCCESSFUL}"));
+    }
 
-    
-    
+    public static ChangePasswordRequest GetNonMatchingPasswordsRequest()
+    {
+        return new ChangePasswordRequest("emma@gmail.com", "test", "password", "newpassword");
+    }
+
+    public static ChangePasswordRequest GetValidChangePasswordRequest()
+    {
+        return new ChangePasswordRequest("emma@gmail.com", "strin(1)G", "strin(2)G", "strin(2)G");
+    }
+    public static ChangePasswordRequest GetNonExistingPasswordChangePasswordRequest()
+    {
+        return new ChangePasswordRequest("emma@gmail.com", "strin(2)G", "strin(1)G", "strin(1)G");
+    }
+    public static ChangePasswordRequest GetNonValidPasswordParamsChangePasswordRequest()
+    {
+        return new ChangePasswordRequest("emma@gmail.com", "strin(1)G", "newpassword", "newpassword");
+    }
 
     #endregion
+
+    #region role
+
+    public static SelectRoleRequest GetNonExistingEmailSelectRoleRequest()
+    {
+        return new SelectRoleRequest("ema@gmail.com", AppMessages.ROLE_TUTOR);
+    }
+    public static SelectRoleRequest GetNonExistingRoleSelectRoleRequest()
+    {
+        return new SelectRoleRequest("ema@gmail.com", "Tutors");
+    }
+    public static SelectRoleRequest GetExistingEmailAndRoleSelectRoleRequest()
+    {
+        return new SelectRoleRequest("e@gmail.com", AppMessages.ROLE_TUTOR);
+    }
+
+    #endregion
+
+
 }

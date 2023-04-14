@@ -41,7 +41,6 @@ public class AuthenticationServiceTests
             );
     }
 
-    #region Tutor 
 
     #region Registrations
     [Fact]
@@ -307,7 +306,7 @@ public class AuthenticationServiceTests
         Assert.False(result.Success);
         Assert.Contains(AppMessages.NOT_EXIST, result.ResultMessage);
     }
-    
+
     [Fact]
     public async Task Authenticate_WithNonExistingCredentials_Fails()
     {
@@ -337,6 +336,185 @@ public class AuthenticationServiceTests
 
 
     #endregion
+
+    #region change password
+
+    [Fact]
+    public async Task ChangePasswordAsync_WithInvalidUsername_ReturnsFailedResponse()
+    {
+        var request = It.IsAny<ChangePasswordRequest>();
+        var invalidUser = UserMock.GetEmptyListOfExistingUsers();
+        _unitOfWork
+            .Setup(
+                unit =>
+                    unit.UserRepository.Get(
+                        It.IsAny<Expression<Func<User, bool>>?>(),
+                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                        It.IsAny<string>(),
+                        It.IsAny<int?>(),
+                        It.IsAny<int?>()
+                    )
+            )
+            .Returns(() => invalidUser);
+
+        var result = await _authService.ChangePasswordAsync(request);
+
+        Assert.False(result.Success);
+        Assert.Contains($"{AppMessages.USER} {AppMessages.NOT_EXIST}", result.ResultMessage);
+        _unitOfWork.Verify(_ => _.UserRepository.Update(It.IsAny<User>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task ChangePasswordAsync_WhenOldPasswordFieldDoesNotMatchExistingPassword_ReturnsFailedResponse()
+    {
+        var validUser = UserMock.GetAListOfValidTutors();
+        _unitOfWork
+            .Setup(
+                unit =>
+                    unit.UserRepository.Get(
+                        It.IsAny<Expression<Func<User, bool>>?>(),
+                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                        It.IsAny<string>(),
+                        It.IsAny<int?>(),
+                        It.IsAny<int?>()
+                    )
+            ).Returns(() => validUser);
+
+        var request = UserMock.GetNonExistingPasswordChangePasswordRequest();
+        var result = await _authService.ChangePasswordAsync(request);
+
+        Assert.False(result.Success);
+        Assert.Contains(AppMessages.INVALID_EMAIL_PASSWORD, result.ResultMessage);
+        _unitOfWork.Verify(_ => _.UserRepository.Update(It.IsAny<User>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task ChangePasswordAsync_WhenNewPasswordDoesNotMeetRequirements_ReturnsFailedResponse()
+    {
+        var validUser = UserMock.GetAListOfValidTutors();
+        _unitOfWork
+            .Setup(
+                unit =>
+                    unit.UserRepository.Get(
+                        It.IsAny<Expression<Func<User, bool>>?>(),
+                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                        It.IsAny<string>(),
+                        It.IsAny<int?>(),
+                        It.IsAny<int?>()
+                    )
+            ).Returns(() => validUser);
+
+        var request = UserMock.GetNonValidPasswordParamsChangePasswordRequest();
+        var result = await _authService.ChangePasswordAsync(request);
+
+        Assert.False(result.Success);
+        Assert.Contains(AppMessages.INVALID_PASSWORD, result.ResultMessage);
+        _unitOfWork.Verify(_ => _.UserRepository.Update(It.IsAny<User>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task ChangePasswordAsync_WithValidOldAndNewPasswords_ReturnsSuccess()
+    {
+        var validUser = UserMock.GetAListOfValidTutors();
+        _unitOfWork
+            .Setup(
+                unit =>
+                    unit.UserRepository.Get(
+                        It.IsAny<Expression<Func<User, bool>>?>(),
+                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                        It.IsAny<string>(),
+                        It.IsAny<int?>(),
+                        It.IsAny<int?>()
+                    )
+            ).Returns(() => validUser);
+
+        var request = UserMock.GetValidChangePasswordRequest();
+        var result = await _authService.ChangePasswordAsync(request);
+
+        Assert.True(result.Success);
+        Assert.Contains($"{AppMessages.CHANGE_PASSWORD} {AppMessages.SUCCESSFUL}", result.ResultMessage);
+        _unitOfWork.Verify(_ => _.UserRepository.Update(It.IsAny<User>()), Times.Once);
+    }
+
+    #endregion
+
+    #region select role
+
+    /* - when email is not found
+       - when email is found but role is invalid
+       - when email is found & role is valid */
+
+    [Fact]
+    public async Task SelectRoleAsync_WhenEmailDoesNotExist_ReturnsFailedResponse()
+    {
+        var userNotFound = UserMock.GetEmptyListOfExistingUsers();
+        _unitOfWork
+            .Setup(
+                unit =>
+                    unit.UserRepository.Get(
+                        It.IsAny<Expression<Func<User, bool>>?>(),
+                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                        It.IsAny<string>(),
+                        It.IsAny<int?>(),
+                        It.IsAny<int?>()
+                    )
+            ).Returns(() => userNotFound);
+
+        var request = UserMock.GetNonExistingEmailSelectRoleRequest();
+        var result = await _authService.SelectRoleAsync(request);
+
+        Assert.False(result.Success);
+        Assert.Contains($"{AppMessages.USER} {AppMessages.NOT_EXIST}", result.ResultMessage);
+        _unitOfWork.Verify(_ => _.UserRepository.Update(It.IsAny<User>()), Times.Never);
+    }
+    
+    [Fact]
+    public async Task SelectRoleAsync_WhenEmailExistsButRoleDoesNot_ReturnsFailedResponse()
+    {
+        var existUser = UserMock.GetAListOfValidTutors();
+        _unitOfWork
+            .Setup(
+                unit =>
+                    unit.UserRepository.Get(
+                        It.IsAny<Expression<Func<User, bool>>?>(),
+                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                        It.IsAny<string>(),
+                        It.IsAny<int?>(),
+                        It.IsAny<int?>()
+                    )
+            ).Returns(() => existUser);
+
+        var request = UserMock.GetNonExistingRoleSelectRoleRequest();
+        var result = await _authService.SelectRoleAsync(request);
+
+        Assert.False(result.Success);
+        Assert.Contains(AppMessages.INVALID_REQUEST, result.ResultMessage);
+        _unitOfWork.Verify(_ => _.UserRepository.Update(It.IsAny<User>()), Times.Never);
+    }
+    
+    [Fact]
+    public async Task SelectRoleAsync_WhenEmailExistsAndRoleIsValid_ReturnsSuccess()
+    {
+        var existUser = UserMock.GetAListOfValidTutors();
+        _unitOfWork
+            .Setup(
+                unit =>
+                    unit.UserRepository.Get(
+                        It.IsAny<Expression<Func<User, bool>>?>(),
+                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                        It.IsAny<string>(),
+                        It.IsAny<int?>(),
+                        It.IsAny<int?>()
+                    )
+            ).Returns(() => existUser);
+
+        var request = UserMock.GetExistingEmailAndRoleSelectRoleRequest();
+        var result = await _authService.SelectRoleAsync(request);
+
+        Assert.True(result.Success);
+        Assert.Contains($"{AppMessages.ROLE} {AppMessages.SUCCESSFUL}", result.ResultMessage);
+        _unitOfWork.Verify(_ => _.UserRepository.Update(It.IsAny<User>()), Times.Once);
+    }
 
     #endregion
 }

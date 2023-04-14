@@ -1,6 +1,7 @@
 using Examiner.API.Controllers;
 using Examiner.Application.Authentication.Interfaces;
 using Examiner.Application.Users.Interfaces;
+using Examiner.Common;
 using Examiner.Domain.Dtos;
 using Examiner.Domain.Dtos.Authentication;
 using Examiner.Domain.Dtos.Users;
@@ -115,7 +116,117 @@ public class UserControllerTests
         Assert.IsType<UnauthorizedObjectResult>(actionResult.Result);
     }
 
+    #endregion
 
+    #region change password
+
+    [Fact]
+    public async Task ChangePasswordAsync_InvalidModel_Returns400BadRequest()
+    {
+
+        _userController.ModelState.AddModelError("error", "some error");
+        var result = await _userController.ChangePasswordAsync(request: null!);
+
+        var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
+        Assert.IsType<BadRequestObjectResult>(actionResult.Result);
+    }
+
+    [Fact]
+    public async Task ChangePasswordAsync_NonMatchingPasswords_Returns400BadRequestStatus()
+    {
+
+        var request = UserMock.GetNonMatchingPasswordsRequest();
+
+        var result = await _userController.ChangePasswordAsync(request);
+
+        var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
+        Assert.IsType<BadRequestObjectResult>(actionResult.Result);
+    }
+
+    [Fact]
+    public async Task ChangePasswordAsync_WhenUserIsNotFound_Returns404NotFoundRequestStatus()
+    {
+        var request = UserMock.GetValidChangePasswordRequest();
+        var response = UserMock.GetFailedUserResponse();
+        _authenticationService.Setup(_ => _.ChangePasswordAsync(request)).Returns(response);
+
+        var result = await _userController.ChangePasswordAsync(request);
+
+        var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
+        var notFoundObjResult = Assert.IsType<NotFoundObjectResult>(actionResult.Result);
+    }
+
+    [Fact]
+    public async Task ChangePasswordAsync_Returns200OkRequestStatus()
+    {
+        var request = UserMock.GetValidChangePasswordRequest();
+        var response = UserMock.GetValidUserResponse();
+        _authenticationService.Setup(_ => _.ChangePasswordAsync(request)).Returns(response);
+
+        var result = await _userController.ChangePasswordAsync(request);
+
+        var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
+        var okObjResult = Assert.IsType<OkObjectResult>(actionResult.Result);
+        var returnValue = Assert.IsType<GenericResponse>(okObjResult.Value);
+        Assert.True(returnValue.Success);
+    }
+
+    #endregion
+    
+    #region select role
+
+    [Fact]
+    public async Task SelectRoleAsync_InvalidModel_Returns400BadRequest()
+    {
+
+        _userController.ModelState.AddModelError("error", "some error");
+        var result = await _userController.SelectRoleAsync(request: null!);
+
+        var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
+        Assert.IsType<BadRequestObjectResult>(actionResult.Result);
+    }
+
+    [Fact]
+    public async Task SelectRoleAsync_WhenEmailIsNotFound_Returns404NotFoundRequestStatus()
+    {
+        var request = UserMock.GetNonExistingEmailSelectRoleRequest();
+        var response = UserMock.GetFailedUserResponse();
+        _authenticationService.Setup(_ => _.SelectRoleAsync(request)).Returns(response);
+
+        var result = await _userController.SelectRoleAsync(request);
+
+        var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
+        var notFoundObjResult = Assert.IsType<NotFoundObjectResult>(actionResult.Result);
+    }
+    
+    [Fact]
+    public async Task SelectRoleAsync_WhenEmailIsFoundButRoleIsInvalid_Returns404NotFoundRequestStatus()
+    {
+        var request = UserMock.GetNonExistingRoleSelectRoleRequest();
+        var response = UserMock.GetInvalidRequestGenericResponse();
+        _authenticationService.Setup(_ => _.SelectRoleAsync(request)).Returns(response);
+
+        var result = await _userController.SelectRoleAsync(request);
+
+        var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
+        var notFoundObjResult = Assert.IsType<NotFoundObjectResult>(actionResult.Result);
+    }
+
+    [Fact]
+    public async Task SelectRoleAsync_WhenEmailIsFoundAndRoleIsValid_Returns200OkRequestStatus()
+    {
+        var request = UserMock.GetExistingEmailAndRoleSelectRoleRequest();
+        var response = UserMock.GetValidRoleSelectGenericResponse();
+        _authenticationService.Setup(_ => _.SelectRoleAsync(request)).Returns(response);
+
+        var result = await _userController.SelectRoleAsync(request);
+
+        var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
+        var okObjResult = Assert.IsType<OkObjectResult>(actionResult.Result);
+        var returnValue = Assert.IsType<GenericResponse>(okObjResult.Value);
+        Assert.True(returnValue.Success);
+        Assert.Contains($"{AppMessages.ROLE} {AppMessages.SUCCESSFUL}",returnValue.ResultMessage);
+    }
 
     #endregion
 }
