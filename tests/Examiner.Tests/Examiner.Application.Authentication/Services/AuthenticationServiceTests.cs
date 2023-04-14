@@ -440,10 +440,6 @@ public class AuthenticationServiceTests
 
     #region select role
 
-    /* - when email is not found
-       - when email is found but role is invalid
-       - when email is found & role is valid */
-
     [Fact]
     public async Task SelectRoleAsync_WhenEmailDoesNotExist_ReturnsFailedResponse()
     {
