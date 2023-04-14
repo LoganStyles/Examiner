@@ -10,5 +10,5 @@ public interface IAuthenticationService{
     Task<GenericResponse> RegisterAsync(RegisterUserRequest request);
     Task<GenericResponse> Authenticate(AuthenticationRequest request);
     Task<GenericResponse> ChangePasswordAsync(ChangePasswordRequest request);
-    Task<GenericResponse> SelectRole(SelectRoleRequest request);
+    Task<GenericResponse> SelectRoleAsync(SelectRoleRequest request);
 }

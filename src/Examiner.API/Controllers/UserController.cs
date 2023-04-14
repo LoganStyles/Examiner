@@ -130,7 +130,7 @@ public class UserController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var result = await _authenticationService.SelectRole(request);
+        var result = await _authenticationService.SelectRoleAsync(request);
         if (!result.Success)
             return NotFound(result);
 
