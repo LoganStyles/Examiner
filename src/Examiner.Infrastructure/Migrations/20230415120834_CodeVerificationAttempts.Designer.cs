@@ -3,6 +3,7 @@ using System;
 using Examiner.Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Examiner.Infrastructure.Migrations
 {
     [DbContext(typeof(ExaminerContext))]
-    partial class ExaminerContextModelSnapshot : ModelSnapshot
+    [Migration("20230415120834_CodeVerificationAttempts")]
+    partial class CodeVerificationAttempts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

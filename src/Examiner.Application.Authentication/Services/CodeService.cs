@@ -8,6 +8,7 @@ using Examiner.Domain.Entities.Authentication;
 using System.Linq.Expressions;
 using Examiner.Authentication.Domain.Mappings;
 using Examiner.Domain.Entities.Users;
+using Examiner.Domain.Dtos.Users;
 
 namespace Examiner.Application.Authentication.Services;
 
