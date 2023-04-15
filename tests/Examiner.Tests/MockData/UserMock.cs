@@ -37,6 +37,14 @@ public static class UserMock
             IsActive = true
         };
     }
+
+    public static UserDto GetValidUserDto()
+    {
+        return new UserDto
+        {
+            Email = "e@gmail.com"
+        };
+    }
     public static User GetValidNewRegistrationTutor()
     {
         return new User
@@ -57,7 +65,7 @@ public static class UserMock
         {
             Success = true,
             ResultMessage = "Registering user was successful, and verification code sent successfully",
-            Id = Guid.NewGuid(),
+            // Id = Guid.NewGuid(),
             Email = "e@gmail.com"
         };
     }
@@ -224,6 +232,14 @@ public static class UserMock
         return new SelectRoleRequest("e@gmail.com", AppMessages.ROLE_TUTOR);
     }
 
+    #endregion
+
+    #region code verification
+
+    public static CodeVerificationRequest GetNonExistingUserCodeVerificationRequest()
+    {
+        return new CodeVerificationRequest("ema@gmail.com", "000000");
+    }
     #endregion
 
 

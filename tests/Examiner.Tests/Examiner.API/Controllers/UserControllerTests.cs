@@ -5,6 +5,8 @@ using Examiner.Common;
 using Examiner.Domain.Dtos;
 using Examiner.Domain.Dtos.Authentication;
 using Examiner.Domain.Dtos.Users;
+using Examiner.Domain.Entities.Authentication;
+using Examiner.Domain.Entities.Users;
 using Examiner.Tests.MockData;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -24,7 +26,7 @@ public class UserControllerTests
         _authenticationService = new();
         _userService = new();
         _codeService = new();
-        _userController = new UserController(_authenticationService.Object, _userService.Object,_codeService.Object);
+        _userController = new UserController(_authenticationService.Object, _userService.Object, _codeService.Object);
     }
 
     #region Registrations
@@ -174,7 +176,7 @@ public class UserControllerTests
     }
 
     #endregion
-    
+
     #region select role
 
     [Fact]
@@ -200,7 +202,7 @@ public class UserControllerTests
         var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
         var notFoundObjResult = Assert.IsType<NotFoundObjectResult>(actionResult.Result);
     }
-    
+
     [Fact]
     public async Task SelectRoleAsync_WhenEmailIsFoundButRoleIsInvalid_Returns404NotFoundRequestStatus()
     {
@@ -227,8 +229,61 @@ public class UserControllerTests
         var okObjResult = Assert.IsType<OkObjectResult>(actionResult.Result);
         var returnValue = Assert.IsType<GenericResponse>(okObjResult.Value);
         Assert.True(returnValue.Success);
-        Assert.Contains($"{AppMessages.ROLE} {AppMessages.SUCCESSFUL}",returnValue.ResultMessage);
+        Assert.Contains($"{AppMessages.ROLE} {AppMessages.SUCCESSFUL}", returnValue.ResultMessage);
     }
 
+    #endregion
+
+    #region code verification
+
+    /* none existing user returns 404
+     none existing code returns 404
+     expired code returns failed with proper message
+     verified code returns success */
+
+    // [Fact]
+    // public async Task CodeVerificationAsync_NoneExistingUser_Returns404NotFoundResponseStatus()
+    // {
+
+    //     var request = UserMock.GetNonExistingUserCodeVerificationRequest();
+    //     var response = It.IsAny<User>();
+    //     _userService.Setup(u => u.GetUserByEmail(request.Email)).ReturnsAsync(response);
+        
+    //     var result = await _userController.VerifyCodeAsync(request);
+
+    //     var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
+    //     Assert.IsType<NotFoundObjectResult>(result.Result);
+
+    // }
+    
+    [Fact]
+    public async Task CodeVerificationAsync_NoneExistingCode_Returns404NotFoundResponseStatus()
+    {
+
+        var request = UserMock.GetNonExistingUserCodeVerificationRequest();
+        var response = It.IsAny<CodeVerification>();
+        _codeService.Setup(u => u.GetCodeVerification(request.Code)).ReturnsAsync(response);
+        
+        var result = await _userController.VerifyCodeAsync(request);
+
+        var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
+        Assert.IsType<NotFoundObjectResult>(result.Result);
+
+    }
+    
+    [Fact]
+    public async Task CodeVerificationAsync_ExpiredCode_ReturnsFailedResponseStatus()
+    {
+
+        var request = UserMock.GetNonExistingUserCodeVerificationRequest();
+        var response = It.IsAny<CodeVerification>();
+        _codeService.Setup(u => u.GetCodeVerification(request.Code)).ReturnsAsync(response);
+        
+        var result = await _userController.VerifyCodeAsync(request);
+
+        var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
+        Assert.IsType<NotFoundObjectResult>(result.Result);
+
+    }
     #endregion
 }
