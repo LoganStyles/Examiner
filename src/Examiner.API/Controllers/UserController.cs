@@ -6,6 +6,7 @@ using Examiner.Domain.Dtos.Users;
 using Examiner.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Examiner.Authentication.Domain.Mappings;
 
 namespace Examiner.API.Controllers;
 
@@ -56,8 +57,8 @@ public class UserController : ControllerBase
         {
             UserResponse userResponse = (UserResponse)result;
             return CreatedAtAction(
-                nameof(GetByIdAsync),
-                new { Id = userResponse.Id },
+                nameof(GetUserByEmailAsync),
+                new { Email = userResponse.Email },
                 userResponse
             );
         }
@@ -140,16 +141,16 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    /// verifies a code. it requires authentication.
+    /// verifies a previously sent to a user's email.
     /// </summary>
-    /// <param name="request">An object holding role request data</param>
+    /// <param name="request">An object holding code verification request data</param>
     /// <returns>A generic Response indicating success or failure of the role request change</returns>
     [HttpPut("verifyCode")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<GenericResponse>> CodeVerificationAsync([FromBody] CodeVerificationRequest request)
+    public async Task<ActionResult<GenericResponse>> VerifyCodeAsync([FromBody] CodeVerificationRequest request)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -161,7 +162,6 @@ public class UserController : ControllerBase
         var existingCode = await _codeService.GetCodeVerification(request.Code);
         if (existingCode is null)
             return NotFound($"{AppMessages.CODE_VERIFICATION} {AppMessages.NOT_EXIST}");
-
 
         var result = await _codeService.VerifyCode(existingUser, existingCode);
         if (!result.Success)
@@ -196,24 +196,24 @@ public class UserController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>
-    /// Fetches a user
-    /// </summary>
-    /// <param name="Id">The Id of the user to be fetched</param>
-    /// <returns>Fetches a user or not found ActionResult</returns>
-    [HttpGet("{Id:Guid}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<GenericResponse>> GetByIdAsync(Guid Id)
-    {
+    // /// <summary>
+    // /// Fetches a user
+    // /// </summary>
+    // /// <param name="Id">The Id of the user to be fetched</param>
+    // /// <returns>Fetches a user or not found ActionResult</returns>
+    // [HttpGet("{Id:Guid}")]
+    // [ProducesResponseType(StatusCodes.Status200OK)]
+    // [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    // [ProducesResponseType(StatusCodes.Status404NotFound)]
+    // public async Task<ActionResult<GenericResponse>> GetByIdAsync(Guid Id)
+    // {
 
-        var result = await _userService.GetByIdAsync(Id);
-        if (result.Success)
-            return Ok(result);
-        else
-            return NotFound(result);
-    }
+    //     var result = await _userService.GetByIdAsync(Id);
+    //     if (result.Success)
+    //         return Ok(result);
+    //     else
+    //         return NotFound(result);
+    // }
 
     /// <summary>
     /// Fetches a user
@@ -224,12 +224,12 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<GenericResponse>> GetUserByEmailAsync(string email)
+    public async Task<ActionResult<UserResponse>> GetUserByEmailAsync(string email)
     {
 
-        var result = await _userService.GetUserByEmail(email);
-        if (result is not null)
-            return Ok(result);
+        var user = await _userService.GetUserByEmail(email);
+        if (user is not null)
+            return Ok(ObjectMapper.Mapper.Map<UserResponse>(user));
         else
             return NotFound($"{AppMessages.USER} {AppMessages.NOT_EXIST}");
     }

@@ -31,6 +31,7 @@ public class UserService : IUserService
     /// <returns>An object holding data indicating the success or failure of fetching the users</returns>
     public async Task<User?> GetUserByEmail(string email)
     {
+        // var response = new UserResponse(false,$"{AppMessages.USER} {AppMessages.NOT_EXIST}");
         try
         {
             Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null;
@@ -40,7 +41,7 @@ public class UserService : IUserService
             if (users.Count() > 0)
             {
                 return users.FirstOrDefault();
-                // var response = ObjectMapper.Mapper.Map<UserResponse>();
+                // response = ObjectMapper.Mapper.Map<UserResponse>(users.FirstOrDefault());
                 // response.Success = true;
                 // response.ResultMessage = $"{AppMessages.USER} {AppMessages.EXISTS}";
                 // return response;
@@ -51,7 +52,8 @@ public class UserService : IUserService
         catch (Exception ex)
         {
             _logger.LogError("Error fetching user - ", ex.Message);
-            // return GenericResponse.Result(false, ex.Message);
+            // response.ResultMessage+=" "+ex.Message;
+            // return response;
             throw;
         }
     }
@@ -90,24 +92,51 @@ public class UserService : IUserService
     /// </summary>
     /// <param name="Id">An Id representing the user to be fetched</param>
     /// <returns>An object holding data indicating the success or failure of fetching the user</returns>
-    public async Task<GenericResponse> GetByIdAsync(Guid Id)
+    public async Task<User?> GetByIdAsync(Guid Id)
     {
         try
         {
             var user = await _unitOfWork.UserRepository.GetByIdAsync(Id);
             if (user is not null)
             {
-                var response = ObjectMapper.Mapper.Map<UserResponse>(user);
-                response.Success = true;
-                response.ResultMessage = $"{AppMessages.USER} {AppMessages.EXISTS}";
-                return response;
+                return user;
+                // var response = ObjectMapper.Mapper.Map<UserResponse>(user);
+                // response.Success = true;
+                // response.ResultMessage = $"{AppMessages.USER} {AppMessages.EXISTS}";
+                // return response;
             }
-            return GenericResponse.Result(false, $"{AppMessages.USER} {AppMessages.NOT_EXIST}");
+            return null;
         }
         catch (Exception ex)
         {
             _logger.LogError("Error fetching user - ", ex.Message);
-            return GenericResponse.Result(false, ex.Message);
+            throw;
         }
     }
+
+    // /// <summary>
+    // /// Fetches a user by Id
+    // /// </summary>
+    // /// <param name="Id">An Id representing the user to be fetched</param>
+    // /// <returns>An object holding data indicating the success or failure of fetching the user</returns>
+    // public async Task<GenericResponse> GetByIdAsync(Guid Id)
+    // {
+    //     try
+    //     {
+    //         var user = await _unitOfWork.UserRepository.GetByIdAsync(Id);
+    //         if (user is not null)
+    //         {
+    //             var response = ObjectMapper.Mapper.Map<UserResponse>(user);
+    //             response.Success = true;
+    //             response.ResultMessage = $"{AppMessages.USER} {AppMessages.EXISTS}";
+    //             return response;
+    //         }
+    //         return GenericResponse.Result(false, $"{AppMessages.USER} {AppMessages.NOT_EXIST}");
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError("Error fetching user - ", ex.Message);
+    //         return GenericResponse.Result(false, ex.Message);
+    //     }
+    // }
 }

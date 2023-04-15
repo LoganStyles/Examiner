@@ -21,6 +21,7 @@ public class CustomDtoMapper : Profile
         .ForMember(dest => dest.PasswordHash, map => map.MapFrom(src => BC.HashPassword(src.Password)));
 
         CreateMap<User, UserResponse>();
+        CreateMap<User, UserDto>();
         CreateMap<CodeVerification, CodeVerificationResponse>();
         CreateMap<ExtendedKickBoxResponse, KickboxVerification>();
     }

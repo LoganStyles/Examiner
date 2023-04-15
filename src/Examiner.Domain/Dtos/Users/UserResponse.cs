@@ -15,7 +15,7 @@ public class UserResponse : GenericResponse
 
     public UserResponse(bool success, string? message) : base(success, message) { }
 
-    public Guid? Id { get; set; }
+    // public Guid? Id { get; set; }
     public string? FirstName { get; set; }
 
     public string? LastName { get; set; }
