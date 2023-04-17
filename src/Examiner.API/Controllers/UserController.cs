@@ -152,6 +152,7 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<GenericResponse>> VerifyCodeAsync([FromBody] CodeVerificationRequest request)
     {
+        
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 

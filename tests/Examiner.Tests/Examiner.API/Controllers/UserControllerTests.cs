@@ -241,20 +241,21 @@ public class UserControllerTests
      expired code returns failed with proper message
      verified code returns success */
 
-    // [Fact]
-    // public async Task CodeVerificationAsync_NoneExistingUser_Returns404NotFoundResponseStatus()
-    // {
+    [Fact]
+    public async Task CodeVerificationAsync_NoneExistingUser_Returns404NotFoundResponseStatus()
+    {
 
-    //     var request = UserMock.GetNonExistingUserCodeVerificationRequest();
-    //     var response = It.IsAny<User>();
-    //     _userService.Setup(u => u.GetUserByEmail(request.Email)).ReturnsAsync(response);
+        var request = UserMock.GetNonExistingUserCodeVerificationRequest();
+        var response = It.IsAny<User>();
+        _userService.Setup(u => u.GetUserByEmail(request.Email)).ReturnsAsync(response);
         
-    //     var result = await _userController.VerifyCodeAsync(request);
+        var result = await _userController.VerifyCodeAsync(request);
 
-    //     var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
-    //     Assert.IsType<NotFoundObjectResult>(result.Result);
+        var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
+        Assert.IsType<NotFoundObjectResult>(result.Result);
+        _codeService.Verify(u=>u.VerifyCode(It.IsAny<User>(), It.IsAny<CodeVerification>()),Times.Never);
 
-    // }
+    }
     
     [Fact]
     public async Task CodeVerificationAsync_NoneExistingCode_Returns404NotFoundResponseStatus()
@@ -268,6 +269,7 @@ public class UserControllerTests
 
         var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
         Assert.IsType<NotFoundObjectResult>(result.Result);
+        _codeService.Verify(u=>u.VerifyCode(It.IsAny<User>(), It.IsAny<CodeVerification>()),Times.Never);
 
     }
     
@@ -283,6 +285,7 @@ public class UserControllerTests
 
         var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
         Assert.IsType<NotFoundObjectResult>(result.Result);
+        _codeService.Verify(u=>u.VerifyCode(It.IsAny<User>(), It.IsAny<CodeVerification>()),Times.Never);
 
     }
     #endregion
