@@ -72,7 +72,7 @@ public class AuthenticationServiceTests
     {
         var request = UserMock.RegisterTutorWithValidPassword();
         var emptyResult = UserMock.GetEmptyListOfExistingUsers();
-        var codeGenerationResponse = new CodeGenerationResponse(false, $"{AppMessages.CODE_GENERATION} {AppMessages.FAILED}");
+        var codeGenerationResponse = new CodeGenerationResponse(false, $"{AppMessages.CODE_CREATION} {AppMessages.FAILED}");
 
         _unitOfWork
             .Setup(
@@ -87,11 +87,11 @@ public class AuthenticationServiceTests
             )
             .Returns(() => emptyResult);
 
-        _codeService.Setup(code => code.GetCode()).ReturnsAsync(() => codeGenerationResponse);
+        _codeService.Setup(code => code.CreateCode()).ReturnsAsync(() => codeGenerationResponse);
 
         var result = await _authService.RegisterAsync(request);
         Assert.False(result.Success);
-        Assert.Contains($"{AppMessages.CODE_GENERATION} {AppMessages.FAILED}", result.ResultMessage);
+        Assert.Contains($"{AppMessages.CODE_CREATION} {AppMessages.FAILED}", result.ResultMessage);
     }
 
     [Fact]
@@ -115,7 +115,7 @@ public class AuthenticationServiceTests
             )
             .Returns(() => emptyResult);
 
-        _codeService.Setup(code => code.GetCode()).Returns(() => codeGenerationResponse);
+        _codeService.Setup(code => code.CreateCode()).Returns(() => codeGenerationResponse);
         _emailService.Setup(msg => msg.SendMessage("", request.Email, It.IsAny<string>(), It.IsAny<string>()))
         .ReturnsAsync(() => codeSendingResultResponse);
 
@@ -133,7 +133,7 @@ public class AuthenticationServiceTests
 
         var codeSendingResultResponse = GenericResponse.Result(true, It.IsAny<string>());
 
-        _codeService.Setup(code => code.GetCode()).ReturnsAsync(() => codeGenerationResponse);
+        _codeService.Setup(code => code.CreateCode()).ReturnsAsync(() => codeGenerationResponse);
         _emailService.Setup(msg => msg.SendMessage("", request.Email, It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(() => codeSendingResultResponse);
         _unitOfWork.Setup(unit => unit.CodeVerificationRepository.AddAsync(It.IsAny<CodeVerification>())).ReturnsAsync(It.IsAny<CodeVerification>());
         _unitOfWork.Setup(unit => unit.UserRepository.Get(
@@ -463,7 +463,7 @@ public class AuthenticationServiceTests
         Assert.Contains($"{AppMessages.USER} {AppMessages.NOT_EXIST}", result.ResultMessage);
         _unitOfWork.Verify(_ => _.UserRepository.Update(It.IsAny<User>()), Times.Never);
     }
-    
+
     [Fact]
     public async Task SelectRoleAsync_WhenEmailExistsButRoleDoesNot_ReturnsFailedResponse()
     {
@@ -487,7 +487,7 @@ public class AuthenticationServiceTests
         Assert.Contains(AppMessages.INVALID_REQUEST, result.ResultMessage);
         _unitOfWork.Verify(_ => _.UserRepository.Update(It.IsAny<User>()), Times.Never);
     }
-    
+
     [Fact]
     public async Task SelectRoleAsync_WhenEmailExistsAndRoleIsValid_ReturnsSuccess()
     {

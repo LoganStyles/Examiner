@@ -65,7 +65,6 @@ public static class UserMock
         {
             Success = true,
             ResultMessage = "Registering user was successful, and verification code sent successfully",
-            // Id = Guid.NewGuid(),
             Email = "e@gmail.com"
         };
     }

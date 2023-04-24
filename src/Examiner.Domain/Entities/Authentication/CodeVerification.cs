@@ -14,17 +14,16 @@ public class CodeVerification : BaseEntity
     public string Code { get; set; } = null!;
 
     public Guid UserId { get; set; }
-    public User User {get; set;} = null!;
-
-    public int Attempts { get; set; }
-    public bool Expired { get; set; }
+    public User User { get; set; } = null!;
 
     public bool IsSent { get; set; }
-    public bool CanResend { get; set; }
+    public int Attempts { get; set; }
+    public int ExpiresIn { get; set; }
+    public bool Expired { get; set; }
 
     public bool HasVerified { get; set; }
     public DateTime? VerifiedAt { get; set; }
 
-    public ICollection<CodeVerificationHistory>? CodeVerificationHistories {get;set;}
+    public ICollection<CodeVerificationHistory>? CodeVerificationHistories { get; set; }
 
 }

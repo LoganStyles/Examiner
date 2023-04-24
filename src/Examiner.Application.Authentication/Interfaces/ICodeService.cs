@@ -8,7 +8,7 @@ namespace Examiner.Application.Authentication.Interfaces;
 
 public interface ICodeService : IVerificationService
 {
-    Task<CodeGenerationResponse> GetCode();
+    Task<CodeGenerationResponse> CreateCode();
     Task<CodeVerification?> GetCodeVerification(string code);
-    Task<GenericResponse> VerifyCode(User user, CodeVerification codeVerification);
+    Task<GenericResponse> VerifyCode(User user, string suppliedCode);
 }

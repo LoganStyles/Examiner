@@ -9,15 +9,14 @@ public static class AppMessages
     public const string CHANGE_PASSWORD = "Change password";
     public const string ROLE = "Role select";
     public const string CODE_VERIFICATION = "Code verification";
-    public const string CODE_GENERATION = "Code generation";
+    public const string CODE_CREATION = "Code creation";
+    public const string CODE_SUPPLIED = "Supplied code";
     public const string CODE_RESEND = "Code resend";
     public const string EMAIL = "Email";
     public const string ROLE_TUTOR = "Tutor";
     public const string USER = "User";
 
     #endregion
-
-
     public const string SUCCESSFUL = "successful";
     public const string FAILED = "failed";
     public const string EXPIRED = "expired";
@@ -28,6 +27,7 @@ public static class AppMessages
     public const string VERIFIED = "is verified";
     public const string NOT_VERIFIED = "not verified";
     public const string INVALID_FORMAT = "has invalid format";
+    public const string NO_CODE_INITIATED = "has no code initiated";
 
     public const string SENDING = "sending";
 

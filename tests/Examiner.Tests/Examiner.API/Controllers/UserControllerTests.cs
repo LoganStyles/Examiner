@@ -238,8 +238,12 @@ public class UserControllerTests
 
     /* none existing user returns 404
      none existing code returns 404
-     expired code returns failed with proper message
-     verified code returns success */
+     expired code returns failed response with proper message
+     code from request does not match existing code returns 404 & appropriate message
+     code from request matches existing code returns 200 & appropriate message
+     user inputs wrong number, attempt count increases by one, return failed response message
+     
+    */
 
     [Fact]
     public async Task CodeVerificationAsync_NoneExistingUser_Returns404NotFoundResponseStatus()
@@ -253,7 +257,7 @@ public class UserControllerTests
 
         var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
         Assert.IsType<NotFoundObjectResult>(result.Result);
-        _codeService.Verify(u=>u.VerifyCode(It.IsAny<User>(), It.IsAny<CodeVerification>()),Times.Never);
+        _codeService.Verify(u=>u.VerifyCode(It.IsAny<User>(), request.Code),Times.Never);
 
     }
     
@@ -269,7 +273,7 @@ public class UserControllerTests
 
         var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
         Assert.IsType<NotFoundObjectResult>(result.Result);
-        _codeService.Verify(u=>u.VerifyCode(It.IsAny<User>(), It.IsAny<CodeVerification>()),Times.Never);
+        _codeService.Verify(u=>u.VerifyCode(It.IsAny<User>(), request.Code),Times.Never);
 
     }
     
@@ -278,14 +282,22 @@ public class UserControllerTests
     {
 
         var request = UserMock.GetNonExistingUserCodeVerificationRequest();
-        var response = It.IsAny<CodeVerification>();
-        _codeService.Setup(u => u.GetCodeVerification(request.Code)).ReturnsAsync(response);
+        var response = CodeVerificationMock.GetExpiredCodeVerificationResponse();
+        var existingUser = UserMock.GetValidNewRegistrationTutor();
+        _codeService.Setup(u => u.VerifyCode(existingUser,request.Code)).Returns(response);
+
+        var userResponse = UserMock.GetValidNewRegistrationTutor();
+        _userService.Setup(u => u.GetUserByEmail(request.Email)).ReturnsAsync(userResponse);
         
         var result = await _userController.VerifyCodeAsync(request);
 
         var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
-        Assert.IsType<NotFoundObjectResult>(result.Result);
-        _codeService.Verify(u=>u.VerifyCode(It.IsAny<User>(), It.IsAny<CodeVerification>()),Times.Never);
+        var notFoundObjResult = Assert.IsType<NotFoundObjectResult>(actionResult.Result);
+        var returnValue = Assert.IsType<GenericResponse>(notFoundObjResult.Value);
+        // Assert.IsType<NotFoundObjectResult>(result.Result);
+        // _codeService.Verify(u=>u.VerifyCode(It.IsAny<User>(), request.Code),Times.Never);
+        Assert.False(returnValue.Success);
+        Assert.Contains($"{AppMessages.CODE_SUPPLIED} {AppMessages.EXPIRED}",returnValue.ResultMessage);
 
     }
     #endregion

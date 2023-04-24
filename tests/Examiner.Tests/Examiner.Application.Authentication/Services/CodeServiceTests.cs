@@ -46,7 +46,7 @@ public class CodeServiceTests
             )
             .Returns(() => emptyResult);
 
-        var result = await _codeService.GetCode();
+        var result = await _codeService.CreateCode();
         Assert.True(result.Success);
         Assert.NotNull(result.Code);
         Assert.Equal(CODE_LENGTH, result.Code.Length);

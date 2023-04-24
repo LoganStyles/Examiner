@@ -152,19 +152,15 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<GenericResponse>> VerifyCodeAsync([FromBody] CodeVerificationRequest request)
     {
-        
+
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
         var existingUser = await _userService.GetUserByEmail(request.Email);
         if (existingUser is null)
-            return NotFound($"{AppMessages.USER} {AppMessages.NOT_EXIST}");
+            return NotFound(GenericResponse.Result(false,$"{AppMessages.USER} {AppMessages.NOT_EXIST}"));
 
-        var existingCode = await _codeService.GetCodeVerification(request.Code);
-        if (existingCode is null)
-            return NotFound($"{AppMessages.CODE_VERIFICATION} {AppMessages.NOT_EXIST}");
-
-        var result = await _codeService.VerifyCode(existingUser, existingCode);
+        var result = await _codeService.VerifyCode(existingUser, request.Code);
         if (!result.Success)
             return NotFound(result);
 

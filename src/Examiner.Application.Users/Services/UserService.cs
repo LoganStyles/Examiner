@@ -37,7 +37,7 @@ public class UserService : IUserService
             Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null;
             Expression<Func<User, bool>>? filter = (u => u.Email == email);
 
-            var users = await _unitOfWork.UserRepository.Get(filter, orderBy, string.Empty, null, null);
+            var users = await _unitOfWork.UserRepository.Get(filter, orderBy, "CodeVerification", null, null);
             if (users.Count() > 0)
             {
                 return users.FirstOrDefault();

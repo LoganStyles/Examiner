@@ -30,11 +30,11 @@ public class CodeService : ICodeService
     /// </summary>
     /// <returns>An GenericResponse object indicating the success or failure of an attempt to send a verification code to a user</returns>
 
-    public async Task<CodeGenerationResponse> GetCode()
+    public async Task<CodeGenerationResponse> CreateCode()
     {
 
         CodeGenerationResponse resultResponse = new CodeGenerationResponse(
-            false, $"{AppMessages.CODE_GENERATION} {AppMessages.FAILED}");
+            false, $"{AppMessages.CODE_CREATION} {AppMessages.FAILED}");
 
         var verificationCode = await Generate();
         if (!string.IsNullOrWhiteSpace(verificationCode))
@@ -42,9 +42,9 @@ public class CodeService : ICodeService
             // check if a code exists whose expired value is false
             var existingCodeList = await _unitOfWork.CodeVerificationRepository.Get(u => u.Code.Equals(verificationCode) && u.Expired == false, null, "", null, null);
             if (existingCodeList.Count() > 0)
-                await GetCode();
+                await CreateCode();
 
-            resultResponse.ResultMessage = $"{AppMessages.CODE_GENERATION} {AppMessages.SUCCESSFUL}";
+            resultResponse.ResultMessage = $"{AppMessages.CODE_CREATION} {AppMessages.SUCCESSFUL}";
             resultResponse.Success = true;
             resultResponse.Code = verificationCode;
         }
@@ -120,23 +120,35 @@ public class CodeService : ICodeService
     /// Verifies a code
     /// </summary>
     /// <returns>An GenericResponse object indicating the success or failure of an attempt to send a verification code to a user</returns>
-    public async Task<GenericResponse> VerifyCode(User user, CodeVerification codeVerification)
+    public async Task<GenericResponse> VerifyCode(User user, string suppliedCode)
     {
 
         GenericResponse resultResponse = new GenericResponse(
             false, $"{AppMessages.CODE_VERIFICATION} {AppMessages.FAILED}");
 
-        if (user.CodeVerification is null)
-            return resultResponse;
-
-        // has code expired
-        if (codeVerification.Expired)
+        if (user is null)
         {
-            resultResponse.ResultMessage = $"{AppMessages.CODE_VERIFICATION} {AppMessages.EXPIRED}";
-            return resultResponse;
+            throw new InvalidOperationException($"{AppMessages.INVALID_REQUEST} :{AppMessages.USER} {AppMessages.NOT_EXIST}");
+        }
+        
+        // when a user who has not been sent a code requests for verification (this should not happen)
+        if (user.CodeVerification is null)
+        {
+            throw new InvalidOperationException($"{AppMessages.INVALID_REQUEST} :{AppMessages.CODE_SUPPLIED} {AppMessages.NOT_EXIST}");
         }
 
-        if (user.CodeVerification.Code == codeVerification.Code)
+        user.CodeVerification.Attempts += 1;
+        var suppliedCodeResult = await this.GetCodeVerification(suppliedCode);
+
+        if (suppliedCodeResult is null || suppliedCodeResult.Code != user.CodeVerification.Code)
+            resultResponse.ResultMessage = $"{AppMessages.CODE_SUPPLIED} {AppMessages.NOT_EXIST}";
+
+        else if (user.CodeVerification.Expired || (DateTime.Now - user.CodeVerification.CreatedDate).Seconds >= user.CodeVerification.ExpiresIn)
+        {
+            user.CodeVerification.Expired = true;
+            resultResponse.ResultMessage = $"{AppMessages.CODE_SUPPLIED} {AppMessages.EXPIRED}";
+        }
+        else if (user.CodeVerification.Code == suppliedCodeResult.Code)
         {
             user.CodeVerification.HasVerified = true;
             user.CodeVerification.VerifiedAt = DateTime.Now;
@@ -147,11 +159,10 @@ public class CodeService : ICodeService
         }
         else
         {
-            user.CodeVerification.Attempts += 1;
             if (user.CodeVerification.Attempts >= 3)
             {
                 user.CodeVerification.Expired = true;
-                resultResponse.ResultMessage = $"{AppMessages.CODE_VERIFICATION} {AppMessages.EXPIRED}";
+                resultResponse.ResultMessage = $"{AppMessages.CODE_SUPPLIED} {AppMessages.EXPIRED}";
             }
         }
 

@@ -26,6 +26,7 @@ public class AuthenticationService : IAuthenticationService
     private readonly ILogger<AuthenticationService> _logger;
     private readonly ICodeService _codeService;
     private readonly IEmailService _emailService;
+    private const int CODE_VALIDITY_DURATION = 24;
 
     public AuthenticationService(
         IJwtTokenHandler jwtTokenHandler,
@@ -196,7 +197,7 @@ public class AuthenticationService : IAuthenticationService
                 return GenericResponse.Result(false, $"{AppMessages.EMAIL} {AppMessages.EXISTS}");
 
             // fetch a code for this new user
-            var codeGenerationResponse = await _codeService.GetCode();
+            var codeGenerationResponse = await _codeService.CreateCode();
             if (!codeGenerationResponse.Success || codeGenerationResponse.Code is null)
                 return GenericResponse.Result(false, codeGenerationResponse.ResultMessage);
 
@@ -207,13 +208,15 @@ public class AuthenticationService : IAuthenticationService
                 return GenericResponse.Result(false, codeSendingResponse.ResultMessage);
             else
             {
+                var codeExpiryTimeStamp = DateTime.Now.AddHours(CODE_VALIDITY_DURATION);
                 var codeVerification = new CodeVerification()
                 {
                     Code = codeGenerationResponse.Code,
                     UserId = newUser.Id,
-                    IsSent = true
+                    IsSent = true,
+                    ExpiresIn=(int)codeExpiryTimeStamp.Subtract(DateTime.Now).TotalSeconds
                 };
-                // save user & code only if we were able to send code 
+                // save user & code only if we were able to send verification code 
                 await _unitOfWork.CodeVerificationRepository.AddAsync(codeVerification);
                 await _unitOfWork.UserRepository.AddAsync(newUser);
                 await _unitOfWork.CompleteAsync();
@@ -246,7 +249,7 @@ public class AuthenticationService : IAuthenticationService
                 return GenericResponse.Result(false, $"{AppMessages.USER} {AppMessages.NOT_EXIST}");
 
             // fetch a code for this new user
-            var codeGenerationResponse = await _codeService.GetCode();
+            var codeGenerationResponse = await _codeService.CreateCode();
             if (!codeGenerationResponse.Success || codeGenerationResponse.Code is null)
                 return GenericResponse.Result(false, codeGenerationResponse.ResultMessage);
 
