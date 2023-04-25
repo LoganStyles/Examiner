@@ -17,6 +17,47 @@ public static class CodeVerificationMock
         return Task.FromResult((new List<CodeVerification>()).AsEnumerable());
     }
 
+    public static IEnumerable<CodeVerification> GetExistingCodeVerificationHavingExpiredCode()
+    {
+        return new List<CodeVerification>
+        {
+
+            new CodeVerification{
+                Code = "000000",
+                IsSent = true,
+                Attempts = 0,
+                Expired = true
+            }
+        };
+    }
+    public static IEnumerable<CodeVerification> GetExistingCodeVerificationHavingExpiredCodeAndExpiredAttempts()
+    {
+        return new List<CodeVerification>
+        {
+
+            new CodeVerification{
+                Code = "000000",
+                IsSent = true,
+                Attempts = 3,
+                Expired = false
+            }
+        };
+    }
+    
+    public static IEnumerable<CodeVerification> GetExistingCodeVerificationHavingValidCode()
+    {
+        return new List<CodeVerification>
+        {
+
+            new CodeVerification{
+                Code = "000000",
+                IsSent = true,
+                Attempts = 0,
+                Expired = false
+            }
+        };
+    }
+
     public static Task<CodeGenerationResponse> GetSuccessfulCodeGenerationResponse()
     {
         return Task.FromResult(new CodeGenerationResponse
@@ -29,5 +70,13 @@ public static class CodeVerificationMock
     public static Task<GenericResponse> GetExpiredCodeVerificationResponse()
     {
         return Task.FromResult(new GenericResponse(false, $"{AppMessages.CODE_SUPPLIED} {AppMessages.EXPIRED}"));
+    }
+    public static Task<GenericResponse> GetNotMatchingCodeVerificationResponse()
+    {
+        return Task.FromResult(new GenericResponse(false, $"{AppMessages.CODE_SUPPLIED} {AppMessages.NOT_EXIST}"));
+    }
+    public static Task<GenericResponse> GetMatchingCodeVerificationResponse()
+    {
+        return Task.FromResult(new GenericResponse(true, $"{AppMessages.CODE_VERIFICATION} {AppMessages.SUCCESSFUL}"));
     }
 }

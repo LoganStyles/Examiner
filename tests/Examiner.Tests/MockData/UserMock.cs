@@ -4,6 +4,7 @@ using BC = BCrypt.Net.BCrypt;
 using Examiner.Domain.Dtos.Users;
 using Examiner.Domain.Dtos;
 using Examiner.Common;
+using Examiner.Domain.Entities.Authentication;
 
 namespace Examiner.Tests.MockData;
 
@@ -58,8 +59,99 @@ public static class UserMock
         };
 
     }
+    public static User GetValidRegisteredTutorWithExpiredCodeRequestingCodeVerification()
+    {
+        return new User
+        {
+            Id = Guid.NewGuid(),
+            FirstName = "adam",
+            LastName = "felix",
+            Email = "e@gmail.com",
+            PasswordHash = BC.HashPassword("strin(1)G"),
+            IsActive = true,
+            CodeVerification = new CodeVerification()
+            {
+                Code = "000000",
+                IsSent = true,
+                Attempts = 0,
+                Expired = true
+            }
+        };
 
-    public static UserResponse? GetNewlyRegisteredUser()
+    }
+    public static IEnumerable<User> GetListOfRegisteredTutorWithExpiredCodeRequestingCodeVerification()
+    {
+        return
+            new List<User>{
+
+                new User {
+                    Id = Guid.NewGuid(),
+                    FirstName = "adam",
+                    LastName = "felix",
+                    Email = "e@gmail.com",
+                    PasswordHash = BC.HashPassword("strin(1)G"),
+                    IsActive = true,
+                    CodeVerification = new CodeVerification()
+                    {
+                        Code = "000000",
+                        IsSent = true,
+                        Attempts = 0,
+                        Expired = true
+                    }
+                }
+            }
+        ;
+
+    }
+    
+    public static IEnumerable<User> GetListOfRegisteredTutorWithValidCodeRequestingCodeVerification()
+    {
+        var codeExpiryTimeStamp = DateTime.Now.AddHours(1);
+        return
+            new List<User>{
+
+                new User {
+                    Id = Guid.NewGuid(),
+                    FirstName = "adam",
+                    LastName = "felix",
+                    Email = "e@gmail.com",
+                    PasswordHash = BC.HashPassword("strin(1)G"),
+                    IsActive = true,
+                    CodeVerification = new CodeVerification()
+                    {
+                        Code = "000000",
+                        IsSent = true,
+                        Attempts = 0,
+                        CreatedDate=DateTime.Now,
+                        Expired = false,
+                        ExpiresIn=(int)codeExpiryTimeStamp.Subtract(DateTime.Now).TotalSeconds
+                    }
+                }
+            }
+        ;
+
+    }
+    public static User GetValidRegisteredTutorRequestingCodeThatMatchesAndExists()
+    {
+        return new User
+        {
+            Id = Guid.NewGuid(),
+            FirstName = "adam",
+            LastName = "felix",
+            Email = "emaa@gmail.com",
+            PasswordHash = BC.HashPassword("strin(1)G"),
+            IsActive = true,
+            CodeVerification = new CodeVerification()
+            {
+                Code = "123456",
+                IsSent = true,
+                Attempts = 0,
+                Expired = false
+            }
+        };
+    }
+
+    public static UserResponse? GetNewlyRegisteredUserResponse()
     {
         return new UserResponse
         {
@@ -238,6 +330,11 @@ public static class UserMock
     public static CodeVerificationRequest GetNonExistingUserCodeVerificationRequest()
     {
         return new CodeVerificationRequest("ema@gmail.com", "000000");
+    }
+
+    public static CodeVerificationRequest GetExistingUserCodeVerificationRequest()
+    {
+        return new CodeVerificationRequest("emaa@gmail.com", "123456");
     }
     #endregion
 

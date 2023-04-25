@@ -1,6 +1,8 @@
 using System.Linq.Expressions;
 using Examiner.Application.Authentication.Services;
+using Examiner.Common;
 using Examiner.Domain.Entities.Authentication;
+using Examiner.Domain.Entities.Users;
 using Examiner.Infrastructure.UnitOfWork.Interfaces;
 using Examiner.Tests.MockData;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -51,4 +53,137 @@ public class CodeServiceTests
         Assert.NotNull(result.Code);
         Assert.Equal(CODE_LENGTH, result.Code.Length);
     }
+
+    [Fact]
+    public async Task VerifyCode_FailedAttempt_IncreasesAttemptCount()
+    {
+        var userList = UserMock.GetListOfRegisteredTutorWithExpiredCodeRequestingCodeVerification();
+        var user = userList.FirstOrDefault();
+        var previousAttemptCount = user!.CodeVerification!.Attempts;
+        var suppliedCode = user!.CodeVerification!.Code;
+        var getCodeList = CodeVerificationMock.GetExistingCodeVerificationHavingExpiredCode();
+
+        _unitOfWork.Setup(unit => unit.UserRepository.Update(user)).Returns(Task.CompletedTask);
+
+        _unitOfWork
+            .Setup(
+                unit =>
+                    unit.CodeVerificationRepository.Get(
+                        It.IsAny<Expression<Func<CodeVerification, bool>>?>(),
+                        It.IsAny<Func<IQueryable<CodeVerification>, IOrderedQueryable<CodeVerification>>?>(),
+                        It.IsAny<string>(),
+                        It.IsAny<int?>(),
+                        It.IsAny<int?>()
+                    )
+            )
+            .ReturnsAsync(() => getCodeList);
+
+        var result = await _codeService.VerifyCode(user!, suppliedCode!);
+
+        _unitOfWork.Verify(u => u.UserRepository.Update(user!), Times.Once);
+        Assert.Equal((double)previousAttemptCount + 1, (double)user!.CodeVerification!.Attempts);
+        Assert.False(result.Success);
+        Assert.Contains($"{AppMessages.CODE_SUPPLIED} {AppMessages.EXPIRED}", result.ResultMessage);
+    }
+    
+    [Fact]
+    public async Task VerifyCode_ExpiredAttempts_IncreasesAttemptCount()
+    {
+        var userList = UserMock.GetListOfRegisteredTutorWithExpiredCodeRequestingCodeVerification();
+        var user = userList.FirstOrDefault();
+        user!.CodeVerification!.Expired=true;
+        var previousAttemptCount = user!.CodeVerification!.Attempts;
+        var suppliedCode = user!.CodeVerification!.Code;
+        var getCodeList = CodeVerificationMock.GetExistingCodeVerificationHavingExpiredCodeAndExpiredAttempts();
+
+        _unitOfWork.Setup(unit => unit.UserRepository.Update(user)).Returns(Task.CompletedTask);
+
+        _unitOfWork
+            .Setup(
+                unit =>
+                    unit.CodeVerificationRepository.Get(
+                        It.IsAny<Expression<Func<CodeVerification, bool>>?>(),
+                        It.IsAny<Func<IQueryable<CodeVerification>, IOrderedQueryable<CodeVerification>>?>(),
+                        It.IsAny<string>(),
+                        It.IsAny<int?>(),
+                        It.IsAny<int?>()
+                    )
+            )
+            .ReturnsAsync(() => getCodeList);
+
+        var result = await _codeService.VerifyCode(user!, suppliedCode!);
+
+        _unitOfWork.Verify(u => u.UserRepository.Update(user!), Times.Once);
+        Assert.Equal((double)previousAttemptCount + 1, (double)user!.CodeVerification!.Attempts);
+        Assert.False(result.Success);
+        Assert.Contains($"{AppMessages.CODE_SUPPLIED} {AppMessages.EXPIRED}", result.ResultMessage);
+    }
+    
+    // [Fact]
+    // public async Task VerifyCode_NullUserOrCode_ThrowsException()
+    // {
+    //     // var userList = UserMock.GetListOfRegisteredTutorWithExpiredCodeRequestingCodeVerification();
+    //     // var user = userList.FirstOrDefault();
+    //     // user!.CodeVerification!.Expired=true;
+    //     // var previousAttemptCount = user!.CodeVerification!.Attempts;
+    //     // var suppliedCode = user!.CodeVerification!.Code;
+    //     // var getCodeList = CodeVerificationMock.GetExistingCodeVerificationHavingExpiredCodeAndExpiredAttempts();
+
+    //     _unitOfWork.Setup(unit => unit.UserRepository.Update(null!)).Returns(Task.CompletedTask);
+
+    //     // _unitOfWork
+    //     //     .Setup(
+    //     //         unit =>
+    //     //             unit.CodeVerificationRepository.Get(
+    //     //                 It.IsAny<Expression<Func<CodeVerification, bool>>?>(),
+    //     //                 It.IsAny<Func<IQueryable<CodeVerification>, IOrderedQueryable<CodeVerification>>?>(),
+    //     //                 It.IsAny<string>(),
+    //     //                 It.IsAny<int?>(),
+    //     //                 It.IsAny<int?>()
+    //     //             )
+    //     //     )
+    //     //     .ReturnsAsync(() => getCodeList);
+
+    //     var result = await _codeService.VerifyCode(user:null!, suppliedCode:null!);
+    //     Assert.Throws<InvalidOperationException>();
+
+    //     _unitOfWork.Verify(u => u.UserRepository.Update(It.IsAny<User>()), Times.Never);
+    //     // Assert.Equal((double)previousAttemptCount + 1, (double)user!.CodeVerification!.Attempts);
+    //     Assert.False(result.Success);
+    //     Assert.Contains($"{AppMessages.CODE_SUPPLIED} {AppMessages.EXPIRED}", result.ResultMessage);
+    // }
+    
+    [Fact]
+    public async Task VerifyCode_SuccessfulAttempt_DoesNotIncreasesAttemptCount()
+    {
+        var userList = UserMock.GetListOfRegisteredTutorWithValidCodeRequestingCodeVerification();
+        var user = userList.FirstOrDefault();
+        var previousAttemptCount = user!.CodeVerification!.Attempts;
+        var suppliedCode = user!.CodeVerification!.Code;
+        var getCodeList = CodeVerificationMock.GetExistingCodeVerificationHavingValidCode();
+
+        _unitOfWork.Setup(unit => unit.UserRepository.Update(user)).Returns(Task.CompletedTask);
+
+        _unitOfWork
+            .Setup(
+                unit =>
+                    unit.CodeVerificationRepository.Get(
+                        It.IsAny<Expression<Func<CodeVerification, bool>>?>(),
+                        It.IsAny<Func<IQueryable<CodeVerification>, IOrderedQueryable<CodeVerification>>?>(),
+                        It.IsAny<string>(),
+                        It.IsAny<int?>(),
+                        It.IsAny<int?>()
+                    )
+            )
+            .ReturnsAsync(() => getCodeList);
+
+        var result = await _codeService.VerifyCode(user!, suppliedCode!);
+
+        _unitOfWork.Verify(u => u.UserRepository.Update(user!), Times.Once);
+        Assert.Equal((double)previousAttemptCount + 1, (double)user!.CodeVerification!.Attempts);
+        Assert.True(result.Success);
+        Assert.Contains($"{AppMessages.CODE_VERIFICATION} {AppMessages.SUCCESSFUL}", result.ResultMessage);
+    }
+
+
 }

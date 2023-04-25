@@ -6,9 +6,7 @@ using Examiner.Infrastructure.UnitOfWork.Interfaces;
 using Microsoft.Extensions.Logging;
 using Examiner.Domain.Entities.Authentication;
 using System.Linq.Expressions;
-using Examiner.Authentication.Domain.Mappings;
 using Examiner.Domain.Entities.Users;
-using Examiner.Domain.Dtos.Users;
 
 namespace Examiner.Application.Authentication.Services;
 
@@ -26,7 +24,7 @@ public class CodeService : ICodeService
     }
 
     /// <summary>
-    /// Fetches a verification code that does not exist or exists but has expired
+    /// Creates a verification code that does not exist or exists but has expired
     /// </summary>
     /// <returns>An GenericResponse object indicating the success or failure of an attempt to send a verification code to a user</returns>
 
@@ -52,13 +50,12 @@ public class CodeService : ICodeService
     }
 
     /// <summary>
-    /// Confirms if a code exists
+    /// Fetches a code if it exists
     /// </summary>
     /// <param name="code">The code to fetch</param>
     /// <returns>An object holding data indicating the success or failure of fetching the users</returns>
-    public async Task<CodeVerification?> GetCodeVerification(string code)
+    public async Task<CodeVerification?> GetCode(string code)
     {
-        // var response = new CodeVerificationResponse(false, $"{AppMessages.CODE_VERIFICATION} {AppMessages.NOT_EXIST}");
         try
         {
             Func<IQueryable<CodeVerification>, IOrderedQueryable<CodeVerification>>? orderBy = null;
@@ -68,10 +65,6 @@ public class CodeService : ICodeService
             if (codeList.Count() > 0)
             {
                 return codeList.FirstOrDefault();
-                // response = ObjectMapper.Mapper.Map<CodeVerificationResponse>();
-                // response.Success = true;
-                // response.ResultMessage = $"{AppMessages.CODE_VERIFICATION} {AppMessages.EXISTS}";
-                // return response;
             }
             return null;
 
@@ -79,42 +72,10 @@ public class CodeService : ICodeService
         catch (Exception ex)
         {
             _logger.LogError("Error fetching code - ", ex.Message);
-            // response.ResultMessage=ex.Message;
-            // return response;
             throw;
         }
     }
-    /// <summary>
-    /// Confirms if a code exists
-    /// </summary>
-    /// <param name="code">The code to fetch</param>
-    /// <returns>An object holding data indicating the success or failure of fetching the users</returns>
-    // public async Task<CodeVerificationResponse> ConfirmCodeExists(string code)
-    // {
-    //     var response = new CodeVerificationResponse(false, $"{AppMessages.CODE_VERIFICATION} {AppMessages.NOT_EXIST}");
-    //     try
-    //     {
-    //         Func<IQueryable<CodeVerification>, IOrderedQueryable<CodeVerification>>? orderBy = null;
-    //         Expression<Func<CodeVerification, bool>>? filter = (c => c.Code == code);
-
-    //         var codeList = await _unitOfWork.CodeVerificationRepository.Get(filter, orderBy, string.Empty, null, null);
-    //         if (codeList.Count() > 0)
-    //         {
-    //             response = ObjectMapper.Mapper.Map<CodeVerificationResponse>(codeList.FirstOrDefault());
-    //             response.Success = true;
-    //             response.ResultMessage = $"{AppMessages.CODE_VERIFICATION} {AppMessages.EXISTS}";
-    //             return response;
-    //         }
-    //         return response;
-
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         _logger.LogError("Error fetching code - ", ex.Message);
-    //         response.ResultMessage=ex.Message;
-    //         return response;
-    //     }
-    // }
+   
 
     /// <summary>
     /// Verifies a code
@@ -130,7 +91,7 @@ public class CodeService : ICodeService
         {
             throw new InvalidOperationException($"{AppMessages.INVALID_REQUEST} :{AppMessages.USER} {AppMessages.NOT_EXIST}");
         }
-        
+
         // when a user who has not been sent a code requests for verification (this should not happen)
         if (user.CodeVerification is null)
         {
@@ -138,7 +99,7 @@ public class CodeService : ICodeService
         }
 
         user.CodeVerification.Attempts += 1;
-        var suppliedCodeResult = await this.GetCodeVerification(suppliedCode);
+        var suppliedCodeResult = await this.GetCode(suppliedCode);
 
         if (suppliedCodeResult is null || suppliedCodeResult.Code != user.CodeVerification.Code)
             resultResponse.ResultMessage = $"{AppMessages.CODE_SUPPLIED} {AppMessages.NOT_EXIST}";
