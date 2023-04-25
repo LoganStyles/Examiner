@@ -357,13 +357,11 @@ public class UserControllerTests
     {
 
         var request = UserMock.GetExistingUserResendVerificationRequest();
-        var codeGenerationResponse = CodeVerificationMock.GetSuccessfulCodeGenerationResponse();
 
         var returnedUser = UserMock.GetValidRegisteredTutorRequestingCodeThatMatchesAndExists();
         _userService.Setup(u => u.GetUserByEmail(request.Email)).ReturnsAsync(returnedUser);
 
-        var resendVerificationCodeResponse = CodeVerificationMock.ResendVerificationCodeResponse();
-        _authenticationService.Setup(a => a.ResendVerificationCodeAsync(returnedUser)).Returns(resendVerificationCodeResponse);
+        _authenticationService.Setup(a => a.ResendVerificationCodeAsync(returnedUser)).Returns(CodeVerificationMock.ResendVerificationCodeResponse());
 
         var result = await _userController.ResendVerificationCodeAsync(request);
 
