@@ -12,7 +12,7 @@ public interface IUnitOfWork : IAsyncDisposable
 
     IUserRepository UserRepository { get; }
     ICodeVerificationRepository CodeVerificationRepository { get; }
-    ICodeVerificationHistoryRepository CodeVerificationHistoryRepository { get; }
+    // ICodeVerificationHistoryRepository CodeVerificationHistoryRepository { get; }
     IKickboxVerificationRepository KickboxVerificationRepository { get; }
 
     #endregion

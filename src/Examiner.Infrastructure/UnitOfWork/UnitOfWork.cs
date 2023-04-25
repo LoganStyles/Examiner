@@ -17,7 +17,7 @@ public class UnitOfWork : IUnitOfWork
     private readonly ExaminerContext _dbContext;
     private UserRepository<User>? _userRepository;
     private CodeVerificationRepository<CodeVerification>? _codeVerificationRepository;
-    private CodeVerificationHistoryRepository<CodeVerificationHistory>? _codeVerificationHistoryRepository;
+    // private CodeVerificationHistoryRepository<CodeVerificationHistory>? _codeVerificationHistoryRepository;
     private KickboxVerificationRepository<KickboxVerification>? _kickboxVerificationRepository;
 
     public UnitOfWork(ExaminerContext dbContext)
@@ -30,9 +30,9 @@ public class UnitOfWork : IUnitOfWork
     _codeVerificationRepository ?? 
     (_codeVerificationRepository = new CodeVerificationRepository<CodeVerification>(_dbContext));
 
-    public ICodeVerificationHistoryRepository CodeVerificationHistoryRepository => 
-    _codeVerificationHistoryRepository ?? 
-    (_codeVerificationHistoryRepository = new CodeVerificationHistoryRepository<CodeVerificationHistory>(_dbContext));
+    // public ICodeVerificationHistoryRepository CodeVerificationHistoryRepository => 
+    // _codeVerificationHistoryRepository ?? 
+    // (_codeVerificationHistoryRepository = new CodeVerificationHistoryRepository<CodeVerificationHistory>(_dbContext));
     
     public IKickboxVerificationRepository KickboxVerificationRepository => 
     _kickboxVerificationRepository ?? 

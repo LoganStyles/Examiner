@@ -49,8 +49,13 @@ public class UserController : ControllerBase
             return BadRequest(ModelState);
         }
 
+        var response = GenericResponse.Result(false, $"{AppMessages.REGISTRATION} {AppMessages.FAILED}");
+
         if (request.Password != request.ConfirmPassword)
-            return BadRequest(AppMessages.PASSWORDS_DO_NOT_MATCH);
+        {
+            response.ResultMessage = AppMessages.PASSWORDS_DO_NOT_MATCH;
+            return BadRequest(response);
+        }
 
         var result = await _authenticationService.RegisterAsync(request);
         if (result.Success == true)
@@ -158,7 +163,7 @@ public class UserController : ControllerBase
 
         var existingUser = await _userService.GetUserByEmail(request.Email);
         if (existingUser is null)
-            return NotFound(GenericResponse.Result(false,$"{AppMessages.USER} {AppMessages.NOT_EXIST}"));
+            return NotFound(GenericResponse.Result(false, $"{AppMessages.USER} {AppMessages.NOT_EXIST}"));
 
         var result = await _codeService.VerifyCode(existingUser, request.Code);
         if (!result.Success)

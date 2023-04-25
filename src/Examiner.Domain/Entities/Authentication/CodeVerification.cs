@@ -24,6 +24,6 @@ public class CodeVerification : BaseEntity
     public bool HasVerified { get; set; }
     public DateTime? VerifiedAt { get; set; }
 
-    public ICollection<CodeVerificationHistory>? CodeVerificationHistories { get; set; }
+    // public ICollection<CodeVerificationHistory>? CodeVerificationHistories { get; set; }
 
 }
