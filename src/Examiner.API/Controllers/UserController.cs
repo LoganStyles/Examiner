@@ -113,8 +113,13 @@ public class UserController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
+        var response = GenericResponse.Result(false, $"{AppMessages.CHANGE_PASSWORD} {AppMessages.FAILED}");
+
         if (request.NewPassword != request.ConfirmNewPassword)
-            return BadRequest(AppMessages.PASSWORDS_DO_NOT_MATCH);
+        {
+            response.ResultMessage = AppMessages.PASSWORDS_DO_NOT_MATCH;
+            return BadRequest(response);
+        }
 
         var result = await _authenticationService.ChangePasswordAsync(request);
         if (!result.Success)
