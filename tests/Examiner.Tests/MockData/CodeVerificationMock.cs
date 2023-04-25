@@ -43,7 +43,7 @@ public static class CodeVerificationMock
             }
         };
     }
-    
+
     public static IEnumerable<CodeVerification> GetExistingCodeVerificationHavingValidCode()
     {
         return new List<CodeVerification>
@@ -78,5 +78,9 @@ public static class CodeVerificationMock
     public static Task<GenericResponse> GetMatchingCodeVerificationResponse()
     {
         return Task.FromResult(new GenericResponse(true, $"{AppMessages.CODE_VERIFICATION} {AppMessages.SUCCESSFUL}"));
+    }
+    public static Task<GenericResponse> ResendVerificationCodeResponse()
+    {
+        return Task.FromResult(new GenericResponse(true, $"{AppMessages.CODE_RESEND} {AppMessages.SUCCESSFUL}"));
     }
 }

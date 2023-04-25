@@ -190,7 +190,7 @@ public class UserController : ControllerBase
 
         var existingUser = await _userService.GetUserByEmail(request.Email);
         if (existingUser is null)
-            return NotFound($"{AppMessages.USER} {AppMessages.NOT_EXIST}");
+            return NotFound(GenericResponse.Result(false, $"{AppMessages.USER} {AppMessages.NOT_EXIST}"));
 
         var result = await _authenticationService.ResendVerificationCodeAsync(existingUser);
         if (!result.Success)

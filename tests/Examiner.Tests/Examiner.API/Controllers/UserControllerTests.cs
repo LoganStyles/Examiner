@@ -1,5 +1,6 @@
 using Examiner.API.Controllers;
 using Examiner.Application.Authentication.Interfaces;
+using Examiner.Application.Notifications.Interfaces;
 using Examiner.Application.Users.Interfaces;
 using Examiner.Common;
 using Examiner.Domain.Dtos;
@@ -331,6 +332,47 @@ public class UserControllerTests
         var returnValue = Assert.IsType<GenericResponse>(okObjResult.Value);
         Assert.True(returnValue.Success);
         Assert.Contains($"{AppMessages.CODE_VERIFICATION} {AppMessages.SUCCESSFUL}", returnValue.ResultMessage);
+    }
+    #endregion
+
+    #region code resend
+
+    [Fact]
+    public async Task ResendVerificationCodeAsync_NoneExistingUser_Returns404NotFoundResponseStatus()
+    {
+
+        var request = UserMock.GetNonExistingUserResendVerificationRequest();
+        var returnedUser = It.IsAny<User>();
+        _userService.Setup(u => u.GetUserByEmail(request.Email)).ReturnsAsync(returnedUser);
+
+        var result = await _userController.ResendVerificationCodeAsync(request);
+
+        var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
+        Assert.IsType<NotFoundObjectResult>(result.Result);
+        _authenticationService.Verify(a => a.ResendVerificationCodeAsync(returnedUser), Times.Never);
+    }
+
+    [Fact]
+    public async Task ResendVerificationCodeAsync_ExistingUser_ReturnsSuccessResponseStatus()
+    {
+
+        var request = UserMock.GetExistingUserResendVerificationRequest();
+        var codeGenerationResponse = CodeVerificationMock.GetSuccessfulCodeGenerationResponse();
+
+        var returnedUser = UserMock.GetValidRegisteredTutorRequestingCodeThatMatchesAndExists();
+        _userService.Setup(u => u.GetUserByEmail(request.Email)).ReturnsAsync(returnedUser);
+
+        var resendVerificationCodeResponse = CodeVerificationMock.ResendVerificationCodeResponse();
+        _authenticationService.Setup(a => a.ResendVerificationCodeAsync(returnedUser)).Returns(resendVerificationCodeResponse);
+
+        var result = await _userController.ResendVerificationCodeAsync(request);
+
+        var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
+        var okObjResult = Assert.IsType<OkObjectResult>(actionResult.Result);
+        var returnValue = Assert.IsType<GenericResponse>(okObjResult.Value);
+        Assert.True(returnValue.Success);
+        Assert.Contains($"{AppMessages.CODE_RESEND} {AppMessages.SUCCESSFUL}", returnValue.ResultMessage);
+        _authenticationService.Verify(a => a.ResendVerificationCodeAsync(returnedUser), Times.Once);
     }
     #endregion
 }

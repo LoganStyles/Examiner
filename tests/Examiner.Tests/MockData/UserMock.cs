@@ -103,7 +103,7 @@ public static class UserMock
         ;
 
     }
-    
+
     public static IEnumerable<User> GetListOfRegisteredTutorWithValidCodeRequestingCodeVerification()
     {
         var codeExpiryTimeStamp = DateTime.Now.AddHours(1);
@@ -335,6 +335,18 @@ public static class UserMock
     public static CodeVerificationRequest GetExistingUserCodeVerificationRequest()
     {
         return new CodeVerificationRequest("emaa@gmail.com", "123456");
+    }
+    #endregion
+
+    #region code resend
+
+    public static ResendVerificationCodeRequest GetNonExistingUserResendVerificationRequest()
+    {
+        return new ResendVerificationCodeRequest("ema@gmail.com");
+    }
+    public static ResendVerificationCodeRequest GetExistingUserResendVerificationRequest()
+    {
+        return new ResendVerificationCodeRequest("emaa@gmail.com");
     }
     #endregion
 
