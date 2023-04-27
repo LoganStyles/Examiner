@@ -14,7 +14,7 @@ public class CodeVerification : BaseEntity
     public string Code { get; set; } = null!;
 
     public Guid UserId { get; set; }
-    public User User { get; set; } = null!;
+    public UserIdentity User { get; set; } = null!;
 
     public bool IsSent { get; set; }
     public int Attempts { get; set; }

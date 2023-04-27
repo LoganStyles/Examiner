@@ -10,5 +10,5 @@ public interface ICodeService : IVerificationService
 {
     Task<CodeGenerationResponse> CreateCode();
     Task<CodeVerification?> GetCode(string code);
-    Task<GenericResponse> VerifyCode(User user, string suppliedCode);
+    Task<GenericResponse> VerifyCode(UserIdentity user, string suppliedCode);
 }

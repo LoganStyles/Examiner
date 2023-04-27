@@ -242,14 +242,14 @@ public class UserControllerTests
     {
 
         var request = UserMock.GetNonExistingUserCodeVerificationRequest();
-        var response = It.IsAny<User>();
+        var response = It.IsAny<UserIdentity>();
         _userService.Setup(u => u.GetUserByEmail(request.Email)).ReturnsAsync(response);
 
         var result = await _userController.VerifyCodeAsync(request);
 
         var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
         Assert.IsType<NotFoundObjectResult>(result.Result);
-        _codeService.Verify(u => u.VerifyCode(It.IsAny<User>(), request.Code), Times.Never);
+        _codeService.Verify(u => u.VerifyCode(It.IsAny<UserIdentity>(), request.Code), Times.Never);
 
     }
 
@@ -265,7 +265,7 @@ public class UserControllerTests
 
         var actionResult = Assert.IsType<ActionResult<GenericResponse>>(result);
         Assert.IsType<NotFoundObjectResult>(result.Result);
-        _codeService.Verify(u => u.VerifyCode(It.IsAny<User>(), request.Code), Times.Never);
+        _codeService.Verify(u => u.VerifyCode(It.IsAny<UserIdentity>(), request.Code), Times.Never);
 
     }
 
@@ -342,7 +342,7 @@ public class UserControllerTests
     {
 
         var request = UserMock.GetNonExistingUserResendVerificationRequest();
-        var returnedUser = It.IsAny<User>();
+        var returnedUser = It.IsAny<UserIdentity>();
         _userService.Setup(u => u.GetUserByEmail(request.Email)).ReturnsAsync(returnedUser);
 
         var result = await _userController.ResendVerificationCodeAsync(request);

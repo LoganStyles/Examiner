@@ -53,8 +53,8 @@ public class AuthenticationServiceTests
             .Setup(
                 unit =>
                     unit.UserRepository.Get(
-                        It.IsAny<Expression<Func<User, bool>>?>(),
-                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                        It.IsAny<Expression<Func<UserIdentity, bool>>?>(),
+                        It.IsAny<Func<IQueryable<UserIdentity>, IOrderedQueryable<UserIdentity>>?>(),
                         It.IsAny<string>(),
                         It.IsAny<int?>(),
                         It.IsAny<int?>()
@@ -78,8 +78,8 @@ public class AuthenticationServiceTests
             .Setup(
                 unit =>
                     unit.UserRepository.Get(
-                        It.IsAny<Expression<Func<User, bool>>?>(),
-                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                        It.IsAny<Expression<Func<UserIdentity, bool>>?>(),
+                        It.IsAny<Func<IQueryable<UserIdentity>, IOrderedQueryable<UserIdentity>>?>(),
                         It.IsAny<string>(),
                         It.IsAny<int?>(),
                         It.IsAny<int?>()
@@ -106,8 +106,8 @@ public class AuthenticationServiceTests
             .Setup(
                 unit =>
                     unit.UserRepository.Get(
-                        It.IsAny<Expression<Func<User, bool>>?>(),
-                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                        It.IsAny<Expression<Func<UserIdentity, bool>>?>(),
+                        It.IsAny<Func<IQueryable<UserIdentity>, IOrderedQueryable<UserIdentity>>?>(),
                         It.IsAny<string>(),
                         It.IsAny<int?>(),
                         It.IsAny<int?>()
@@ -137,8 +137,8 @@ public class AuthenticationServiceTests
         _emailService.Setup(msg => msg.SendMessage("", request.Email, It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(() => codeSendingResultResponse);
         _unitOfWork.Setup(unit => unit.CodeVerificationRepository.AddAsync(It.IsAny<CodeVerification>())).ReturnsAsync(It.IsAny<CodeVerification>());
         _unitOfWork.Setup(unit => unit.UserRepository.Get(
-                                It.IsAny<Expression<Func<User, bool>>?>(),
-                                It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                                It.IsAny<Expression<Func<UserIdentity, bool>>?>(),
+                                It.IsAny<Func<IQueryable<UserIdentity>, IOrderedQueryable<UserIdentity>>?>(),
                                 It.IsAny<string>(),
                                 It.IsAny<int?>(),
                                 It.IsAny<int?>()
@@ -157,8 +157,8 @@ public class AuthenticationServiceTests
 
         _unitOfWork
             .Setup(u => u.UserRepository.Get(
-                It.IsAny<Expression<Func<User, bool>>?>(),
-                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                It.IsAny<Expression<Func<UserIdentity, bool>>?>(),
+                        It.IsAny<Func<IQueryable<UserIdentity>, IOrderedQueryable<UserIdentity>>?>(),
                         It.IsAny<string>(),
                         It.IsAny<int?>(),
                         It.IsAny<int?>()
@@ -179,8 +179,8 @@ public class AuthenticationServiceTests
         _unitOfWork.Setup(_ => _.UserRepository.AddAsync(validTutor)).Throws<Exception>();
         _unitOfWork
             .Setup(u => u.UserRepository.Get(
-                It.IsAny<Expression<Func<User, bool>>?>(),
-                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                It.IsAny<Expression<Func<UserIdentity, bool>>?>(),
+                        It.IsAny<Func<IQueryable<UserIdentity>, IOrderedQueryable<UserIdentity>>?>(),
                         It.IsAny<string>(),
                         It.IsAny<int?>(),
                         It.IsAny<int?>()
@@ -205,8 +205,8 @@ public class AuthenticationServiceTests
             .Setup(
                 unit =>
                     unit.UserRepository.Get(
-                        It.IsAny<Expression<Func<User, bool>>?>(),
-                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                        It.IsAny<Expression<Func<UserIdentity, bool>>?>(),
+                        It.IsAny<Func<IQueryable<UserIdentity>, IOrderedQueryable<UserIdentity>>?>(),
                         It.IsAny<string>(),
                         It.IsAny<int?>(),
                         It.IsAny<int?>()
@@ -233,8 +233,8 @@ public class AuthenticationServiceTests
             .Setup(
                 unit =>
                     unit.UserRepository.Get(
-                        It.IsAny<Expression<Func<User, bool>>?>(),
-                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                        It.IsAny<Expression<Func<UserIdentity, bool>>?>(),
+                        It.IsAny<Func<IQueryable<UserIdentity>, IOrderedQueryable<UserIdentity>>?>(),
                         It.IsAny<string>(),
                         It.IsAny<int?>(),
                         It.IsAny<int?>()
@@ -260,8 +260,8 @@ public class AuthenticationServiceTests
             .Setup(
                 unit =>
                     unit.UserRepository.Get(
-                        It.IsAny<Expression<Func<User, bool>>?>(),
-                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                        It.IsAny<Expression<Func<UserIdentity, bool>>?>(),
+                        It.IsAny<Func<IQueryable<UserIdentity>, IOrderedQueryable<UserIdentity>>?>(),
                         It.IsAny<string>(),
                         It.IsAny<int?>(),
                         It.IsAny<int?>()
@@ -289,8 +289,8 @@ public class AuthenticationServiceTests
             .Setup(
                 unit =>
                     unit.UserRepository.Get(
-                        It.IsAny<Expression<Func<User, bool>>?>(),
-                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                        It.IsAny<Expression<Func<UserIdentity, bool>>?>(),
+                        It.IsAny<Func<IQueryable<UserIdentity>, IOrderedQueryable<UserIdentity>>?>(),
                         It.IsAny<string>(),
                         It.IsAny<int?>(),
                         It.IsAny<int?>()
@@ -316,8 +316,8 @@ public class AuthenticationServiceTests
             .Setup(
                 unit =>
                     unit.UserRepository.Get(
-                        It.IsAny<Expression<Func<User, bool>>?>(),
-                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                        It.IsAny<Expression<Func<UserIdentity, bool>>?>(),
+                        It.IsAny<Func<IQueryable<UserIdentity>, IOrderedQueryable<UserIdentity>>?>(),
                         It.IsAny<string>(),
                         It.IsAny<int?>(),
                         It.IsAny<int?>()
@@ -348,8 +348,8 @@ public class AuthenticationServiceTests
             .Setup(
                 unit =>
                     unit.UserRepository.Get(
-                        It.IsAny<Expression<Func<User, bool>>?>(),
-                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                        It.IsAny<Expression<Func<UserIdentity, bool>>?>(),
+                        It.IsAny<Func<IQueryable<UserIdentity>, IOrderedQueryable<UserIdentity>>?>(),
                         It.IsAny<string>(),
                         It.IsAny<int?>(),
                         It.IsAny<int?>()
@@ -361,7 +361,7 @@ public class AuthenticationServiceTests
 
         Assert.False(result.Success);
         Assert.Contains($"{AppMessages.USER} {AppMessages.NOT_EXIST}", result.ResultMessage);
-        _unitOfWork.Verify(_ => _.UserRepository.Update(It.IsAny<User>()), Times.Never);
+        _unitOfWork.Verify(_ => _.UserRepository.Update(It.IsAny<UserIdentity>()), Times.Never);
     }
 
     [Fact]
@@ -372,8 +372,8 @@ public class AuthenticationServiceTests
             .Setup(
                 unit =>
                     unit.UserRepository.Get(
-                        It.IsAny<Expression<Func<User, bool>>?>(),
-                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                        It.IsAny<Expression<Func<UserIdentity, bool>>?>(),
+                        It.IsAny<Func<IQueryable<UserIdentity>, IOrderedQueryable<UserIdentity>>?>(),
                         It.IsAny<string>(),
                         It.IsAny<int?>(),
                         It.IsAny<int?>()
@@ -385,7 +385,7 @@ public class AuthenticationServiceTests
 
         Assert.False(result.Success);
         Assert.Contains(AppMessages.INVALID_EMAIL_PASSWORD, result.ResultMessage);
-        _unitOfWork.Verify(_ => _.UserRepository.Update(It.IsAny<User>()), Times.Never);
+        _unitOfWork.Verify(_ => _.UserRepository.Update(It.IsAny<UserIdentity>()), Times.Never);
     }
 
     [Fact]
@@ -396,8 +396,8 @@ public class AuthenticationServiceTests
             .Setup(
                 unit =>
                     unit.UserRepository.Get(
-                        It.IsAny<Expression<Func<User, bool>>?>(),
-                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                        It.IsAny<Expression<Func<UserIdentity, bool>>?>(),
+                        It.IsAny<Func<IQueryable<UserIdentity>, IOrderedQueryable<UserIdentity>>?>(),
                         It.IsAny<string>(),
                         It.IsAny<int?>(),
                         It.IsAny<int?>()
@@ -409,7 +409,7 @@ public class AuthenticationServiceTests
 
         Assert.False(result.Success);
         Assert.Contains(AppMessages.INVALID_PASSWORD, result.ResultMessage);
-        _unitOfWork.Verify(_ => _.UserRepository.Update(It.IsAny<User>()), Times.Never);
+        _unitOfWork.Verify(_ => _.UserRepository.Update(It.IsAny<UserIdentity>()), Times.Never);
     }
 
     [Fact]
@@ -420,8 +420,8 @@ public class AuthenticationServiceTests
             .Setup(
                 unit =>
                     unit.UserRepository.Get(
-                        It.IsAny<Expression<Func<User, bool>>?>(),
-                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                        It.IsAny<Expression<Func<UserIdentity, bool>>?>(),
+                        It.IsAny<Func<IQueryable<UserIdentity>, IOrderedQueryable<UserIdentity>>?>(),
                         It.IsAny<string>(),
                         It.IsAny<int?>(),
                         It.IsAny<int?>()
@@ -433,7 +433,7 @@ public class AuthenticationServiceTests
 
         Assert.True(result.Success);
         Assert.Contains($"{AppMessages.CHANGE_PASSWORD} {AppMessages.SUCCESSFUL}", result.ResultMessage);
-        _unitOfWork.Verify(_ => _.UserRepository.Update(It.IsAny<User>()), Times.Once);
+        _unitOfWork.Verify(_ => _.UserRepository.Update(It.IsAny<UserIdentity>()), Times.Once);
     }
 
     #endregion
@@ -448,8 +448,8 @@ public class AuthenticationServiceTests
             .Setup(
                 unit =>
                     unit.UserRepository.Get(
-                        It.IsAny<Expression<Func<User, bool>>?>(),
-                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                        It.IsAny<Expression<Func<UserIdentity, bool>>?>(),
+                        It.IsAny<Func<IQueryable<UserIdentity>, IOrderedQueryable<UserIdentity>>?>(),
                         It.IsAny<string>(),
                         It.IsAny<int?>(),
                         It.IsAny<int?>()
@@ -461,7 +461,7 @@ public class AuthenticationServiceTests
 
         Assert.False(result.Success);
         Assert.Contains($"{AppMessages.USER} {AppMessages.NOT_EXIST}", result.ResultMessage);
-        _unitOfWork.Verify(_ => _.UserRepository.Update(It.IsAny<User>()), Times.Never);
+        _unitOfWork.Verify(_ => _.UserRepository.Update(It.IsAny<UserIdentity>()), Times.Never);
     }
 
     [Fact]
@@ -472,8 +472,8 @@ public class AuthenticationServiceTests
             .Setup(
                 unit =>
                     unit.UserRepository.Get(
-                        It.IsAny<Expression<Func<User, bool>>?>(),
-                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                        It.IsAny<Expression<Func<UserIdentity, bool>>?>(),
+                        It.IsAny<Func<IQueryable<UserIdentity>, IOrderedQueryable<UserIdentity>>?>(),
                         It.IsAny<string>(),
                         It.IsAny<int?>(),
                         It.IsAny<int?>()
@@ -485,7 +485,7 @@ public class AuthenticationServiceTests
 
         Assert.False(result.Success);
         Assert.Contains(AppMessages.INVALID_REQUEST, result.ResultMessage);
-        _unitOfWork.Verify(_ => _.UserRepository.Update(It.IsAny<User>()), Times.Never);
+        _unitOfWork.Verify(_ => _.UserRepository.Update(It.IsAny<UserIdentity>()), Times.Never);
     }
 
     [Fact]
@@ -496,8 +496,8 @@ public class AuthenticationServiceTests
             .Setup(
                 unit =>
                     unit.UserRepository.Get(
-                        It.IsAny<Expression<Func<User, bool>>?>(),
-                        It.IsAny<Func<IQueryable<User>, IOrderedQueryable<User>>?>(),
+                        It.IsAny<Expression<Func<UserIdentity, bool>>?>(),
+                        It.IsAny<Func<IQueryable<UserIdentity>, IOrderedQueryable<UserIdentity>>?>(),
                         It.IsAny<string>(),
                         It.IsAny<int?>(),
                         It.IsAny<int?>()
@@ -509,7 +509,7 @@ public class AuthenticationServiceTests
 
         Assert.True(result.Success);
         Assert.Contains($"{AppMessages.ROLE} {AppMessages.SUCCESSFUL}", result.ResultMessage);
-        _unitOfWork.Verify(_ => _.UserRepository.Update(It.IsAny<User>()), Times.Once);
+        _unitOfWork.Verify(_ => _.UserRepository.Update(It.IsAny<UserIdentity>()), Times.Once);
     }
 
     #endregion

@@ -9,6 +9,6 @@ namespace Examiner.Application.Users.Interfaces;
 /// </summary>
 public interface IUserService
 {
-    Task<User?> GetByIdAsync(Guid Id);
-    Task<User?> GetUserByEmail(string email);
+    Task<UserIdentity?> GetByIdAsync(Guid Id);
+    Task<UserIdentity?> GetUserByEmail(string email);
 }

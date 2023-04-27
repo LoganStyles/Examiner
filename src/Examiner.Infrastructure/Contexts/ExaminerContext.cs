@@ -16,9 +16,9 @@ public class ExaminerContext : DbContext
 
     public ExaminerContext(DbContextOptions<ExaminerContext> options) : base(options) { }
 
-    
 
-    public DbSet<User>? Users { get; set; }
+
+    public DbSet<UserIdentity>? Users { get; set; }
     public DbSet<CodeVerification>? CodeVerifications { get; set; }
     // public DbSet<CodeVerificationHistory>? CodeVerificationHistories { get; set; }
     public DbSet<KickboxVerification>? KickboxVerifications { get; set; }

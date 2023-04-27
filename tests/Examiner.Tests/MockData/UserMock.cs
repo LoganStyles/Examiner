@@ -26,9 +26,9 @@ public static class UserMock
         return new RegisterUserRequest("e@gmail.com", "strin()G", "strin(1)G");
     }
 
-    public static User GetValidTutor()
+    public static UserIdentity GetValidTutor()
     {
-        return new User
+        return new UserIdentity
         {
             Id = Guid.NewGuid(),
             FirstName = "adam",
@@ -46,9 +46,9 @@ public static class UserMock
             Email = "e@gmail.com"
         };
     }
-    public static User GetValidNewRegistrationTutor()
+    public static UserIdentity GetValidNewRegistrationTutor()
     {
-        return new User
+        return new UserIdentity
         {
             Id = Guid.NewGuid(),
             FirstName = "adam",
@@ -59,9 +59,9 @@ public static class UserMock
         };
 
     }
-    public static User GetValidRegisteredTutorWithExpiredCodeRequestingCodeVerification()
+    public static UserIdentity GetValidRegisteredTutorWithExpiredCodeRequestingCodeVerification()
     {
-        return new User
+        return new UserIdentity
         {
             Id = Guid.NewGuid(),
             FirstName = "adam",
@@ -79,12 +79,12 @@ public static class UserMock
         };
 
     }
-    public static IEnumerable<User> GetListOfRegisteredTutorWithExpiredCodeRequestingCodeVerification()
+    public static IEnumerable<UserIdentity> GetListOfRegisteredTutorWithExpiredCodeRequestingCodeVerification()
     {
         return
-            new List<User>{
+            new List<UserIdentity>{
 
-                new User {
+                new UserIdentity {
                     Id = Guid.NewGuid(),
                     FirstName = "adam",
                     LastName = "felix",
@@ -104,13 +104,13 @@ public static class UserMock
 
     }
 
-    public static IEnumerable<User> GetListOfRegisteredTutorWithValidCodeRequestingCodeVerification()
+    public static IEnumerable<UserIdentity> GetListOfRegisteredTutorWithValidCodeRequestingCodeVerification()
     {
         var codeExpiryTimeStamp = DateTime.Now.AddHours(1);
         return
-            new List<User>{
+            new List<UserIdentity>{
 
-                new User {
+                new UserIdentity {
                     Id = Guid.NewGuid(),
                     FirstName = "adam",
                     LastName = "felix",
@@ -131,9 +131,9 @@ public static class UserMock
         ;
 
     }
-    public static User GetValidRegisteredTutorRequestingCodeThatMatchesAndExists()
+    public static UserIdentity GetValidRegisteredTutorRequestingCodeThatMatchesAndExists()
     {
-        return new User
+        return new UserIdentity
         {
             Id = Guid.NewGuid(),
             FirstName = "adam",
@@ -161,18 +161,18 @@ public static class UserMock
         };
     }
 
-    public static Task<IEnumerable<User>> GetEmptyListOfExistingUsers()
+    public static Task<IEnumerable<UserIdentity>> GetEmptyListOfExistingUsers()
     {
-        return Task.FromResult((new List<User>()).AsEnumerable());
+        return Task.FromResult((new List<UserIdentity>()).AsEnumerable());
     }
 
-    public static Task<IEnumerable<User>> GetAListOfValidTutors()
+    public static Task<IEnumerable<UserIdentity>> GetAListOfValidTutors()
     {
         return Task.FromResult(
             (
-                new List<User>
+                new List<UserIdentity>
                 {
-                    new User
+                    new UserIdentity
                     {
                         Id = Guid.NewGuid(),
                         FirstName = "adam",
@@ -232,13 +232,13 @@ public static class UserMock
         return Task.FromResult(new GenericResponse(false, $"{AppMessages.INVALID_REQUEST}"));
     }
 
-    public static Task<IEnumerable<User>> GetAListOfNewlyRegisteredValidTutors()
+    public static Task<IEnumerable<UserIdentity>> GetAListOfNewlyRegisteredValidTutors()
     {
         return Task.FromResult(
             (
-                new List<User>
+                new List<UserIdentity>
                 {
-                    new User
+                    new UserIdentity
                     {
                         Id = Guid.NewGuid(),
                         Email = "emma@gmail.com",
@@ -250,13 +250,13 @@ public static class UserMock
         );
     }
 
-    public static Task<IEnumerable<User>> GetAListOfNewlyRegisteredValidTutorsWithoutRole()
+    public static Task<IEnumerable<UserIdentity>> GetAListOfNewlyRegisteredValidTutorsWithoutRole()
     {
         return Task.FromResult(
             (
-                new List<User>
+                new List<UserIdentity>
                 {
-                    new User
+                    new UserIdentity
                     {
                         Id = Guid.NewGuid(),
                         Email = "emma@gmail.com",

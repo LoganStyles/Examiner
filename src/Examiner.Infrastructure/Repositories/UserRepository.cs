@@ -4,7 +4,7 @@ using Examiner.Domain.Entities.Users;
 
 namespace Examiner.Infrastructure.Repositories;
 
-public class UserRepository<T> : BaseRepository<User>, IUserRepository
+public class UserRepository<T> : BaseRepository<UserIdentity>, IUserRepository
 {
 
     /// <summary>

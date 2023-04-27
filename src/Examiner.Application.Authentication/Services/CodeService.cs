@@ -75,13 +75,13 @@ public class CodeService : ICodeService
             throw;
         }
     }
-   
+
 
     /// <summary>
     /// Verifies a code
     /// </summary>
     /// <returns>An GenericResponse object indicating the success or failure of an attempt to send a verification code to a user</returns>
-    public async Task<GenericResponse> VerifyCode(User user, string suppliedCode)
+    public async Task<GenericResponse> VerifyCode(UserIdentity user, string suppliedCode)
     {
 
         GenericResponse resultResponse = new GenericResponse(

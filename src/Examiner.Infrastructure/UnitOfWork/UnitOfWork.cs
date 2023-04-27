@@ -15,7 +15,7 @@ namespace Examiner.Infrastructure.UnitOfWork;
 public class UnitOfWork : IUnitOfWork
 {
     private readonly ExaminerContext _dbContext;
-    private UserRepository<User>? _userRepository;
+    private UserRepository<UserIdentity>? _userRepository;
     private CodeVerificationRepository<CodeVerification>? _codeVerificationRepository;
     // private CodeVerificationHistoryRepository<CodeVerificationHistory>? _codeVerificationHistoryRepository;
     private KickboxVerificationRepository<KickboxVerification>? _kickboxVerificationRepository;
@@ -24,18 +24,18 @@ public class UnitOfWork : IUnitOfWork
     {
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     }
-    public IUserRepository UserRepository => _userRepository ?? (_userRepository = new UserRepository<User>(_dbContext));
+    public IUserRepository UserRepository => _userRepository ?? (_userRepository = new UserRepository<UserIdentity>(_dbContext));
 
-    public ICodeVerificationRepository CodeVerificationRepository => 
-    _codeVerificationRepository ?? 
+    public ICodeVerificationRepository CodeVerificationRepository =>
+    _codeVerificationRepository ??
     (_codeVerificationRepository = new CodeVerificationRepository<CodeVerification>(_dbContext));
 
     // public ICodeVerificationHistoryRepository CodeVerificationHistoryRepository => 
     // _codeVerificationHistoryRepository ?? 
     // (_codeVerificationHistoryRepository = new CodeVerificationHistoryRepository<CodeVerificationHistory>(_dbContext));
-    
-    public IKickboxVerificationRepository KickboxVerificationRepository => 
-    _kickboxVerificationRepository ?? 
+
+    public IKickboxVerificationRepository KickboxVerificationRepository =>
+    _kickboxVerificationRepository ??
     (_kickboxVerificationRepository = new KickboxVerificationRepository<KickboxVerification>(_dbContext));
 
     public async Task CompleteAsync()
