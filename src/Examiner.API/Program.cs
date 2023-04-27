@@ -74,24 +74,28 @@ services.AddCustomJwtAuthentication();
 services.AddControllers(options =>
 {
     options.SuppressAsyncSuffixInActionNames = false;
-}).ConfigureApiBehaviorOptions(options =>
-{
-    // To preserve the default behaviour, capture the original delegate to call later.
-    var builtInFactory = options.InvalidModelStateResponseFactory;
-
-    options.InvalidModelStateResponseFactory = context =>
-    {
-        var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
-
-        // Perform logging here
-        // ...
-
-        // Invoke the default behavior, which produces a ValidationProblemDetails response.
-        // To produce a custom response, return a different implementation of 
-        // IActionResult instead.
-        return builtInFactory(context);
-    };
 });
+
+services.AddProblemDetails();
+
+// .ConfigureApiBehaviorOptions(options =>
+// {
+//     // To preserve the default behaviour, capture the original delegate to call later.
+//     var builtInFactory = options.InvalidModelStateResponseFactory;
+
+//     options.InvalidModelStateResponseFactory = context =>
+//     {
+//         var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+
+//         // Perform logging here
+//         // ...
+
+//         // Invoke the default behavior, which produces a ValidationProblemDetails response.
+//         // To produce a custom response, return a different implementation of 
+//         // IActionResult instead.
+//         return builtInFactory(context);
+//     };
+// });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
@@ -102,9 +106,13 @@ var app = builder.Build();
 var scope = app.Services.CreateScope();
 await DataHelper.ManageDataAsync(scope.ServiceProvider);
 
+app.UseExceptionHandler();
+app.UseStatusCodePages();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
