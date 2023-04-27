@@ -7,13 +7,13 @@ using Examiner.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Examiner.Authentication.Domain.Mappings;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Examiner.API.Controllers;
 
 /// <summary>
 /// Provides endpoints for authenticating a user and fetching a user's basic details
 /// </summary>
-
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
@@ -23,13 +23,27 @@ public class UserController : ControllerBase
     private readonly IUserService _userService;
     private readonly ICodeService _codeService;
 
-
     public UserController(IAuthenticationService authenticationService, IUserService userService, ICodeService codeService)
     {
         _authenticationService = authenticationService;
         _userService = userService;
         _codeService = codeService;
     }
+
+    // protected string GetModelStateErrors(ModelStateDictionary modelState)
+    // {
+
+    //     string allErrors = string.Empty;
+    //     foreach (var state in modelState)
+    //     {
+    //         foreach (var error in state.Value.Errors)
+    //         {
+    //             string.Concat(allErrors, ", ", error.ErrorMessage);
+    //             // errors.Add(error.ErrorMessage);
+    //         }
+    //     }
+    //     return allErrors;
+    // }
 
     /// <summary>
     /// Registers a user (without a role)
@@ -42,10 +56,13 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<GenericResponse>> RegisterAsync([FromBody] RegisterUserRequest request)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
         var response = GenericResponse.Result(false, $"{AppMessages.REGISTRATION} {AppMessages.FAILED}");
+
+        // if (!ModelState.IsValid)
+        // {
+        //     response.ResultMessage += $" - {this.GetModelStateErrors(ModelState)}";
+        //     return BadRequest();
+        // }
 
         if (request.Password != request.ConfirmPassword)
         {
@@ -70,6 +87,8 @@ public class UserController : ControllerBase
 
     }
 
+
+
     /// <summary>
     /// Authenticates a user
     /// </summary>
@@ -82,10 +101,10 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<GenericResponse>> LoginAsync([FromBody] AuthenticationRequest request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
+        // if (!ModelState.IsValid)
+        // {
+        //     return BadRequest(ModelState);
+        // }
 
         var result = await _authenticationService.Authenticate(request);
         if (result.Success)
@@ -106,8 +125,8 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<GenericResponse>> ChangePasswordAsync([FromBody] ChangePasswordRequest request)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        // if (!ModelState.IsValid)
+        //     return BadRequest(ModelState);
 
         var response = GenericResponse.Result(false, $"{AppMessages.CHANGE_PASSWORD} {AppMessages.FAILED}");
 
@@ -136,8 +155,8 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<GenericResponse>> SelectRoleAsync([FromBody] SelectRoleRequest request)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        // if (!ModelState.IsValid)
+        //     return BadRequest(ModelState);
 
         var result = await _authenticationService.SelectRoleAsync(request);
         if (!result.Success)
@@ -159,8 +178,8 @@ public class UserController : ControllerBase
     public async Task<ActionResult<GenericResponse>> VerifyCodeAsync([FromBody] CodeVerificationRequest request)
     {
 
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        // if (!ModelState.IsValid)
+        //     return BadRequest(ModelState);
 
         var existingUser = await _userService.GetUserByEmail(request.Email);
         if (existingUser is null)
@@ -185,8 +204,8 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<GenericResponse>> ResendVerificationCodeAsync([FromBody] ResendVerificationCodeRequest request)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        // if (!ModelState.IsValid)
+        //     return BadRequest(ModelState);
 
         var existingUser = await _userService.GetUserByEmail(request.Email);
         if (existingUser is null)
