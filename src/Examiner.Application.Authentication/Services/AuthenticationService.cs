@@ -116,7 +116,6 @@ public class AuthenticationService : IAuthenticationService
 
             // change of password has been authorized
             userFound.PasswordHash = BC.HashPassword(request.NewPassword);
-            userFound.LastModified = DateTime.Now;
 
             await _unitOfWork.UserRepository.Update(userFound);
             await _unitOfWork.CompleteAsync();
@@ -184,7 +183,7 @@ public class AuthenticationService : IAuthenticationService
     {
         try
         {
-            var newUser = ObjectMapper.Mapper.Map<User>(request);
+            var newUser = ObjectMapper.Mapper.Map<UserIdentity>(request);
             if (newUser is null)
                 return GenericResponse.Result(false, AppMessages.INVALID_REQUEST);
 
@@ -214,7 +213,7 @@ public class AuthenticationService : IAuthenticationService
                     Code = codeGenerationResponse.Code,
                     UserId = newUser.Id,
                     IsSent = true,
-                    ExpiresIn=(int)codeExpiryTimeStamp.Subtract(DateTime.Now).TotalSeconds
+                    ExpiresIn = (int)codeExpiryTimeStamp.Subtract(DateTime.Now).TotalSeconds
                 };
                 // save user & code only if we were able to send verification code 
                 await _unitOfWork.CodeVerificationRepository.AddAsync(codeVerification);
@@ -241,7 +240,7 @@ public class AuthenticationService : IAuthenticationService
     /// </summary>
     /// <param name="user">An object holding user data</param>
     /// <returns>An object holding a registered user as well data  indicating the success or failure of the registration</returns>
-    public async Task<GenericResponse> ResendVerificationCodeAsync(User user)
+    public async Task<GenericResponse> ResendVerificationCodeAsync(UserIdentity user)
     {
         try
         {
