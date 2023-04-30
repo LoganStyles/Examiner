@@ -7,7 +7,6 @@ using Examiner.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Examiner.Authentication.Domain.Mappings;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Examiner.API.Controllers;
 
@@ -46,7 +45,7 @@ public class UserController : ControllerBase
     // }
 
     /// <summary>
-    /// Registers a user (without a role)
+    /// Registers a user (without a role), creates user identity & default profile
     /// </summary>
     /// <param name="request">An object holding registration request data</param>
     /// <returns>Redirects to the registered user or returns bad request</returns>

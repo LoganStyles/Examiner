@@ -5,6 +5,7 @@ using Examiner.Domain.Dtos.Users;
 using Examiner.Domain.Dtos;
 using Examiner.Common;
 using Examiner.Domain.Entities.Authentication;
+using Examiner.Domain.Models;
 
 namespace Examiner.Tests.MockData;
 
@@ -31,8 +32,6 @@ public static class UserMock
         return new UserIdentity
         {
             Id = Guid.NewGuid(),
-            FirstName = "adam",
-            LastName = "felix",
             Email = "e@gmail.com",
             PasswordHash = BC.HashPassword("strin(1)G"),
             IsActive = true
@@ -51,8 +50,30 @@ public static class UserMock
         return new UserIdentity
         {
             Id = Guid.NewGuid(),
-            FirstName = "adam",
-            LastName = "felix",
+            Email = "e@gmail.com",
+            PasswordHash = BC.HashPassword("strin(1)G"),
+            IsActive = true,
+            Role=Role.Tutor
+        };
+
+    }
+    public static UserIdentity GetUnverifiedTutor()
+    {
+        return new UserIdentity
+        {
+            Id = Guid.NewGuid(),
+            Email = "e@gmail.com",
+            PasswordHash = BC.HashPassword("strin(1)G"),
+            IsActive = false
+        };
+
+    }
+    
+    public static UserIdentity GetNoRoleUser()
+    {
+        return new UserIdentity
+        {
+            Id = Guid.NewGuid(),
             Email = "e@gmail.com",
             PasswordHash = BC.HashPassword("strin(1)G"),
             IsActive = true
@@ -64,8 +85,6 @@ public static class UserMock
         return new UserIdentity
         {
             Id = Guid.NewGuid(),
-            FirstName = "adam",
-            LastName = "felix",
             Email = "e@gmail.com",
             PasswordHash = BC.HashPassword("strin(1)G"),
             IsActive = true,
@@ -86,8 +105,6 @@ public static class UserMock
 
                 new UserIdentity {
                     Id = Guid.NewGuid(),
-                    FirstName = "adam",
-                    LastName = "felix",
                     Email = "e@gmail.com",
                     PasswordHash = BC.HashPassword("strin(1)G"),
                     IsActive = true,
@@ -112,8 +129,6 @@ public static class UserMock
 
                 new UserIdentity {
                     Id = Guid.NewGuid(),
-                    FirstName = "adam",
-                    LastName = "felix",
                     Email = "e@gmail.com",
                     PasswordHash = BC.HashPassword("strin(1)G"),
                     IsActive = true,
@@ -136,8 +151,6 @@ public static class UserMock
         return new UserIdentity
         {
             Id = Guid.NewGuid(),
-            FirstName = "adam",
-            LastName = "felix",
             Email = "emaa@gmail.com",
             PasswordHash = BC.HashPassword("strin(1)G"),
             IsActive = true,
@@ -175,8 +188,6 @@ public static class UserMock
                     new UserIdentity
                     {
                         Id = Guid.NewGuid(),
-                        FirstName = "adam",
-                        LastName = "felix",
                         Email = "e@gmail.com",
                         PasswordHash = BC.HashPassword("strin(1)G"),
                         IsActive = true
@@ -347,6 +358,19 @@ public static class UserMock
     public static ResendVerificationCodeRequest GetExistingUserResendVerificationRequest()
     {
         return new ResendVerificationCodeRequest("emaa@gmail.com");
+    }
+    #endregion
+
+    #region profile update
+
+    public static PhoneUpdateRequest GetExistingUserPhoneUpdateRequest()
+    {
+        return new PhoneUpdateRequest("emaa@gmail.com", "234", "8034599890");
+    }
+
+    public static GenericResponse GetSuccessfulPhoneUpdateResponse()
+    {
+        return GenericResponse.Result(true, $"{AppMessages.MOBILE_PHONE} {AppMessages.UPDATE} {AppMessages.SUCCESSFUL}");
     }
     #endregion
 

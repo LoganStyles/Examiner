@@ -208,15 +208,19 @@ public class AuthenticationService : IAuthenticationService
             else
             {
                 var codeExpiryTimeStamp = DateTime.Now.AddHours(CODE_VALIDITY_DURATION);
-                var codeVerification = new CodeVerification()
+                newUser.CodeVerification = new CodeVerification()
                 {
                     Code = codeGenerationResponse.Code,
                     UserId = newUser.Id,
                     IsSent = true,
                     ExpiresIn = (int)codeExpiryTimeStamp.Subtract(DateTime.Now).TotalSeconds
                 };
-                // save user & code only if we were able to send verification code 
-                await _unitOfWork.CodeVerificationRepository.AddAsync(codeVerification);
+                newUser.UserProfile = new UserProfile()
+                {
+                    UserId = newUser.Id
+                };
+                // save user identity, profile & code only if we were able to send verification code 
+                // await _unitOfWork.CodeVerificationRepository.AddAsync(codeVerification);
                 await _unitOfWork.UserRepository.AddAsync(newUser);
                 await _unitOfWork.CompleteAsync();
 

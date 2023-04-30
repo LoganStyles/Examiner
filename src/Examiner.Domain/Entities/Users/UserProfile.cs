@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Examiner.Domain.Entities.Content;
 
 namespace Examiner.Domain.Entities.Users;
 
@@ -10,6 +11,16 @@ public class UserProfile : BaseEntity
     public Guid UserId { get; set; }
     [JsonIgnore]
     public UserIdentity User { get; set; } = null!;
+
+    [MaxLength(20)]
+    public string? FirstName { get; set; }
+
+    [MaxLength(20)]
+    public string? LastName { get; set; }
+    [MaxLength(50)]
+    public string? Location { get; set; }
+    public HashSet<Subject>? Subjects { get; set; }
+    public DateOnly? DateOfBirth { get; set; }
 
     [StringLength(3)]
     public string? CountryCode { get; set; }

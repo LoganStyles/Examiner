@@ -8,7 +8,8 @@ namespace Examiner.Infrastructure.Repositories.Interfaces;
 /// Implements contract for processing entities
 /// </summary>
 
-public interface IBaseRepository<TEntity> where TEntity:BaseEntity{
+public interface IBaseRepository<TEntity> where TEntity : BaseEntity
+{
 
     Task<TEntity> AddAsync(TEntity entity);
     Task DeleteAsync(object id);

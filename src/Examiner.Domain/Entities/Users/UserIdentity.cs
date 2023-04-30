@@ -11,19 +11,10 @@ namespace Examiner.Domain.Entities.Users;
 /// </summary>
 public class UserIdentity : BaseEntity
 {
-    [MaxLength(20)]
-    public string? FirstName { get; set; }
-
-    [MaxLength(20)]
-    public string? LastName { get; set; }
-
     [Required]
     [MaxLength(30)]
     [EmailAddress]
     public string Email { get; set; } = null!;
-
-    [JsonIgnore]
-    public string? EmailVerificationToken { get; set; }
 
     [JsonIgnore]
     public DateTime? LastEmailVerification { get; set; }
@@ -37,16 +28,9 @@ public class UserIdentity : BaseEntity
 
     public Role? Role { get; set; }
 
-    // public bool HasRole => Role;
-
-    // [JsonIgnore]
-    // public DateTime? LastPasswordReset { get; set; }
-
-    // [JsonIgnore]
-    // public DateTime? LastModified { get; set; }
-
     public bool IsActive { get; set; }
 
     public CodeVerification? CodeVerification { get; set; }
+    public UserProfile? UserProfile { get; set; }
 
 }

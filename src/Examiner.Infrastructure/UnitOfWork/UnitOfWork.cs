@@ -1,4 +1,5 @@
 using Examiner.Domain.Entities.Authentication;
+using Examiner.Domain.Entities.Content;
 using Examiner.Domain.Entities.Notifications.Emails;
 using Examiner.Domain.Entities.Users;
 using Examiner.Infrastructure.Contexts;
@@ -16,9 +17,10 @@ public class UnitOfWork : IUnitOfWork
 {
     private readonly ExaminerContext _dbContext;
     private UserRepository<UserIdentity>? _userRepository;
+    private UserProfileRepository<UserProfile>? _userProfileyRepository;
     private CodeVerificationRepository<CodeVerification>? _codeVerificationRepository;
-    // private CodeVerificationHistoryRepository<CodeVerificationHistory>? _codeVerificationHistoryRepository;
     private KickboxVerificationRepository<KickboxVerification>? _kickboxVerificationRepository;
+    private SubjectRepository<Subject>? _subjectRepository;
 
     public UnitOfWork(ExaminerContext dbContext)
     {
@@ -30,13 +32,16 @@ public class UnitOfWork : IUnitOfWork
     _codeVerificationRepository ??
     (_codeVerificationRepository = new CodeVerificationRepository<CodeVerification>(_dbContext));
 
-    // public ICodeVerificationHistoryRepository CodeVerificationHistoryRepository => 
-    // _codeVerificationHistoryRepository ?? 
-    // (_codeVerificationHistoryRepository = new CodeVerificationHistoryRepository<CodeVerificationHistory>(_dbContext));
+    public IUserProfileRepository UserProfileRepository => 
+    _userProfileyRepository ?? 
+    (_userProfileyRepository = new UserProfileRepository<UserProfile>(_dbContext));
 
     public IKickboxVerificationRepository KickboxVerificationRepository =>
     _kickboxVerificationRepository ??
     (_kickboxVerificationRepository = new KickboxVerificationRepository<KickboxVerification>(_dbContext));
+    
+    public ISubjectRepository SubjectRepository =>
+    _subjectRepository ??  (_subjectRepository = new SubjectRepository<Subject>(_dbContext));
 
     public async Task CompleteAsync()
     {
