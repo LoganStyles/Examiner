@@ -12,6 +12,10 @@ public record PhoneUpdateRequest(
     string Email,
 
     [Required]
+    [StringLength(3)]
+    string CountryCode,
+
+    [Required]
     [StringLength(10)]
     string MobilePhone
 );

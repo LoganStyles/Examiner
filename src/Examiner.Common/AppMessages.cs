@@ -13,12 +13,14 @@ public static class AppMessages
     public const string CODE_SUPPLIED = "Supplied code";
     public const string CODE_RESEND = "Code resend";
     public const string EMAIL = "Email";
+    public const string MOBILE_PHONE = "Mobile phone";
     public const string ROLE_TUTOR = "Tutor";
     public const string USER = "User";
 
     #endregion
     public const string SUCCESSFUL = "successful";
     public const string FAILED = "failed";
+    public const string UPDATE = "update";
     public const string EXPIRED = "expired";
     public const string INVALID_REQUEST = "Invalid request body";
     public const string EXISTS = "exists";
@@ -28,6 +30,7 @@ public static class AppMessages
     public const string NOT_VERIFIED = "not verified";
     public const string INVALID_FORMAT = "has invalid format";
     public const string NO_CODE_INITIATED = "has no code initiated";
+    public const string INCOMPLETE = "incomplete";
 
     public const string SENDING = "sending";
 

@@ -111,8 +111,10 @@ public class CodeService : ICodeService
         }
         else if (user.CodeVerification.Code == suppliedCodeResult.Code)
         {
+            var now = DateTime.Now;
             user.CodeVerification.HasVerified = true;
-            user.CodeVerification.VerifiedAt = DateTime.Now;
+            user.CodeVerification.VerifiedAt = now;
+            user.LastEmailVerification=now;
             user.IsActive = true;
 
             resultResponse.Success = true;

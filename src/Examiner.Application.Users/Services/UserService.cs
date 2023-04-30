@@ -3,6 +3,12 @@ using Examiner.Domain.Entities.Users;
 using Examiner.Infrastructure.UnitOfWork.Interfaces;
 using Microsoft.Extensions.Logging;
 using Examiner.Application.Users.Interfaces;
+using Examiner.Domain.Dtos.Users;
+using Examiner.Domain.Dtos;
+using Examiner.Common;
+using AutoMapper.Internal.Mappers;
+using System.Globalization;
+using Examiner.Domain.Entities.Content;
 
 namespace Examiner.Application.Users.Services;
 
@@ -71,4 +77,87 @@ public class UserService : IUserService
         }
     }
 
+
+    /// <summary>
+    /// Updates a user's phone number
+    /// </summary>
+    /// <param name="request">An object holding email & mobile phone request data</param>
+    /// <returns>An object holding data indicating the success or failure of a user's phone update</returns>
+    public async Task<GenericResponse> PhoneUpdateAsync(PhoneUpdateRequest request, Guid userId)
+    {
+
+        try
+        {
+            var userProfileList = await _unitOfWork.UserProfileRepository.Get(u => u.UserId.Equals(userId), null, "", null, null);
+
+            var userProfileFound = userProfileList.FirstOrDefault();
+            if (userProfileFound is null)
+                return GenericResponse.Result(false, $"{AppMessages.USER} {AppMessages.NOT_EXIST}");
+
+            // check if country code is among supported countries
+            // confirm phone number pattern
+            userProfileFound.CountryCode = request.CountryCode;
+            userProfileFound.MobilePhone = request.MobilePhone;
+
+            await _unitOfWork.UserProfileRepository.Update(userProfileFound);
+            await _unitOfWork.CompleteAsync();
+
+            return GenericResponse.Result(true, $"{AppMessages.MOBILE_PHONE} {AppMessages.UPDATE} {AppMessages.SUCCESSFUL}");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error updating phone - ", ex.Message);
+            return GenericResponse.Result(false, ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Updates a user's profile
+    /// </summary>
+    /// <param name="request">An object holding profile request data</param>
+    /// <returns>An object holding data indicating the success or failure of a user's profile update</returns>
+    public async Task<GenericResponse> ProfileUpdateAsync(ProfileUpdateRequest request, Guid userId)
+    {
+
+        try
+        {
+            var userProfileList = await _unitOfWork.UserProfileRepository.Get(u => u.UserId.Equals(userId), null, "", null, null);
+
+            var userProfileFound = userProfileList.FirstOrDefault();
+            if (userProfileFound is null)
+                return GenericResponse.Result(false, $"{AppMessages.USER} {AppMessages.NOT_EXIST}");
+
+            // check if country code is among supported countries
+            userProfileFound.CountryCode = request.CountryCode;
+            // confirm phone number pattern
+            userProfileFound.MobilePhone = request.MobilePhone;
+            userProfileFound.FirstName = request.FirstName;
+            userProfileFound.LastName = request.LastName;
+            userProfileFound.Location = request.Location;
+            userProfileFound.DateOfBirth = request.DateOfBirth;
+            // DateOnly dob;
+            // if (DateOnly.TryParse(request.DateOfBirth,CultureInfo.InvariantCulture,"yyyy/mm/dd", out dob))
+            // {
+            // }
+            if (userProfileFound.Subjects is null)
+                userProfileFound.Subjects = new HashSet<Subject>();
+
+            var subjectList = await _unitOfWork.SubjectRepository.Get(s => request.SubjectIds.Contains(s.Id), null, "", null, null);
+            userProfileFound.Subjects.UnionWith(subjectList);
+            // foreach (var item in subjectList)
+            // {
+            //     userProfileFound.Subjects.Add(item);
+            // }
+
+            await _unitOfWork.UserProfileRepository.Update(userProfileFound);
+            await _unitOfWork.CompleteAsync();
+
+            return GenericResponse.Result(true, $"{AppMessages.MOBILE_PHONE} {AppMessages.UPDATE} {AppMessages.SUCCESSFUL}");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error updating phone - ", ex.Message);
+            return GenericResponse.Result(false, ex.Message);
+        }
+    }
 }

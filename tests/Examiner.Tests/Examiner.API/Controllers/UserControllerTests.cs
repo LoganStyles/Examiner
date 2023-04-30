@@ -1,6 +1,5 @@
 using Examiner.API.Controllers;
 using Examiner.Application.Authentication.Interfaces;
-using Examiner.Application.Notifications.Interfaces;
 using Examiner.Application.Users.Interfaces;
 using Examiner.Common;
 using Examiner.Domain.Dtos;
