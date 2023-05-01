@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Examiner.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddUserProfileWithSubjects : Migration
+    public partial class Adduserprofile : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -160,6 +160,10 @@ namespace Examiner.Infrastructure.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     LastMobilePhoneVerification = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     LastAvailability = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    ProfilePhotoPath = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ShortDescription = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
@@ -204,9 +208,9 @@ namespace Examiner.Infrastructure.Migrations
                 columns: new[] { "Id", "CreatedDate", "Title" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2023, 4, 30, 9, 17, 45, 117, DateTimeKind.Local).AddTicks(1579), "Science" },
-                    { 2, new DateTime(2023, 4, 30, 9, 17, 45, 117, DateTimeKind.Local).AddTicks(1673), "Art" },
-                    { 3, new DateTime(2023, 4, 30, 9, 17, 45, 117, DateTimeKind.Local).AddTicks(1695), "Social Science" }
+                    { 1, new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1228), "Science" },
+                    { 2, new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1314), "Art" },
+                    { 3, new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1342), "Social Science" }
                 });
 
             migrationBuilder.InsertData(
@@ -214,15 +218,15 @@ namespace Examiner.Infrastructure.Migrations
                 columns: new[] { "Id", "CreatedDate", "SubjectCategoryId", "Title" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2023, 4, 30, 9, 17, 45, 117, DateTimeKind.Local).AddTicks(1733), 1, "Chemistry" },
-                    { 2, new DateTime(2023, 4, 30, 9, 17, 45, 117, DateTimeKind.Local).AddTicks(1766), 1, "Physics" },
-                    { 3, new DateTime(2023, 4, 30, 9, 17, 45, 117, DateTimeKind.Local).AddTicks(1789), 1, "Computer Science" },
-                    { 4, new DateTime(2023, 4, 30, 9, 17, 45, 117, DateTimeKind.Local).AddTicks(1827), 2, "History" },
-                    { 5, new DateTime(2023, 4, 30, 9, 17, 45, 117, DateTimeKind.Local).AddTicks(1869), 2, "Government" },
-                    { 6, new DateTime(2023, 4, 30, 9, 17, 45, 117, DateTimeKind.Local).AddTicks(1898), 2, "Economics" },
-                    { 7, new DateTime(2023, 4, 30, 9, 17, 45, 117, DateTimeKind.Local).AddTicks(1920), 3, "Sociology" },
-                    { 8, new DateTime(2023, 4, 30, 9, 17, 45, 117, DateTimeKind.Local).AddTicks(1942), 3, "Geography" },
-                    { 9, new DateTime(2023, 4, 30, 9, 17, 45, 117, DateTimeKind.Local).AddTicks(1963), 3, "Mass communication" }
+                    { 1, new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1380), 1, "Chemistry" },
+                    { 2, new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1416), 1, "Physics" },
+                    { 3, new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1461), 1, "Computer Science" },
+                    { 4, new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1488), 2, "History" },
+                    { 5, new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1515), 2, "Government" },
+                    { 6, new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1564), 2, "Economics" },
+                    { 7, new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1593), 3, "Sociology" },
+                    { 8, new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1619), 3, "Geography" },
+                    { 9, new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1654), 3, "Mass communication" }
                 });
 
             migrationBuilder.CreateIndex(

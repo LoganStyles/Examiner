@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Examiner.Infrastructure.Migrations
 {
     [DbContext(typeof(ExaminerContext))]
-    [Migration("20230430081745_AddUserProfileWithSubjects")]
-    partial class AddUserProfileWithSubjects
+    [Migration("20230501140211_Adduserprofile")]
+    partial class Adduserprofile
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -90,63 +90,63 @@ namespace Examiner.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2023, 4, 30, 9, 17, 45, 117, DateTimeKind.Local).AddTicks(1733),
+                            CreatedDate = new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1380),
                             SubjectCategoryId = 1,
                             Title = "Chemistry"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2023, 4, 30, 9, 17, 45, 117, DateTimeKind.Local).AddTicks(1766),
+                            CreatedDate = new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1416),
                             SubjectCategoryId = 1,
                             Title = "Physics"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2023, 4, 30, 9, 17, 45, 117, DateTimeKind.Local).AddTicks(1789),
+                            CreatedDate = new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1461),
                             SubjectCategoryId = 1,
                             Title = "Computer Science"
                         },
                         new
                         {
                             Id = 4,
-                            CreatedDate = new DateTime(2023, 4, 30, 9, 17, 45, 117, DateTimeKind.Local).AddTicks(1827),
+                            CreatedDate = new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1488),
                             SubjectCategoryId = 2,
                             Title = "History"
                         },
                         new
                         {
                             Id = 5,
-                            CreatedDate = new DateTime(2023, 4, 30, 9, 17, 45, 117, DateTimeKind.Local).AddTicks(1869),
+                            CreatedDate = new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1515),
                             SubjectCategoryId = 2,
                             Title = "Government"
                         },
                         new
                         {
                             Id = 6,
-                            CreatedDate = new DateTime(2023, 4, 30, 9, 17, 45, 117, DateTimeKind.Local).AddTicks(1898),
+                            CreatedDate = new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1564),
                             SubjectCategoryId = 2,
                             Title = "Economics"
                         },
                         new
                         {
                             Id = 7,
-                            CreatedDate = new DateTime(2023, 4, 30, 9, 17, 45, 117, DateTimeKind.Local).AddTicks(1920),
+                            CreatedDate = new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1593),
                             SubjectCategoryId = 3,
                             Title = "Sociology"
                         },
                         new
                         {
                             Id = 8,
-                            CreatedDate = new DateTime(2023, 4, 30, 9, 17, 45, 117, DateTimeKind.Local).AddTicks(1942),
+                            CreatedDate = new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1619),
                             SubjectCategoryId = 3,
                             Title = "Geography"
                         },
                         new
                         {
                             Id = 9,
-                            CreatedDate = new DateTime(2023, 4, 30, 9, 17, 45, 117, DateTimeKind.Local).AddTicks(1963),
+                            CreatedDate = new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1654),
                             SubjectCategoryId = 3,
                             Title = "Mass communication"
                         });
@@ -172,19 +172,19 @@ namespace Examiner.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2023, 4, 30, 9, 17, 45, 117, DateTimeKind.Local).AddTicks(1579),
+                            CreatedDate = new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1228),
                             Title = "Science"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2023, 4, 30, 9, 17, 45, 117, DateTimeKind.Local).AddTicks(1673),
+                            CreatedDate = new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1314),
                             Title = "Art"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2023, 4, 30, 9, 17, 45, 117, DateTimeKind.Local).AddTicks(1695),
+                            CreatedDate = new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1342),
                             Title = "Social Science"
                         });
                 });
@@ -327,6 +327,12 @@ namespace Examiner.Infrastructure.Migrations
                     b.Property<string>("MobilePhone")
                         .HasMaxLength(10)
                         .HasColumnType("varchar(10)");
+
+                    b.Property<string>("ProfilePhotoPath")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ShortDescription")
+                        .HasColumnType("longtext");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("char(36)");

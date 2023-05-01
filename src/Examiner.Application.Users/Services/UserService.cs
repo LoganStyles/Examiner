@@ -9,6 +9,7 @@ using Examiner.Common;
 using AutoMapper.Internal.Mappers;
 using System.Globalization;
 using Examiner.Domain.Entities.Content;
+using Examiner.Domain.Dtos.Content;
 
 namespace Examiner.Application.Users.Services;
 
@@ -78,38 +79,38 @@ public class UserService : IUserService
     }
 
 
-    /// <summary>
-    /// Updates a user's phone number
-    /// </summary>
-    /// <param name="request">An object holding email & mobile phone request data</param>
-    /// <returns>An object holding data indicating the success or failure of a user's phone update</returns>
-    public async Task<GenericResponse> PhoneUpdateAsync(PhoneUpdateRequest request, Guid userId)
-    {
+    // /// <summary>
+    // /// Updates a user's phone number
+    // /// </summary>
+    // /// <param name="request">An object holding email & mobile phone request data</param>
+    // /// <returns>An object holding data indicating the success or failure of a user's phone update</returns>
+    // public async Task<GenericResponse> PhoneUpdateAsync(PhoneUpdateRequest request, Guid userId)
+    // {
 
-        try
-        {
-            var userProfileList = await _unitOfWork.UserProfileRepository.Get(u => u.UserId.Equals(userId), null, "", null, null);
+    //     try
+    //     {
+    //         var userProfileList = await _unitOfWork.UserProfileRepository.Get(u => u.UserId.Equals(userId), null, "", null, null);
 
-            var userProfileFound = userProfileList.FirstOrDefault();
-            if (userProfileFound is null)
-                return GenericResponse.Result(false, $"{AppMessages.USER} {AppMessages.NOT_EXIST}");
+    //         var userProfileFound = userProfileList.FirstOrDefault();
+    //         if (userProfileFound is null)
+    //             return GenericResponse.Result(false, $"{AppMessages.USER} {AppMessages.NOT_EXIST}");
 
-            // check if country code is among supported countries
-            // confirm phone number pattern
-            userProfileFound.CountryCode = request.CountryCode;
-            userProfileFound.MobilePhone = request.MobilePhone;
+    //         // check if country code is among supported countries
+    //         // confirm phone number pattern
+    //         userProfileFound.CountryCode = request.CountryCode;
+    //         userProfileFound.MobilePhone = request.MobilePhone;
 
-            await _unitOfWork.UserProfileRepository.Update(userProfileFound);
-            await _unitOfWork.CompleteAsync();
+    //         await _unitOfWork.UserProfileRepository.Update(userProfileFound);
+    //         await _unitOfWork.CompleteAsync();
 
-            return GenericResponse.Result(true, $"{AppMessages.MOBILE_PHONE} {AppMessages.UPDATE} {AppMessages.SUCCESSFUL}");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("Error updating phone - ", ex.Message);
-            return GenericResponse.Result(false, ex.Message);
-        }
-    }
+    //         return GenericResponse.Result(true, $"{AppMessages.MOBILE_PHONE} {AppMessages.UPDATE} {AppMessages.SUCCESSFUL}");
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError("Error updating phone - ", ex.Message);
+    //         return GenericResponse.Result(false, ex.Message);
+    //     }
+    // }
 
     /// <summary>
     /// Updates a user's profile
@@ -134,15 +135,14 @@ public class UserService : IUserService
             userProfileFound.FirstName = request.FirstName;
             userProfileFound.LastName = request.LastName;
             userProfileFound.Location = request.Location;
-            userProfileFound.DateOfBirth = request.DateOfBirth;
-            // DateOnly dob;
-            // if (DateOnly.TryParse(request.DateOfBirth,CultureInfo.InvariantCulture,"yyyy/mm/dd", out dob))
-            // {
-            // }
+            userProfileFound.ShortDescription = request.ShortDescription;
+            userProfileFound.DateOfBirth = new DateOnly(request.DateOfBirth.Year, request.DateOfBirth.Month, request.DateOfBirth.Day);
+
             if (userProfileFound.Subjects is null)
                 userProfileFound.Subjects = new HashSet<Subject>();
 
             var subjectList = await _unitOfWork.SubjectRepository.Get(s => request.SubjectIds.Contains(s.Id), null, "", null, null);
+            // prevent duplicate entries
             userProfileFound.Subjects.UnionWith(subjectList);
             // foreach (var item in subjectList)
             // {
@@ -152,11 +152,36 @@ public class UserService : IUserService
             await _unitOfWork.UserProfileRepository.Update(userProfileFound);
             await _unitOfWork.CompleteAsync();
 
-            return GenericResponse.Result(true, $"{AppMessages.MOBILE_PHONE} {AppMessages.UPDATE} {AppMessages.SUCCESSFUL}");
+            return GenericResponse.Result(true, $"{AppMessages.USER} {AppMessages.UPDATE} {AppMessages.SUCCESSFUL}");
         }
         catch (Exception ex)
         {
             _logger.LogError("Error updating phone - ", ex.Message);
+            return GenericResponse.Result(false, ex.Message);
+        }
+    }
+
+    public async Task<GenericResponse> ProfilePhotoUpdateAsync(string filePath, Guid userId)
+    {
+        try
+        {
+            var userProfileList = await _unitOfWork.UserProfileRepository.Get(u => u.UserId.Equals(userId), null, "", null, null);
+
+            var userProfileFound = userProfileList.FirstOrDefault();
+            if (userProfileFound is null)
+                return GenericResponse.Result(false, $"{AppMessages.USER} {AppMessages.NOT_EXIST}");
+
+            userProfileFound.ProfilePhotoPath = filePath;
+
+            await _unitOfWork.UserProfileRepository.Update(userProfileFound);
+            await _unitOfWork.CompleteAsync();
+
+            return GenericResponse.Result(true, $"{AppMessages.PROFILE_PHOTO} {AppMessages.UPDATE} {AppMessages.SUCCESSFUL}");
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error updating profile photo - ", ex.Message);
             return GenericResponse.Result(false, ex.Message);
         }
     }

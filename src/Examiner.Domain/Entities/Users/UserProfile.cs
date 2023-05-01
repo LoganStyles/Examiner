@@ -34,4 +34,6 @@ public class UserProfile : BaseEntity
     public bool IsMobilePhoneVerified => LastMobilePhoneVerification.HasValue;
 
     public DateTime? LastAvailability {get; set;}
+    public string? ProfilePhotoPath {get; set;}
+    public string? ShortDescription {get; set;}
 }

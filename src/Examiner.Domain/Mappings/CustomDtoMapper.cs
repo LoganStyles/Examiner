@@ -1,8 +1,10 @@
 
 using AutoMapper;
 using Examiner.Domain.Dtos.Authentication;
+using Examiner.Domain.Dtos.Content;
 using Examiner.Domain.Dtos.Users;
 using Examiner.Domain.Entities.Authentication;
+using Examiner.Domain.Entities.Content;
 using Examiner.Domain.Entities.Notifications.Emails;
 using Examiner.Domain.Entities.Users;
 using Kickbox.Models;
@@ -24,5 +26,7 @@ public class CustomDtoMapper : Profile
         CreateMap<UserIdentity, UserDto>();
         CreateMap<CodeVerification, CodeVerificationResponse>();
         CreateMap<ExtendedKickBoxResponse, KickboxVerification>();
+        CreateMap<SubjectCategory, SubjectCategoryDto>();
+        CreateMap<Subject, SubjectDto>();
     }
 }

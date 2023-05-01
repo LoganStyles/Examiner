@@ -363,10 +363,10 @@ public static class UserMock
 
     #region profile update
 
-    public static PhoneUpdateRequest GetExistingUserPhoneUpdateRequest()
-    {
-        return new PhoneUpdateRequest("emaa@gmail.com", "234", "8034599890");
-    }
+    // public static PhoneUpdateRequest GetExistingUserPhoneUpdateRequest()
+    // {
+    //     return new PhoneUpdateRequest("emaa@gmail.com", "234", "8034599890");
+    // }
 
     public static GenericResponse GetSuccessfulPhoneUpdateResponse()
     {

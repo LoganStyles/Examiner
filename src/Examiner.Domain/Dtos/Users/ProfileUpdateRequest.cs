@@ -28,13 +28,17 @@ public record ProfileUpdateRequest(
     string LastName,
 
     [Required]
-    DateOnly DateOfBirth,
+    DateTime DateOfBirth,
 
     [Required]
     HashSet<int> SubjectIds,
 
     [Required]
     [StringLength(50)]
-    string Location
+    string Location,
+
+    [Required]
+    // [StringLength(50)]
+    string ShortDescription
 
 );

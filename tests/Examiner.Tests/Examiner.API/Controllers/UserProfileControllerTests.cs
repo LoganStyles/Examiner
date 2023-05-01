@@ -4,6 +4,7 @@ using Examiner.Common;
 using Examiner.Domain.Dtos;
 using Examiner.Domain.Entities.Users;
 using Examiner.Tests.MockData;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
@@ -14,11 +15,13 @@ public class UserProfileControllerTests
 
     private readonly Mock<IUserService> _userService;
     private readonly UserProfileController _userProfileController;
+    private readonly Mock<IWebHostEnvironment> _environment;
 
     public UserProfileControllerTests()
     {
         _userService = new();
-        _userProfileController = new UserProfileController(_userService.Object);
+        _environment = new();
+        _userProfileController = new UserProfileController(_userService.Object,_environment.Object);
     }
 
     #region mobile phone update
