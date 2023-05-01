@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
@@ -16,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Examiner.Application.Authentication\Examiner.Application.Authentication.csproj" />
     <ProjectReference Include="..\Examiner.Application.Users\Examiner.Application.Users.csproj" />
+    <ProjectReference Include="..\Examiner.Application.Content\Examiner.Application.Content.csproj" />
   </ItemGroup>
 
 </Project>
