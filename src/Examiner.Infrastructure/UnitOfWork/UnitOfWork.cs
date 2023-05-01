@@ -21,6 +21,7 @@ public class UnitOfWork : IUnitOfWork
     private CodeVerificationRepository<CodeVerification>? _codeVerificationRepository;
     private KickboxVerificationRepository<KickboxVerification>? _kickboxVerificationRepository;
     private SubjectRepository<Subject>? _subjectRepository;
+    private SubjectCategoryRepository<SubjectCategory>? _subjectCategoryRepository;
 
     public UnitOfWork(ExaminerContext dbContext)
     {
@@ -42,6 +43,9 @@ public class UnitOfWork : IUnitOfWork
     
     public ISubjectRepository SubjectRepository =>
     _subjectRepository ??  (_subjectRepository = new SubjectRepository<Subject>(_dbContext));
+    
+    public ISubjectCategoryRepository SubjectCategoryRepository =>
+    _subjectCategoryRepository ??  (_subjectCategoryRepository = new SubjectCategoryRepository<SubjectCategory>(_dbContext));
 
     public async Task CompleteAsync()
     {

@@ -3,6 +3,8 @@ using Examiner.Application.Authentication;
 using Examiner.Application.Authentication.Interfaces;
 using Examiner.Application.Authentication.Jwt;
 using Examiner.Application.Authentication.Services;
+using Examiner.Application.Content.Interfaces;
+using Examiner.Application.Content.Services;
 using Examiner.Application.Notifications.Interfaces;
 using Examiner.Application.Notifications.Services;
 using Examiner.Application.Users.Interfaces;
@@ -67,6 +69,8 @@ services.AddScoped<ICodeService, CodeService>();
 services.AddScoped<IUserService, UserService>();
 services.AddScoped<IEmailService, EmailService>();
 services.AddScoped<IVerificationService, KickboxVerificationService>();
+services.AddScoped<ISubjectCategoryService, SubjectCategoryService>();
+services.AddScoped<ISubjectService, SubjectService>();
 
 services.AddSingleton<IJwtTokenHandler, JwtTokenHandler>();
 services.AddCustomJwtAuthentication();
