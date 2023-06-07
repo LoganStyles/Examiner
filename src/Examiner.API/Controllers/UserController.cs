@@ -43,6 +43,7 @@ public class UserController : ControllerBase
     //     }
     //     return allErrors;
     // }
+    
 
     /// <summary>
     /// Registers a user (without a role), creates user identity & default profile
