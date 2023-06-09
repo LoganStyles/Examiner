@@ -236,5 +236,25 @@ public class UserController : ControllerBase
         else
             return NotFound(GenericResponse.Result(false, $"{AppMessages.USER} {AppMessages.NOT_EXIST}"));
     }
+    
+    /// <summary>
+    /// Removes a user
+    /// </summary>
+    /// <param name="email">The email of the user to be removed</param>
+    /// <returns>A generic response</returns>
+    [HttpDelete("removeUser")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [AllowAnonymous]
+    public async Task<ActionResult<GenericResponse>> RemoveUserAsync([FromBody] ResendVerificationCodeRequest request)
+    {
+
+        var response = await _userService.RemoveUserByEmail(request.Email);
+        if (response.Success)
+            return Ok(response);
+        else
+            return NotFound(response);
+    }
 
 }

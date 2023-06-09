@@ -52,4 +52,8 @@ public static class AppMessages
     #endregion
     public const string UNABLE_TO_GENERATE_TOKEN = "Unable to generate token";
 
+    #region exceptions
+    public const string EXCEPTION_ERROR="An error occurred while ";
+    #endregion
+
 }

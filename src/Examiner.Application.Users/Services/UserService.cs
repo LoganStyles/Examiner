@@ -54,6 +54,39 @@ public class UserService : IUserService
             throw;
         }
     }
+    
+    /// <summary>
+    /// Removes a user by email
+    /// </summary>
+    /// <param name="email">The email of the user to remove</param>
+    /// <returns>An object holding data indicating the success or failure of removing the user</returns>
+    public async Task<GenericResponse> RemoveUserByEmail(string email)
+    {
+        var response = new GenericResponse(false,$"{AppMessages.USER} {AppMessages.NOT_EXIST}");
+        try
+        {
+
+            var existingUserList = await _unitOfWork.UserRepository.Get(u => u.Email.Equals(email), null, "CodeVerification,UserProfile", null, null);
+            var userFound = existingUserList.FirstOrDefault();
+            if (userFound is null)
+                return response;
+
+            await _unitOfWork.UserRepository.DeleteAsync(userFound.Id);
+            await _unitOfWork.CompleteAsync();
+
+            response.ResultMessage=$"{AppMessages.USER} {AppMessages.UPDATE} {AppMessages.SUCCESSFUL}";
+            response.Success=true;
+
+            return response;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error fetching user - ", ex.Message);
+            response.ResultMessage=AppMessages.EXCEPTION_ERROR+"removing "+AppMessages.USER;
+            return response;
+            // throw;
+        }
+    }
 
     /// <summary>
     /// Fetches a user by Id
