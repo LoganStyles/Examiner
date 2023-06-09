@@ -12,7 +12,7 @@ public interface IUserService
 {
     Task<UserIdentity?> GetByIdAsync(Guid Id);
     Task<UserIdentity?> GetUserByEmail(string email);
-    // Task<GenericResponse> PhoneUpdateAsync(PhoneUpdateRequest request, Guid userId);
+    Task<GenericResponse> RemoveUserByEmail(string email);
     Task<GenericResponse> ProfileUpdateAsync(ProfileUpdateRequest request, Guid userId);
     Task<GenericResponse> ProfilePhotoUpdateAsync(string filePath, Guid userId);
 }

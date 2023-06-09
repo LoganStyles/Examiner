@@ -56,6 +56,45 @@ public class UserService : IUserService
     }
 
     /// <summary>
+    /// Removes a user by email
+    /// </summary>
+    /// <param name="email">The email of the user to remove</param>
+    /// <returns>An object holding data indicating the success or failure of removing the user</returns>
+    public async Task<GenericResponse> RemoveUserByEmail(string email)
+    {
+        var response = new GenericResponse(false, $"{AppMessages.USER} {AppMessages.NOT_EXIST}");
+        try
+        {
+
+            var existingUserList = await _unitOfWork.UserRepository.Get(u => u.Email.Equals(email), null, "CodeVerification,UserProfile", null, null);
+            var userFound = existingUserList.FirstOrDefault();
+            if (userFound is null)
+                return response;
+
+            if (userFound.UserProfile is not null)
+                await _unitOfWork.UserRepository.DeleteAsync(userFound.UserProfile.Id);
+            if (userFound.CodeVerification is not null)
+                await _unitOfWork.UserRepository.DeleteAsync(userFound.CodeVerification.Id);
+
+            await _unitOfWork.UserRepository.DeleteAsync(userFound.Id);
+
+            await _unitOfWork.CompleteAsync();
+
+            response.ResultMessage = $"{AppMessages.USER} {AppMessages.REMOVAL} {AppMessages.SUCCESSFUL}";
+            response.Success = true;
+
+            return response;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error fetching user - ", ex.Message);
+            response.ResultMessage = AppMessages.EXCEPTION_ERROR + "removing " + AppMessages.USER;
+            return response;
+            // throw;
+        }
+    }
+
+    /// <summary>
     /// Fetches a user by Id
     /// </summary>
     /// <param name="Id">An Id representing the user to be fetched</param>

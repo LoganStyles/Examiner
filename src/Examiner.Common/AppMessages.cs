@@ -25,6 +25,7 @@ public static class AppMessages
     public const string FAILED = "failed";
     public const string UPDATE = "update";
     public const string EXPIRED = "expired";
+    public const string REMOVAL = "removal";
     public const string INVALID_REQUEST = "Invalid request body";
     public const string EXISTS = "exists";
     public const string NOT_EXIST = "does not exist";
@@ -51,5 +52,9 @@ public static class AppMessages
 
     #endregion
     public const string UNABLE_TO_GENERATE_TOKEN = "Unable to generate token";
+
+    #region exceptions
+    public const string EXCEPTION_ERROR="An error occurred while ";
+    #endregion
 
 }
