@@ -54,7 +54,7 @@ public class UserService : IUserService
             throw;
         }
     }
-
+    
     /// <summary>
     /// Removes a user by email
     /// </summary>
