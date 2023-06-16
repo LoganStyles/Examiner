@@ -1,6 +1,7 @@
 using Examiner.Application.Notifications.Interfaces;
 using Examiner.Common;
 using Examiner.Domain.Dtos;
+using MailKit;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Configuration;
@@ -19,6 +20,7 @@ public class EmailService : IEmailService
     private const string SENDER_EMAIL_ADDRESS = "ch9labsbybincom@gmail.com";
     private const string SMTP_HOST = "smtp.gmail.com";
     private const int SMTP_PORT = 587;
+    // private const int SMTP_PORT = 25;
 
     public EmailService(IVerificationService verificationService,
     ILogger<EmailService> logger,
@@ -91,7 +93,7 @@ public class EmailService : IEmailService
             var smtpPassword = (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("SMTP_PASSWORD")))
             ? Environment.GetEnvironmentVariable("SMTP_PASSWORD") : _configuration["SMTP_PASSWORD"];
 
-            smtp.Connect(SMTP_HOST, SMTP_PORT, SecureSocketOptions.StartTls);
+            smtp.Connect(SMTP_HOST, SMTP_PORT, SecureSocketOptions.Auto);
 
             smtp.Authenticate(smtpUsername, smtpPassword);
             smtp.Send(email);
