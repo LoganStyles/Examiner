@@ -144,11 +144,12 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    /// sets a user's role. it requires authentication.
+    /// sets a user's role.
     /// </summary>
     /// <param name="request">An object holding role request data</param>
     /// <returns>A generic Response indicating success or failure of the role request change</returns>
     [HttpPut("selectRole")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -171,6 +172,7 @@ public class UserController : ControllerBase
     /// <param name="request">An object holding code verification request data</param>
     /// <returns>A generic Response indicating success or failure of the role request change</returns>
     [HttpPut("verifyCode")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -193,11 +195,12 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    /// verifies a code. it requires authentication.
+    /// verifies a code.
     /// </summary>
     /// <param name="request">An object holding role request data</param>
     /// <returns>A generic Response indicating success or failure of the role request change</returns>
     [HttpPost("resendCode")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -243,10 +246,10 @@ public class UserController : ControllerBase
     /// <param name="email">The email of the user to be removed</param>
     /// <returns>A generic response</returns>
     [HttpDelete("removeUser")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [AllowAnonymous]
     public async Task<ActionResult<GenericResponse>> RemoveUserAsync([FromBody] ResendVerificationCodeRequest request)
     {
 
