@@ -10,7 +10,7 @@ namespace Examiner.Infrastructure.Repositories;
 /// Implements contract for basic database operations on all entities
 ///</summary>
 ///<typeparam name="TEntity">The Type of Entity to operate on</typeparam>
-public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : BaseEntity
+public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : class
 {
 
     protected readonly DbContext _context;
