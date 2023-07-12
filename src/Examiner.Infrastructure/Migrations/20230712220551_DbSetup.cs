@@ -9,12 +9,59 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Examiner.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Adduserprofile : Migration
+    public partial class DbSetup : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterDatabase()
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Countries",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Code = table.Column<string>(type: "varchar(3)", maxLength: 3, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Title = table.Column<string>(type: "varchar(40)", maxLength: 40, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Countries", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "EducationDegrees",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Title = table.Column<string>(type: "varchar(40)", maxLength: 40, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EducationDegrees", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "ExperienceLevels",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Title = table.Column<string>(type: "varchar(40)", maxLength: 40, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExperienceLevels", x => x.Id);
+                })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
@@ -60,9 +107,8 @@ namespace Examiner.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Title = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    Title = table.Column<string>(type: "varchar(40)", maxLength: 40, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
@@ -91,15 +137,36 @@ namespace Examiner.Infrastructure.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "States",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Title = table.Column<string>(type: "varchar(40)", maxLength: 40, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CountryId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_States", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_States_Countries_CountryId",
+                        column: x => x.CountryId,
+                        principalTable: "Countries",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Subjects",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Title = table.Column<string>(type: "longtext", nullable: true)
+                    Title = table.Column<string>(type: "varchar(40)", maxLength: 40, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    SubjectCategoryId = table.Column<int>(type: "int", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    SubjectCategoryId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -147,23 +214,27 @@ namespace Examiner.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    FirstName = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: true)
+                    FirstName = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    LastName = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Location = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
+                    LastName = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     DateOfBirth = table.Column<DateOnly>(type: "date", nullable: true),
-                    CountryCode = table.Column<string>(type: "varchar(3)", maxLength: 3, nullable: true)
+                    CountryId = table.Column<int>(type: "int", nullable: false),
+                    StateId = table.Column<int>(type: "int", nullable: false),
+                    Address = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     MobilePhone = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     LastMobilePhoneVerification = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    IsAvailable = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     LastAvailability = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     ProfilePhotoPath = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    DegreeCertificatePath = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     ShortDescription = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    ExperienceLevelId = table.Column<int>(type: "int", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
@@ -204,29 +275,67 @@ namespace Examiner.Infrastructure.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.InsertData(
-                table: "SubjectCategories",
-                columns: new[] { "Id", "CreatedDate", "Title" },
+                table: "Countries",
+                columns: new[] { "Id", "Code", "Title" },
+                values: new object[] { 1, "NG", "Nigeria" });
+
+            migrationBuilder.InsertData(
+                table: "EducationDegrees",
+                columns: new[] { "Id", "Title" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1228), "Science" },
-                    { 2, new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1314), "Art" },
-                    { 3, new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1342), "Social Science" }
+                    { 1, "Ordinary National Diploma" },
+                    { 2, "Higher National Diploma" },
+                    { 3, "Bachelor's Degree" },
+                    { 4, "Postgraduate Diploma" },
+                    { 5, "Masters" },
+                    { 6, "PHD" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "ExperienceLevels",
+                columns: new[] { "Id", "Title" },
+                values: new object[,]
+                {
+                    { 1, "Low" },
+                    { 2, "Moderate" },
+                    { 3, "High" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "SubjectCategories",
+                columns: new[] { "Id", "Title" },
+                values: new object[,]
+                {
+                    { 1, "Science" },
+                    { 2, "Art" },
+                    { 3, "Social Science" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "States",
+                columns: new[] { "Id", "CountryId", "Title" },
+                values: new object[,]
+                {
+                    { 1, 1, "Abia" },
+                    { 2, 1, "Adamawa" },
+                    { 3, 1, "AkwaIbom" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Subjects",
-                columns: new[] { "Id", "CreatedDate", "SubjectCategoryId", "Title" },
+                columns: new[] { "Id", "SubjectCategoryId", "Title" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1380), 1, "Chemistry" },
-                    { 2, new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1416), 1, "Physics" },
-                    { 3, new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1461), 1, "Computer Science" },
-                    { 4, new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1488), 2, "History" },
-                    { 5, new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1515), 2, "Government" },
-                    { 6, new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1564), 2, "Economics" },
-                    { 7, new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1593), 3, "Sociology" },
-                    { 8, new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1619), 3, "Geography" },
-                    { 9, new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1654), 3, "Mass communication" }
+                    { 1, 1, "Chemistry" },
+                    { 2, 1, "Physics" },
+                    { 3, 1, "Computer Science" },
+                    { 4, 2, "History" },
+                    { 5, 2, "Government" },
+                    { 6, 2, "Economics" },
+                    { 7, 3, "Sociology" },
+                    { 8, 3, "Geography" },
+                    { 9, 3, "Mass communication" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -234,6 +343,11 @@ namespace Examiner.Infrastructure.Migrations
                 table: "CodeVerifications",
                 column: "UserId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_States_CountryId",
+                table: "States",
+                column: "CountryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Subjects_SubjectCategoryId",
@@ -259,10 +373,22 @@ namespace Examiner.Infrastructure.Migrations
                 name: "CodeVerifications");
 
             migrationBuilder.DropTable(
+                name: "EducationDegrees");
+
+            migrationBuilder.DropTable(
+                name: "ExperienceLevels");
+
+            migrationBuilder.DropTable(
                 name: "KickboxVerifications");
 
             migrationBuilder.DropTable(
+                name: "States");
+
+            migrationBuilder.DropTable(
                 name: "SubjectUserProfile");
+
+            migrationBuilder.DropTable(
+                name: "Countries");
 
             migrationBuilder.DropTable(
                 name: "Subjects");

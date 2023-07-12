@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Examiner.Infrastructure.Migrations
 {
     [DbContext(typeof(ExaminerContext))]
-    [Migration("20230501140211_Adduserprofile")]
-    partial class Adduserprofile
+    [Migration("20230712220551_DbSetup")]
+    partial class DbSetup
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -65,20 +65,170 @@ namespace Examiner.Infrastructure.Migrations
                     b.ToTable("CodeVerifications");
                 });
 
+            modelBuilder.Entity("Examiner.Domain.Entities.Content.Country", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("varchar(3)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Countries");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = "NG",
+                            Title = "Nigeria"
+                        });
+                });
+
+            modelBuilder.Entity("Examiner.Domain.Entities.Content.EducationDegree", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EducationDegrees");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Title = "Ordinary National Diploma"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Title = "Higher National Diploma"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Title = "Bachelor's Degree"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Title = "Postgraduate Diploma"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Title = "Masters"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Title = "PHD"
+                        });
+                });
+
+            modelBuilder.Entity("Examiner.Domain.Entities.Content.ExperienceLevel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ExperienceLevels");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Title = "Low"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Title = "Moderate"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Title = "High"
+                        });
+                });
+
+            modelBuilder.Entity("Examiner.Domain.Entities.Content.State", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("CountryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CountryId");
+
+                    b.ToTable("States");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CountryId = 1,
+                            Title = "Abia"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CountryId = 1,
+                            Title = "Adamawa"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CountryId = 1,
+                            Title = "AkwaIbom"
+                        });
+                });
+
             modelBuilder.Entity("Examiner.Domain.Entities.Content.Subject", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime(6)");
-
                     b.Property<int>("SubjectCategoryId")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)");
 
                     b.HasKey("Id");
 
@@ -90,63 +240,54 @@ namespace Examiner.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1380),
                             SubjectCategoryId = 1,
                             Title = "Chemistry"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1416),
                             SubjectCategoryId = 1,
                             Title = "Physics"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1461),
                             SubjectCategoryId = 1,
                             Title = "Computer Science"
                         },
                         new
                         {
                             Id = 4,
-                            CreatedDate = new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1488),
                             SubjectCategoryId = 2,
                             Title = "History"
                         },
                         new
                         {
                             Id = 5,
-                            CreatedDate = new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1515),
                             SubjectCategoryId = 2,
                             Title = "Government"
                         },
                         new
                         {
                             Id = 6,
-                            CreatedDate = new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1564),
                             SubjectCategoryId = 2,
                             Title = "Economics"
                         },
                         new
                         {
                             Id = 7,
-                            CreatedDate = new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1593),
                             SubjectCategoryId = 3,
                             Title = "Sociology"
                         },
                         new
                         {
                             Id = 8,
-                            CreatedDate = new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1619),
                             SubjectCategoryId = 3,
                             Title = "Geography"
                         },
                         new
                         {
                             Id = 9,
-                            CreatedDate = new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1654),
                             SubjectCategoryId = 3,
                             Title = "Mass communication"
                         });
@@ -158,11 +299,10 @@ namespace Examiner.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime(6)");
-
                     b.Property<string>("Title")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)");
 
                     b.HasKey("Id");
 
@@ -172,19 +312,16 @@ namespace Examiner.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1228),
                             Title = "Science"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1314),
                             Title = "Art"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2023, 5, 1, 15, 2, 11, 188, DateTimeKind.Local).AddTicks(1342),
                             Title = "Social Science"
                         });
                 });
@@ -296,9 +433,11 @@ namespace Examiner.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("CountryCode")
-                        .HasMaxLength(3)
-                        .HasColumnType("varchar(3)");
+                    b.Property<string>("Address")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("CountryId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime(6)");
@@ -306,9 +445,18 @@ namespace Examiner.Infrastructure.Migrations
                     b.Property<DateOnly?>("DateOfBirth")
                         .HasColumnType("date");
 
+                    b.Property<string>("DegreeCertificatePath")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("ExperienceLevelId")
+                        .HasColumnType("int");
+
                     b.Property<string>("FirstName")
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
+
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime?>("LastAvailability")
                         .HasColumnType("datetime(6)");
@@ -317,12 +465,8 @@ namespace Examiner.Infrastructure.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("LastName")
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
-
-                    b.Property<string>("Location")
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
 
                     b.Property<string>("MobilePhone")
                         .HasMaxLength(10)
@@ -333,6 +477,9 @@ namespace Examiner.Infrastructure.Migrations
 
                     b.Property<string>("ShortDescription")
                         .HasColumnType("longtext");
+
+                    b.Property<int>("StateId")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("char(36)");
@@ -371,6 +518,17 @@ namespace Examiner.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Examiner.Domain.Entities.Content.State", b =>
+                {
+                    b.HasOne("Examiner.Domain.Entities.Content.Country", "Country")
+                        .WithMany("States")
+                        .HasForeignKey("CountryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Country");
+                });
+
             modelBuilder.Entity("Examiner.Domain.Entities.Content.Subject", b =>
                 {
                     b.HasOne("Examiner.Domain.Entities.Content.SubjectCategory", "SubjectCategory")
@@ -406,6 +564,11 @@ namespace Examiner.Infrastructure.Migrations
                         .HasForeignKey("UserProfilesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Examiner.Domain.Entities.Content.Country", b =>
+                {
+                    b.Navigation("States");
                 });
 
             modelBuilder.Entity("Examiner.Domain.Entities.Content.SubjectCategory", b =>

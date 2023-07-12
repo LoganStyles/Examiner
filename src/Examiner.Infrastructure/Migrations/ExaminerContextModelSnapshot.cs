@@ -73,13 +73,10 @@ namespace Examiner.Infrastructure.Migrations
                         .HasMaxLength(3)
                         .HasColumnType("varchar(3)");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime(6)");
-
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("varchar(30)");
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)");
 
                     b.HasKey("Id");
 
@@ -90,7 +87,6 @@ namespace Examiner.Infrastructure.Migrations
                         {
                             Id = 1,
                             Code = "NG",
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2847),
                             Title = "Nigeria"
                         });
                 });
@@ -101,13 +97,10 @@ namespace Examiner.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime(6)");
-
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)");
 
                     b.HasKey("Id");
 
@@ -117,37 +110,31 @@ namespace Examiner.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(3119),
                             Title = "Ordinary National Diploma"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(3165),
                             Title = "Higher National Diploma"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(3195),
                             Title = "Bachelor's Degree"
                         },
                         new
                         {
                             Id = 4,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(3227),
                             Title = "Postgraduate Diploma"
                         },
                         new
                         {
                             Id = 5,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(3255),
                             Title = "Masters"
                         },
                         new
                         {
                             Id = 6,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(3297),
                             Title = "PHD"
                         });
                 });
@@ -158,13 +145,10 @@ namespace Examiner.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime(6)");
-
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)");
 
                     b.HasKey("Id");
 
@@ -174,19 +158,16 @@ namespace Examiner.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(3007),
                             Title = "Low"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(3043),
                             Title = "Moderate"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(3072),
                             Title = "High"
                         });
                 });
@@ -200,13 +181,10 @@ namespace Examiner.Infrastructure.Migrations
                     b.Property<int>("CountryId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime(6)");
-
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("varchar(30)");
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)");
 
                     b.HasKey("Id");
 
@@ -219,21 +197,18 @@ namespace Examiner.Infrastructure.Migrations
                         {
                             Id = 1,
                             CountryId = 1,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2907),
                             Title = "Abia"
                         },
                         new
                         {
                             Id = 2,
                             CountryId = 1,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2941),
                             Title = "Adamawa"
                         },
                         new
                         {
                             Id = 3,
                             CountryId = 1,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2973),
                             Title = "AkwaIbom"
                         });
                 });
@@ -244,14 +219,13 @@ namespace Examiner.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime(6)");
-
                     b.Property<int>("SubjectCategoryId")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)");
 
                     b.HasKey("Id");
 
@@ -263,63 +237,54 @@ namespace Examiner.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2381),
                             SubjectCategoryId = 1,
                             Title = "Chemistry"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2444),
                             SubjectCategoryId = 1,
                             Title = "Physics"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2470),
                             SubjectCategoryId = 1,
                             Title = "Computer Science"
                         },
                         new
                         {
                             Id = 4,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2499),
                             SubjectCategoryId = 2,
                             Title = "History"
                         },
                         new
                         {
                             Id = 5,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2536),
                             SubjectCategoryId = 2,
                             Title = "Government"
                         },
                         new
                         {
                             Id = 6,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2638),
                             SubjectCategoryId = 2,
                             Title = "Economics"
                         },
                         new
                         {
                             Id = 7,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2673),
                             SubjectCategoryId = 3,
                             Title = "Sociology"
                         },
                         new
                         {
                             Id = 8,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2699),
                             SubjectCategoryId = 3,
                             Title = "Geography"
                         },
                         new
                         {
                             Id = 9,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2791),
                             SubjectCategoryId = 3,
                             Title = "Mass communication"
                         });
@@ -331,11 +296,10 @@ namespace Examiner.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime(6)");
-
                     b.Property<string>("Title")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)");
 
                     b.HasKey("Id");
 
@@ -345,19 +309,16 @@ namespace Examiner.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(1684),
                             Title = "Science"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2045),
                             Title = "Art"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2277),
                             Title = "Social Science"
                         });
                 });
@@ -481,12 +442,15 @@ namespace Examiner.Infrastructure.Migrations
                     b.Property<DateOnly?>("DateOfBirth")
                         .HasColumnType("date");
 
+                    b.Property<string>("DegreeCertificatePath")
+                        .HasColumnType("longtext");
+
                     b.Property<int>("ExperienceLevelId")
                         .HasColumnType("int");
 
                     b.Property<string>("FirstName")
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
 
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("tinyint(1)");
@@ -498,8 +462,8 @@ namespace Examiner.Infrastructure.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("LastName")
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
 
                     b.Property<string>("MobilePhone")
                         .HasMaxLength(10)

@@ -42,7 +42,7 @@ public class ExaminerContext : DbContext
         modelBuilder.Entity<ExperienceLevel>().HasData(new ExperienceLevel { Id = 1, Title = "Low" });
         modelBuilder.Entity<ExperienceLevel>().HasData(new ExperienceLevel { Id = 2, Title = "Moderate" });
         modelBuilder.Entity<ExperienceLevel>().HasData(new ExperienceLevel { Id = 3, Title = "High" });
-        
+
         modelBuilder.Entity<EducationDegree>().HasData(new EducationDegree { Id = 1, Title = "Ordinary National Diploma" });
         modelBuilder.Entity<EducationDegree>().HasData(new EducationDegree { Id = 2, Title = "Higher National Diploma" });
         modelBuilder.Entity<EducationDegree>().HasData(new EducationDegree { Id = 3, Title = "Bachelor's Degree" });
