@@ -1,7 +1,5 @@
 namespace Examiner.Domain.Dtos.Content;
 
-public class SubjectCategoryDto
+public class SubjectCategoryDto : ContentDto
 {
-    public int Id { get; set; }
-    public string? Title { get; set; }
 }
