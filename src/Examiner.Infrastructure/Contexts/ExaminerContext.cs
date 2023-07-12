@@ -32,12 +32,16 @@ public class ExaminerContext : DbContext
         modelBuilder.Entity<Subject>().HasData(new Subject { Id = 7, Title = "Sociology", SubjectCategoryId = 3 });
         modelBuilder.Entity<Subject>().HasData(new Subject { Id = 8, Title = "Geography", SubjectCategoryId = 3 });
         modelBuilder.Entity<Subject>().HasData(new Subject { Id = 9, Title = "Mass communication", SubjectCategoryId = 3 });
-        
+
         modelBuilder.Entity<Country>().HasData(new Country { Id = 1, Code = "NG", Title = "Nigeria" });
 
-        modelBuilder.Entity<State>().HasData(new State { Id = 1, Title = "Abia", CountryId = 1,  });
-        modelBuilder.Entity<State>().HasData(new State { Id = 2, Title = "Adamawa", CountryId = 1,  });
-        modelBuilder.Entity<State>().HasData(new State { Id = 3, Title = "AkwaIbom", CountryId = 1,  });
+        modelBuilder.Entity<State>().HasData(new State { Id = 1, Title = "Abia", CountryId = 1, });
+        modelBuilder.Entity<State>().HasData(new State { Id = 2, Title = "Adamawa", CountryId = 1, });
+        modelBuilder.Entity<State>().HasData(new State { Id = 3, Title = "AkwaIbom", CountryId = 1, });
+
+        modelBuilder.Entity<ExperienceLevel>().HasData(new ExperienceLevel { Id = 1, Title = "Low" });
+        modelBuilder.Entity<ExperienceLevel>().HasData(new ExperienceLevel { Id = 2, Title = "Moderate" });
+        modelBuilder.Entity<ExperienceLevel>().HasData(new ExperienceLevel { Id = 3, Title = "High" });
     }
     public DbSet<UserIdentity>? UserIdentities { get; set; }
     public DbSet<UserProfile>? UserProfiles { get; set; }
@@ -47,4 +51,5 @@ public class ExaminerContext : DbContext
     public DbSet<Subject>? Subjects { get; set; }
     public DbSet<Country>? Countries { get; set; }
     public DbSet<State>? States { get; set; }
+    public DbSet<ExperienceLevel>? ExperienceLevels { get; set; }
 }
