@@ -71,6 +71,8 @@ services.AddScoped<IEmailService, EmailService>();
 services.AddScoped<IVerificationService, KickboxVerificationService>();
 services.AddScoped<ISubjectCategoryService, SubjectCategoryService>();
 services.AddScoped<ISubjectService, SubjectService>();
+services.AddScoped<ICountryService, CountryService>();
+services.AddScoped<IStateService, StateService>();
 
 services.AddSingleton<IJwtTokenHandler, JwtTokenHandler>();
 services.AddCustomJwtAuthentication();
