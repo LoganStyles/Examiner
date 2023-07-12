@@ -12,18 +12,17 @@ public class UserProfile : BaseEntity
     [JsonIgnore]
     public UserIdentity User { get; set; } = null!;
 
-    [MaxLength(20)]
+    [MaxLength(30)]
     public string? FirstName { get; set; }
 
-    [MaxLength(20)]
+    [MaxLength(30)]
     public string? LastName { get; set; }
-    [MaxLength(50)]
-    public string? Location { get; set; }
     public HashSet<Subject>? Subjects { get; set; }
     public DateOnly? DateOfBirth { get; set; }
 
-    [StringLength(3)]
-    public string? CountryCode { get; set; }
+    public int CountryId { get; set; }
+    public int StateId { get; set; }
+    public string? Address { get; set; }
     [StringLength(10)]
     public string? MobilePhone { get; set; }
 
@@ -32,8 +31,10 @@ public class UserProfile : BaseEntity
 
     [JsonIgnore]
     public bool IsMobilePhoneVerified => LastMobilePhoneVerification.HasValue;
-
-    public DateTime? LastAvailability {get; set;}
-    public string? ProfilePhotoPath {get; set;}
-    public string? ShortDescription {get; set;}
+    public bool IsAvailable { get; set; }
+    public DateTime? LastAvailability { get; set; }
+    public string? ProfilePhotoPath { get; set; }
+    public string? DegreeCertificatePath { get; set; }
+    public string? ShortDescription { get; set; }
+    public int ExperienceLevelId { get; set; }
 }

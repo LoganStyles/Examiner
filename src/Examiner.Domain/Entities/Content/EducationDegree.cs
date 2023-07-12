@@ -2,11 +2,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Examiner.Domain.Entities.Content;
 
-public class EducationDegree : BaseEntity
+public class EducationDegree
 {
-    public new int Id { get; set; }
+    public int Id { get; set; }
     
-    [StringLength(20)]
+    [StringLength(40)]
     [Required]
     public string? Title { get; set; }
 }

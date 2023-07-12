@@ -1,8 +1,13 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Examiner.Domain.Entities.Content;
 
-public class SubjectCategory : BaseEntity
+public class SubjectCategory
 {
-    public new int Id { get; set; }
+    public int Id { get; set; }
+
+    [StringLength(40)]
+    [Required]
     public string? Title { get; set; }
     public ICollection<Subject>? Subjects { get; set; }
 }
