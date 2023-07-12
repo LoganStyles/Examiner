@@ -3,6 +3,7 @@ using System;
 using Examiner.Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Examiner.Infrastructure.Migrations
 {
     [DbContext(typeof(ExaminerContext))]
-    partial class ExaminerContextModelSnapshot : ModelSnapshot
+    [Migration("20230712205208_EducationDegree")]
+    partial class EducationDegree
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -90,7 +93,7 @@ namespace Examiner.Infrastructure.Migrations
                         {
                             Id = 1,
                             Code = "NG",
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2847),
+                            CreatedDate = new DateTime(2023, 7, 12, 21, 52, 7, 338, DateTimeKind.Local).AddTicks(4062),
                             Title = "Nigeria"
                         });
                 });
@@ -117,37 +120,37 @@ namespace Examiner.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(3119),
+                            CreatedDate = new DateTime(2023, 7, 12, 21, 52, 7, 338, DateTimeKind.Local).AddTicks(4273),
                             Title = "Ordinary National Diploma"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(3165),
+                            CreatedDate = new DateTime(2023, 7, 12, 21, 52, 7, 338, DateTimeKind.Local).AddTicks(4300),
                             Title = "Higher National Diploma"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(3195),
+                            CreatedDate = new DateTime(2023, 7, 12, 21, 52, 7, 338, DateTimeKind.Local).AddTicks(4322),
                             Title = "Bachelor's Degree"
                         },
                         new
                         {
                             Id = 4,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(3227),
+                            CreatedDate = new DateTime(2023, 7, 12, 21, 52, 7, 338, DateTimeKind.Local).AddTicks(4345),
                             Title = "Postgraduate Diploma"
                         },
                         new
                         {
                             Id = 5,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(3255),
+                            CreatedDate = new DateTime(2023, 7, 12, 21, 52, 7, 338, DateTimeKind.Local).AddTicks(4372),
                             Title = "Masters"
                         },
                         new
                         {
                             Id = 6,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(3297),
+                            CreatedDate = new DateTime(2023, 7, 12, 21, 52, 7, 338, DateTimeKind.Local).AddTicks(4399),
                             Title = "PHD"
                         });
                 });
@@ -174,19 +177,19 @@ namespace Examiner.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(3007),
+                            CreatedDate = new DateTime(2023, 7, 12, 21, 52, 7, 338, DateTimeKind.Local).AddTicks(4192),
                             Title = "Low"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(3043),
+                            CreatedDate = new DateTime(2023, 7, 12, 21, 52, 7, 338, DateTimeKind.Local).AddTicks(4218),
                             Title = "Moderate"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(3072),
+                            CreatedDate = new DateTime(2023, 7, 12, 21, 52, 7, 338, DateTimeKind.Local).AddTicks(4241),
                             Title = "High"
                         });
                 });
@@ -219,21 +222,21 @@ namespace Examiner.Infrastructure.Migrations
                         {
                             Id = 1,
                             CountryId = 1,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2907),
+                            CreatedDate = new DateTime(2023, 7, 12, 21, 52, 7, 338, DateTimeKind.Local).AddTicks(4099),
                             Title = "Abia"
                         },
                         new
                         {
                             Id = 2,
                             CountryId = 1,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2941),
+                            CreatedDate = new DateTime(2023, 7, 12, 21, 52, 7, 338, DateTimeKind.Local).AddTicks(4127),
                             Title = "Adamawa"
                         },
                         new
                         {
                             Id = 3,
                             CountryId = 1,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2973),
+                            CreatedDate = new DateTime(2023, 7, 12, 21, 52, 7, 338, DateTimeKind.Local).AddTicks(4159),
                             Title = "AkwaIbom"
                         });
                 });
@@ -263,63 +266,63 @@ namespace Examiner.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2381),
+                            CreatedDate = new DateTime(2023, 7, 12, 21, 52, 7, 338, DateTimeKind.Local).AddTicks(3759),
                             SubjectCategoryId = 1,
                             Title = "Chemistry"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2444),
+                            CreatedDate = new DateTime(2023, 7, 12, 21, 52, 7, 338, DateTimeKind.Local).AddTicks(3803),
                             SubjectCategoryId = 1,
                             Title = "Physics"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2470),
+                            CreatedDate = new DateTime(2023, 7, 12, 21, 52, 7, 338, DateTimeKind.Local).AddTicks(3852),
                             SubjectCategoryId = 1,
                             Title = "Computer Science"
                         },
                         new
                         {
                             Id = 4,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2499),
+                            CreatedDate = new DateTime(2023, 7, 12, 21, 52, 7, 338, DateTimeKind.Local).AddTicks(3877),
                             SubjectCategoryId = 2,
                             Title = "History"
                         },
                         new
                         {
                             Id = 5,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2536),
+                            CreatedDate = new DateTime(2023, 7, 12, 21, 52, 7, 338, DateTimeKind.Local).AddTicks(3918),
                             SubjectCategoryId = 2,
                             Title = "Government"
                         },
                         new
                         {
                             Id = 6,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2638),
+                            CreatedDate = new DateTime(2023, 7, 12, 21, 52, 7, 338, DateTimeKind.Local).AddTicks(3952),
                             SubjectCategoryId = 2,
                             Title = "Economics"
                         },
                         new
                         {
                             Id = 7,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2673),
+                            CreatedDate = new DateTime(2023, 7, 12, 21, 52, 7, 338, DateTimeKind.Local).AddTicks(3977),
                             SubjectCategoryId = 3,
                             Title = "Sociology"
                         },
                         new
                         {
                             Id = 8,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2699),
+                            CreatedDate = new DateTime(2023, 7, 12, 21, 52, 7, 338, DateTimeKind.Local).AddTicks(4002),
                             SubjectCategoryId = 3,
                             Title = "Geography"
                         },
                         new
                         {
                             Id = 9,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2791),
+                            CreatedDate = new DateTime(2023, 7, 12, 21, 52, 7, 338, DateTimeKind.Local).AddTicks(4024),
                             SubjectCategoryId = 3,
                             Title = "Mass communication"
                         });
@@ -345,19 +348,19 @@ namespace Examiner.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(1684),
+                            CreatedDate = new DateTime(2023, 7, 12, 21, 52, 7, 338, DateTimeKind.Local).AddTicks(3478),
                             Title = "Science"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2045),
+                            CreatedDate = new DateTime(2023, 7, 12, 21, 52, 7, 338, DateTimeKind.Local).AddTicks(3578),
                             Title = "Art"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2023, 7, 12, 21, 58, 56, 161, DateTimeKind.Local).AddTicks(2277),
+                            CreatedDate = new DateTime(2023, 7, 12, 21, 52, 7, 338, DateTimeKind.Local).AddTicks(3705),
                             Title = "Social Science"
                         });
                 });

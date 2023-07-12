@@ -42,6 +42,13 @@ public class ExaminerContext : DbContext
         modelBuilder.Entity<ExperienceLevel>().HasData(new ExperienceLevel { Id = 1, Title = "Low" });
         modelBuilder.Entity<ExperienceLevel>().HasData(new ExperienceLevel { Id = 2, Title = "Moderate" });
         modelBuilder.Entity<ExperienceLevel>().HasData(new ExperienceLevel { Id = 3, Title = "High" });
+        
+        modelBuilder.Entity<EducationDegree>().HasData(new EducationDegree { Id = 1, Title = "Ordinary National Diploma" });
+        modelBuilder.Entity<EducationDegree>().HasData(new EducationDegree { Id = 2, Title = "Higher National Diploma" });
+        modelBuilder.Entity<EducationDegree>().HasData(new EducationDegree { Id = 3, Title = "Bachelor's Degree" });
+        modelBuilder.Entity<EducationDegree>().HasData(new EducationDegree { Id = 4, Title = "Postgraduate Diploma" });
+        modelBuilder.Entity<EducationDegree>().HasData(new EducationDegree { Id = 5, Title = "Masters" });
+        modelBuilder.Entity<EducationDegree>().HasData(new EducationDegree { Id = 6, Title = "PHD" });
     }
     public DbSet<UserIdentity>? UserIdentities { get; set; }
     public DbSet<UserProfile>? UserProfiles { get; set; }
@@ -52,4 +59,5 @@ public class ExaminerContext : DbContext
     public DbSet<Country>? Countries { get; set; }
     public DbSet<State>? States { get; set; }
     public DbSet<ExperienceLevel>? ExperienceLevels { get; set; }
+    public DbSet<EducationDegree>? EducationDegrees { get; set; }
 }
