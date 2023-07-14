@@ -23,7 +23,6 @@ public class UserProfileResponse : GenericResponse
     public string? Email { get; set; }
     public DateOnly? DateOfBirth { get; set; }
 
-    public int CountryId { get; set; }
     public int StateId { get; set; }
     public string? Address { get; set; }
     public string? MobilePhone { get; set; }
@@ -31,6 +30,7 @@ public class UserProfileResponse : GenericResponse
     public string? ProfilePhotoPath { get; set; }
     public string? DegreeCertificatePath { get; set; }
     public string? ShortDescription { get; set; }
+    public int SubjectCategoryId { get; set; }
     public int ExperienceLevelId { get; set; }
     public int EducationDegreeId { get; set; }
 

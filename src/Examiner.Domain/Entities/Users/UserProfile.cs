@@ -17,6 +17,7 @@ public class UserProfile : BaseEntity
 
     [MaxLength(30)]
     public string? LastName { get; set; }
+    public int SubjectCategoryId { get; set; }
     public HashSet<Subject>? Subjects { get; set; }
     public DateOnly? DateOfBirth { get; set; }
 
