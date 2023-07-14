@@ -445,6 +445,9 @@ namespace Examiner.Infrastructure.Migrations
                     b.Property<string>("DegreeCertificatePath")
                         .HasColumnType("longtext");
 
+                    b.Property<int>("EducationDegreeId")
+                        .HasColumnType("int");
+
                     b.Property<int>("ExperienceLevelId")
                         .HasColumnType("int");
 
@@ -517,13 +520,11 @@ namespace Examiner.Infrastructure.Migrations
 
             modelBuilder.Entity("Examiner.Domain.Entities.Content.State", b =>
                 {
-                    b.HasOne("Examiner.Domain.Entities.Content.Country", "Country")
+                    b.HasOne("Examiner.Domain.Entities.Content.Country", null)
                         .WithMany("States")
                         .HasForeignKey("CountryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Country");
                 });
 
             modelBuilder.Entity("Examiner.Domain.Entities.Content.Subject", b =>

@@ -16,6 +16,7 @@ public static class AppMessages
     public const string MOBILE_PHONE = "Mobile phone";
     public const string ROLE_TUTOR = "Tutor";
     public const string USER = "User";
+    public const string USER_PROFILE = "User Profile";
     public const string SUBJECT_CATEGORY = "Subject Category";
     public const string COUNTRY = "Country";
     public const string STATE = "State";

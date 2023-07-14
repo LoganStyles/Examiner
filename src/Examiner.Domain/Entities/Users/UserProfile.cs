@@ -37,4 +37,5 @@ public class UserProfile : BaseEntity
     public string? DegreeCertificatePath { get; set; }
     public string? ShortDescription { get; set; }
     public int ExperienceLevelId { get; set; }
+    public int EducationDegreeId { get; set; }
 }

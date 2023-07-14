@@ -24,6 +24,8 @@ public class UnitOfWork : IUnitOfWork
     private SubjectCategoryRepository<SubjectCategory>? _subjectCategoryRepository;
     private CountryRepository<Country>? _countryRepository;
     private StateRepository<State>? _stateRepository;
+    private ExperienceLevelRepository<ExperienceLevel>? _experienceLevelRepository;
+    private EducationDegreeRepository<EducationDegree>? _educationDegreeRepository;
 
     public UnitOfWork(ExaminerContext dbContext)
     {
@@ -35,23 +37,27 @@ public class UnitOfWork : IUnitOfWork
     _codeVerificationRepository ??
     (_codeVerificationRepository = new CodeVerificationRepository<CodeVerification>(_dbContext));
 
-    public IUserProfileRepository UserProfileRepository => 
-    _userProfileyRepository ?? 
+    public IUserProfileRepository UserProfileRepository =>
+    _userProfileyRepository ??
     (_userProfileyRepository = new UserProfileRepository<UserProfile>(_dbContext));
 
     public IKickboxVerificationRepository KickboxVerificationRepository =>
     _kickboxVerificationRepository ??
     (_kickboxVerificationRepository = new KickboxVerificationRepository<KickboxVerification>(_dbContext));
-    
+
     public ISubjectRepository SubjectRepository =>
-    _subjectRepository ??  (_subjectRepository = new SubjectRepository<Subject>(_dbContext));
-    
+    _subjectRepository ?? (_subjectRepository = new SubjectRepository<Subject>(_dbContext));
+
     public ISubjectCategoryRepository SubjectCategoryRepository =>
-    _subjectCategoryRepository ??  (_subjectCategoryRepository = new SubjectCategoryRepository<SubjectCategory>(_dbContext));
+    _subjectCategoryRepository ?? (_subjectCategoryRepository = new SubjectCategoryRepository<SubjectCategory>(_dbContext));
     public ICountryRepository CountryRepository =>
-    _countryRepository ??  (_countryRepository = new CountryRepository<Country>(_dbContext));
+    _countryRepository ?? (_countryRepository = new CountryRepository<Country>(_dbContext));
     public IStateRepository StateRepository =>
-    _stateRepository ??  (_stateRepository = new StateRepository<State>(_dbContext));
+    _stateRepository ?? (_stateRepository = new StateRepository<State>(_dbContext));
+    public IExperienceLevelRepository ExperienceLevelRepository =>
+    _experienceLevelRepository ?? (_experienceLevelRepository = new ExperienceLevelRepository<ExperienceLevel>(_dbContext));
+    public IEducationDegreeRepository EducationDegreeRepository =>
+    _educationDegreeRepository ?? (_educationDegreeRepository = new EducationDegreeRepository<EducationDegree>(_dbContext));
 
     public async Task CompleteAsync()
     {

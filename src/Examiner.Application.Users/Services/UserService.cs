@@ -10,6 +10,7 @@ using AutoMapper.Internal.Mappers;
 using System.Globalization;
 using Examiner.Domain.Entities.Content;
 using Examiner.Domain.Dtos.Content;
+using Examiner.Authentication.Domain.Mappings;
 
 namespace Examiner.Application.Users.Services;
 
@@ -54,7 +55,7 @@ public class UserService : IUserService
             throw;
         }
     }
-    
+
     /// <summary>
     /// Removes a user by email
     /// </summary>
@@ -152,6 +153,45 @@ public class UserService : IUserService
     // }
 
     /// <summary>
+    /// Fetches a user's profile
+    /// </summary>
+    /// <param name="userId">The user's id</param>
+    /// <returns>An object holding user profile response data</returns>
+    public async Task<UserProfileResponse> GetProfile(Guid userId)
+    {
+
+        var response = new UserProfileResponse(false, $"{AppMessages.USER_PROFILE} {AppMessages.NOT_EXIST}");
+        try
+        {
+            var userProfileList = await _unitOfWork.UserProfileRepository.Get(u => u.UserId.Equals(userId), null, "", null, null);
+            var userProfileFound = userProfileList.FirstOrDefault();
+            if (userProfileFound is null)
+                return response;
+
+            response = ObjectMapper.Mapper.Map<UserProfileResponse>(userProfileFound);
+            // add supporting data 
+            response.Countries = await _unitOfWork.CountryRepository.Get(null, null, "", null, null);
+            response.SelectedCountryStates = await _unitOfWork.StateRepository.Get(s => s.CountryId == userProfileFound.CountryId, null, "", null, null);
+            response.ExperienceLevels = await _unitOfWork.ExperienceLevelRepository.Get(null, null, "", null, null);
+            response.EducationDegrees = await _unitOfWork.EducationDegreeRepository.Get(null, null, "", null, null);
+            response.SubjectCategories = await _unitOfWork.SubjectCategoryRepository.Get(null, null, "", null, null);
+
+            //add general response message
+            response.ResultMessage = $"{AppMessages.USER_PROFILE} {AppMessages.EXISTS}";
+            response.Success = true;
+            return response;
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error fetching user profile - ", ex.Message);
+            response.ResultMessage = "Error fetching user profile ";
+            response.Success = false;
+            return response;
+        }
+    }
+
+    /// <summary>
     /// Updates a user's profile
     /// </summary>
     /// <param name="request">An object holding profile request data</param>
@@ -168,12 +208,12 @@ public class UserService : IUserService
                 return GenericResponse.Result(false, $"{AppMessages.USER} {AppMessages.NOT_EXIST}");
 
             // check if country code is among supported countries
-            userProfileFound.CountryCode = request.CountryCode;
+            userProfileFound.CountryId = request.CountryId;
             // confirm phone number pattern
             userProfileFound.MobilePhone = request.MobilePhone;
             userProfileFound.FirstName = request.FirstName;
             userProfileFound.LastName = request.LastName;
-            userProfileFound.Location = request.Location;
+            userProfileFound.StateId = request.StateId;
             userProfileFound.ShortDescription = request.ShortDescription;
             userProfileFound.DateOfBirth = new DateOnly(request.DateOfBirth.Year, request.DateOfBirth.Month, request.DateOfBirth.Day);
 
@@ -195,7 +235,7 @@ public class UserService : IUserService
         }
         catch (Exception ex)
         {
-            _logger.LogError("Error updating phone - ", ex.Message);
+            _logger.LogError("Error updating user profile - ", ex.Message);
             return GenericResponse.Result(false, ex.Message);
         }
     }

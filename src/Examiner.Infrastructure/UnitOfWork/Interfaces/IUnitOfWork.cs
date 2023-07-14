@@ -18,6 +18,8 @@ public interface IUnitOfWork : IAsyncDisposable
     ISubjectCategoryRepository SubjectCategoryRepository { get; }
     ICountryRepository CountryRepository { get; }
     IStateRepository StateRepository { get; }
+    IExperienceLevelRepository ExperienceLevelRepository { get; }
+    IEducationDegreeRepository EducationDegreeRepository { get; }
 
     #endregion
 
