@@ -9,5 +9,4 @@ public class State
     [Required]
     public string? Title { get; set; }
     public int CountryId { get; set; }
-    public Country? Country { get; set; }
 }
