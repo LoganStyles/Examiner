@@ -218,6 +218,7 @@ namespace Examiner.Infrastructure.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     LastName = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    SubjectCategoryId = table.Column<int>(type: "int", nullable: false),
                     DateOfBirth = table.Column<DateOnly>(type: "date", nullable: true),
                     CountryId = table.Column<int>(type: "int", nullable: false),
                     StateId = table.Column<int>(type: "int", nullable: false),

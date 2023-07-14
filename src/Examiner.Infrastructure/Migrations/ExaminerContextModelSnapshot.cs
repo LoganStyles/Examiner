@@ -481,6 +481,9 @@ namespace Examiner.Infrastructure.Migrations
                     b.Property<int>("StateId")
                         .HasColumnType("int");
 
+                    b.Property<int>("SubjectCategoryId")
+                        .HasColumnType("int");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("char(36)");
 

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Examiner.Infrastructure.Migrations
 {
     [DbContext(typeof(ExaminerContext))]
-    [Migration("20230714105525_DbSetup")]
+    [Migration("20230714123646_DbSetup")]
     partial class DbSetup
     {
         /// <inheritdoc />
@@ -482,6 +482,9 @@ namespace Examiner.Infrastructure.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<int>("StateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubjectCategoryId")
                         .HasColumnType("int");
 
                     b.Property<Guid>("UserId")
