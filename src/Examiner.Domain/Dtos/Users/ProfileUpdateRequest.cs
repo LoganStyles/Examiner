@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace Examiner.Domain.Dtos.Users;
 
@@ -12,14 +13,6 @@ public record ProfileUpdateRequest(
     string Email,
 
     [Required]
-    [StringLength(3)]
-    string CountryCode,
-
-    [Required]
-    [StringLength(10)]
-    string MobilePhone,
-
-    [Required]
     [StringLength(20)]
     string FirstName,
 
@@ -28,17 +21,32 @@ public record ProfileUpdateRequest(
     string LastName,
 
     [Required]
+    [StringLength(10)]
+    string MobilePhone,
+
     DateTime DateOfBirth,
 
     [Required]
-    HashSet<int> SubjectIds,
+    int CountryId,
 
     [Required]
-    [StringLength(50)]
-    string Location,
-
+    int StateId,
+    
     [Required]
-    // [StringLength(50)]
-    string ShortDescription
+    int SubjectCategoryId,
+    
+    [Required]
+    int ExperienceLevelId,
+    
+    [Required]
+    int EducationDegreeId,
+    
+    bool IsAvailable,
+    
+    [Required]
+    string ShortDescription,
+
+    IFormFile? profilePhoto,
+    IFormFile? degreeCertificate
 
 );

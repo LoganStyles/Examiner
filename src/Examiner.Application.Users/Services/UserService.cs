@@ -41,13 +41,18 @@ public class UserService : IUserService
             Func<IQueryable<UserIdentity>, IOrderedQueryable<UserIdentity>>? orderBy = null;
             Expression<Func<UserIdentity, bool>>? filter = (u => u.Email == email);
 
-            var users = await _unitOfWork.UserRepository.Get(filter, orderBy, "CodeVerification", null, null);
+            var users = await _unitOfWork.UserRepository.Get(
+                filter,
+                orderBy,
+                "CodeVerification",
+                null,
+                null
+            );
             if (users.Count() > 0)
             {
                 return users.FirstOrDefault();
             }
             return null;
-
         }
         catch (Exception ex)
         {
@@ -66,8 +71,13 @@ public class UserService : IUserService
         var response = new GenericResponse(false, $"{AppMessages.USER} {AppMessages.NOT_EXIST}");
         try
         {
-
-            var existingUserList = await _unitOfWork.UserRepository.Get(u => u.Email.Equals(email), null, "CodeVerification,UserProfile", null, null);
+            var existingUserList = await _unitOfWork.UserRepository.Get(
+                u => u.Email.Equals(email),
+                null,
+                "CodeVerification,UserProfile",
+                null,
+                null
+            );
             var userFound = existingUserList.FirstOrDefault();
             if (userFound is null)
                 return response;
@@ -81,7 +91,8 @@ public class UserService : IUserService
 
             await _unitOfWork.CompleteAsync();
 
-            response.ResultMessage = $"{AppMessages.USER} {AppMessages.REMOVAL} {AppMessages.SUCCESSFUL}";
+            response.ResultMessage =
+                $"{AppMessages.USER} {AppMessages.REMOVAL} {AppMessages.SUCCESSFUL}";
             response.Success = true;
 
             return response;
@@ -117,7 +128,6 @@ public class UserService : IUserService
             throw;
         }
     }
-
 
     // /// <summary>
     // /// Updates a user's phone number
@@ -157,30 +167,67 @@ public class UserService : IUserService
     /// </summary>
     /// <param name="userId">The user's id</param>
     /// <returns>An object holding user profile response data</returns>
-    public async Task<UserProfileResponse> GetProfile(Guid userId)
+    public async Task<UserProfileResponse> GetProfileAsync(Guid userId)
     {
-
-        var response = new UserProfileResponse(false, $"{AppMessages.USER_PROFILE} {AppMessages.NOT_EXIST}");
+        var response = new UserProfileResponse(
+            false,
+            $"{AppMessages.USER_PROFILE} {AppMessages.NOT_EXIST}"
+        );
         try
         {
-            var userProfileList = await _unitOfWork.UserProfileRepository.Get(u => u.UserId.Equals(userId), null, "", null, null);
+            var userProfileList = await _unitOfWork.UserProfileRepository.Get(
+                u => u.UserId.Equals(userId),
+                null,
+                "",
+                null,
+                null
+            );
             var userProfileFound = userProfileList.FirstOrDefault();
             if (userProfileFound is null)
                 return response;
 
             response = ObjectMapper.Mapper.Map<UserProfileResponse>(userProfileFound);
-            // add supporting data 
-            response.Countries = await _unitOfWork.CountryRepository.Get(null, null, "", null, null);
-            response.SelectedCountryStates = await _unitOfWork.StateRepository.Get(s => s.CountryId == userProfileFound.CountryId, null, "", null, null);
-            response.ExperienceLevels = await _unitOfWork.ExperienceLevelRepository.Get(null, null, "", null, null);
-            response.EducationDegrees = await _unitOfWork.EducationDegreeRepository.Get(null, null, "", null, null);
-            response.SubjectCategories = await _unitOfWork.SubjectCategoryRepository.Get(null, null, "", null, null);
+            // add supporting data
+            response.Countries = await _unitOfWork.CountryRepository.Get(
+                null,
+                null,
+                "",
+                null,
+                null
+            );
+            response.SelectedCountryStates = await _unitOfWork.StateRepository.Get(
+                s => s.CountryId == userProfileFound.CountryId,
+                null,
+                "",
+                null,
+                null
+            );
+            response.ExperienceLevels = await _unitOfWork.ExperienceLevelRepository.Get(
+                null,
+                null,
+                "",
+                null,
+                null
+            );
+            response.EducationDegrees = await _unitOfWork.EducationDegreeRepository.Get(
+                null,
+                null,
+                "",
+                null,
+                null
+            );
+            response.SubjectCategories = await _unitOfWork.SubjectCategoryRepository.Get(
+                null,
+                null,
+                "",
+                null,
+                null
+            );
 
             //add general response message
             response.ResultMessage = $"{AppMessages.USER_PROFILE} {AppMessages.EXISTS}";
             response.Success = true;
             return response;
-
         }
         catch (Exception ex)
         {
@@ -196,42 +243,54 @@ public class UserService : IUserService
     /// </summary>
     /// <param name="request">An object holding profile request data</param>
     /// <returns>An object holding data indicating the success or failure of a user's profile update</returns>
-    public async Task<GenericResponse> ProfileUpdateAsync(ProfileUpdateRequest request, Guid userId)
+    public async Task<GenericResponse> ProfileUpdateAsync(
+        Guid userId,
+        ProfileUpdateRequest request,
+        string profilePath,
+        string degreeCertificatePath
+    )
     {
-
         try
         {
-            var userProfileList = await _unitOfWork.UserProfileRepository.Get(u => u.UserId.Equals(userId), null, "", null, null);
+            var userProfileList = await _unitOfWork.UserProfileRepository.Get(u => u.UserId.Equals(userId),null,"",null,null);
 
             var userProfileFound = userProfileList.FirstOrDefault();
             if (userProfileFound is null)
-                return GenericResponse.Result(false, $"{AppMessages.USER} {AppMessages.NOT_EXIST}");
+                return GenericResponse.Result(false, $"{AppMessages.USER_PROFILE} {AppMessages.NOT_EXIST}");
 
-            // check if country code is among supported countries
-            userProfileFound.CountryId = request.CountryId;
-            // confirm phone number pattern
-            userProfileFound.MobilePhone = request.MobilePhone;
             userProfileFound.FirstName = request.FirstName;
             userProfileFound.LastName = request.LastName;
+            userProfileFound.CountryId = request.CountryId;
             userProfileFound.StateId = request.StateId;
+            // confirm phone number pattern
+            userProfileFound.MobilePhone = request.MobilePhone;
+
             userProfileFound.ShortDescription = request.ShortDescription;
             userProfileFound.DateOfBirth = new DateOnly(request.DateOfBirth.Year, request.DateOfBirth.Month, request.DateOfBirth.Day);
 
-            if (userProfileFound.Subjects is null)
-                userProfileFound.Subjects = new HashSet<Subject>();
+            userProfileFound.SubjectCategoryId = request.SubjectCategoryId;
+            userProfileFound.ExperienceLevelId = request.ExperienceLevelId;
+            userProfileFound.EducationDegreeId = request.EducationDegreeId;
+            userProfileFound.IsAvailable = request.IsAvailable;
+            // if (userProfileFound.Subjects is null)
+            //     userProfileFound.Subjects = new HashSet<Subject>();
 
-            var subjectList = await _unitOfWork.SubjectRepository.Get(s => request.SubjectIds.Contains(s.Id), null, "", null, null);
+            // var subjectList = await _unitOfWork.SubjectRepository.Get(s => request.SubjectIds.Contains(s.Id), null, "", null, null);
             // prevent duplicate entries
-            userProfileFound.Subjects.UnionWith(subjectList);
+            // userProfileFound.Subjects.UnionWith(subjectList);
             // foreach (var item in subjectList)
             // {
             //     userProfileFound.Subjects.Add(item);
             // }
+            if (!string.IsNullOrWhiteSpace(profilePath))
+                userProfileFound.ProfilePhotoPath = profilePath;
+            if (!string.IsNullOrWhiteSpace(degreeCertificatePath))
+                userProfileFound.DegreeCertificatePath = degreeCertificatePath;
 
             await _unitOfWork.UserProfileRepository.Update(userProfileFound);
             await _unitOfWork.CompleteAsync();
 
-            return GenericResponse.Result(true, $"{AppMessages.USER} {AppMessages.UPDATE} {AppMessages.SUCCESSFUL}");
+            return GenericResponse.Result(true,$"{AppMessages.USER_PROFILE} {AppMessages.UPDATE} {AppMessages.SUCCESSFUL}");
         }
         catch (Exception ex)
         {
@@ -244,7 +303,13 @@ public class UserService : IUserService
     {
         try
         {
-            var userProfileList = await _unitOfWork.UserProfileRepository.Get(u => u.UserId.Equals(userId), null, "", null, null);
+            var userProfileList = await _unitOfWork.UserProfileRepository.Get(
+                u => u.UserId.Equals(userId),
+                null,
+                "",
+                null,
+                null
+            );
 
             var userProfileFound = userProfileList.FirstOrDefault();
             if (userProfileFound is null)
@@ -255,8 +320,10 @@ public class UserService : IUserService
             await _unitOfWork.UserProfileRepository.Update(userProfileFound);
             await _unitOfWork.CompleteAsync();
 
-            return GenericResponse.Result(true, $"{AppMessages.PROFILE_PHOTO} {AppMessages.UPDATE} {AppMessages.SUCCESSFUL}");
-
+            return GenericResponse.Result(
+                true,
+                $"{AppMessages.PROFILE_PHOTO} {AppMessages.UPDATE} {AppMessages.SUCCESSFUL}"
+            );
         }
         catch (Exception ex)
         {

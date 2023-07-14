@@ -13,7 +13,8 @@ public interface IUserService
     Task<UserIdentity?> GetByIdAsync(Guid Id);
     Task<UserIdentity?> GetUserByEmail(string email);
     Task<GenericResponse> RemoveUserByEmail(string email);
-    Task<UserProfileResponse> GetProfile(Guid userId);
-    Task<GenericResponse> ProfileUpdateAsync(ProfileUpdateRequest request, Guid userId);
-    Task<GenericResponse> ProfilePhotoUpdateAsync(string filePath, Guid userId);
+    Task<UserProfileResponse> GetProfileAsync(Guid userId);
+    // Task<GenericResponse> ProfileUpdateAsync(ProfileUpdateRequest request, Guid userId);
+    Task<GenericResponse> ProfileUpdateAsync(Guid userId,ProfileUpdateRequest request, string profilePath, string degreeCertificatePath);
+    // Task<GenericResponse> ProfilePhotoUpdateAsync(string filePath, Guid userId);
 }
