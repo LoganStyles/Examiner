@@ -1,7 +1,6 @@
 using Examiner.Application.Users.Interfaces;
 using Examiner.Common;
 using Examiner.Domain.Dtos;
-using Examiner.Domain.Dtos.Content;
 using Examiner.Domain.Dtos.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +12,7 @@ namespace Examiner.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-// [Authorize]
+[Authorize]
 public class UserProfileController : ControllerBase
 {
     private readonly IUserService _userService;
@@ -35,25 +34,17 @@ public class UserProfileController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<UserProfileResponse>> GetProfileAsync(
-        [FromBody] FetchProfileRequest request
-    )
+    public async Task<ActionResult<UserProfileResponse>> GetProfileAsync([FromBody] FetchProfileRequest request)
     {
         var existingUser = await _userService.GetUserByEmail(request.Email);
         if (existingUser is null)
-            return NotFound(
-                UserProfileResponse.Result(false, $"{AppMessages.USER} {AppMessages.NOT_EXIST}")
-            );
+            return NotFound(UserProfileResponse.Result(false, $"{AppMessages.USER} {AppMessages.NOT_EXIST}"));
 
         if (!existingUser.IsActive)
-            return BadRequest(
-                UserProfileResponse.Result(false, $"{AppMessages.EMAIL} {AppMessages.NOT_VERIFIED}")
-            );
+            return BadRequest(UserProfileResponse.Result(false, $"{AppMessages.EMAIL} {AppMessages.NOT_VERIFIED}"));
 
         if (existingUser.Role is null)
-            return BadRequest(
-                UserProfileResponse.Result(false, $"{AppMessages.USER} {AppMessages.HAS_NO_ROLE}")
-            );
+            return BadRequest(UserProfileResponse.Result(false, $"{AppMessages.USER} {AppMessages.HAS_NO_ROLE}"));
 
         var result = await _userService.GetProfileAsync(existingUser.Id);
         if (!result.Success)
@@ -72,7 +63,7 @@ public class UserProfileController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<GenericResponse>> ProfileUpdateAsync([FromBody] ProfileUpdateRequest request)
+    public async Task<ActionResult<GenericResponse>> ProfileUpdateAsync([FromForm] ProfileUpdateRequest request)
     {
         var existingUser = await _userService.GetUserByEmail(request.Email);
         if (existingUser is null)
@@ -91,7 +82,7 @@ public class UserProfileController : ControllerBase
             {
                 Directory.CreateDirectory(_environment.WebRootPath + "\\uploads\\profile-photo\\");
             }
-            profilePhotoPath = _environment.WebRootPath + "\\uploads\\" + request.profilePhoto.FileName;
+            profilePhotoPath = _environment.WebRootPath + "\\uploads\\profile-photo\\" + Guid.NewGuid().ToString() + "_" + "\\uploads\\" + request.profilePhoto.FileName;
             using (FileStream fileStream = System.IO.File.Create(profilePhotoPath))
             {
                 request.profilePhoto.CopyTo(fileStream);
@@ -106,7 +97,7 @@ public class UserProfileController : ControllerBase
             {
                 Directory.CreateDirectory(_environment.WebRootPath + "\\uploads\\degree-certificate\\");
             }
-            degreeCertificatePath = _environment.WebRootPath + "\\uploads\\" + request.degreeCertificate.FileName;
+            degreeCertificatePath = _environment.WebRootPath + "\\uploads\\degree-certificate\\" + Guid.NewGuid().ToString() + "_" + "\\uploads\\" + request.degreeCertificate.FileName;
             using (FileStream fileStream = System.IO.File.Create(degreeCertificatePath))
             {
                 request.degreeCertificate.CopyTo(fileStream);

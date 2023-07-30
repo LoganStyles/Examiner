@@ -6,10 +6,6 @@ using Examiner.Application.Users.Interfaces;
 using Examiner.Domain.Dtos.Users;
 using Examiner.Domain.Dtos;
 using Examiner.Common;
-using AutoMapper.Internal.Mappers;
-using System.Globalization;
-using Examiner.Domain.Entities.Content;
-using Examiner.Domain.Dtos.Content;
 using Examiner.Authentication.Domain.Mappings;
 
 namespace Examiner.Application.Users.Services;
@@ -21,6 +17,9 @@ public class UserService : IUserService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<UserService> _logger;
+
+    // private const int MIN_COUNTRY_ID=1;
+    // private const int MAX_COUNTRY_ID=5;
 
     public UserService(IUnitOfWork unitOfWork, ILogger<UserService> logger)
     {
@@ -169,60 +168,22 @@ public class UserService : IUserService
     /// <returns>An object holding user profile response data</returns>
     public async Task<UserProfileResponse> GetProfileAsync(Guid userId)
     {
-        var response = new UserProfileResponse(
-            false,
-            $"{AppMessages.USER_PROFILE} {AppMessages.NOT_EXIST}"
-        );
+        var response = new UserProfileResponse(false, $"{AppMessages.USER_PROFILE} {AppMessages.NOT_EXIST}");
         try
         {
-            var userProfileList = await _unitOfWork.UserProfileRepository.Get(
-                u => u.UserId.Equals(userId),
-                null,
-                "",
-                null,
-                null
-            );
+            var userProfileList = await _unitOfWork.UserProfileRepository
+            .Get( u => u.UserId.Equals(userId),null,"",null,null);
             var userProfileFound = userProfileList.FirstOrDefault();
             if (userProfileFound is null)
                 return response;
 
             response = ObjectMapper.Mapper.Map<UserProfileResponse>(userProfileFound);
             // add supporting data
-            response.Countries = await _unitOfWork.CountryRepository.Get(
-                null,
-                null,
-                "",
-                null,
-                null
-            );
-            response.SelectedCountryStates = await _unitOfWork.StateRepository.Get(
-                s => s.CountryId == userProfileFound.CountryId,
-                null,
-                "",
-                null,
-                null
-            );
-            response.ExperienceLevels = await _unitOfWork.ExperienceLevelRepository.Get(
-                null,
-                null,
-                "",
-                null,
-                null
-            );
-            response.EducationDegrees = await _unitOfWork.EducationDegreeRepository.Get(
-                null,
-                null,
-                "",
-                null,
-                null
-            );
-            response.SubjectCategories = await _unitOfWork.SubjectCategoryRepository.Get(
-                null,
-                null,
-                "",
-                null,
-                null
-            );
+            response.Countries = await _unitOfWork.CountryRepository.Get(null,null, "",null,null);
+            response.SelectedCountryStates = await _unitOfWork.StateRepository.Get(s => s.CountryId == userProfileFound.CountryId, null, "", null,null);
+            response.ExperienceLevels = await _unitOfWork.ExperienceLevelRepository.Get(null, null,"", null,null);
+            response.EducationDegrees = await _unitOfWork.EducationDegreeRepository.Get(null, null,"",null,null);
+            response.SubjectCategories = await _unitOfWork.SubjectCategoryRepository.Get( null,null,"", null, null);
 
             //add general response message
             response.ResultMessage = $"{AppMessages.USER_PROFILE} {AppMessages.EXISTS}";
@@ -260,17 +221,39 @@ public class UserService : IUserService
 
             userProfileFound.FirstName = request.FirstName;
             userProfileFound.LastName = request.LastName;
-            userProfileFound.CountryId = request.CountryId;
-            userProfileFound.StateId = request.StateId;
+
+            var countryList = await _unitOfWork.CountryRepository.Get(c => c.Id==request.CountryId,null, "",null,null);
+            var selectedCountry = countryList.FirstOrDefault();
+            if(selectedCountry is not null)
+                userProfileFound.CountryId = request.CountryId;
+            
+            var statesList = await _unitOfWork.CountryRepository.Get(c => c.Id==request.StateId,null, "",null,null);
+            var selectedState = statesList.FirstOrDefault();
+            if(selectedState is not null)
+                userProfileFound.StateId = request.StateId;
+            
+            var subjectCategoryList = await _unitOfWork.SubjectCategoryRepository.Get(c => c.Id==request.SubjectCategoryId,null, "",null,null);
+            var selectedSubjectCategory = subjectCategoryList.FirstOrDefault();
+            if(selectedSubjectCategory is not null)
+                userProfileFound.SubjectCategoryId = request.SubjectCategoryId;
+            
+            var experienceLevelList = await _unitOfWork.ExperienceLevelRepository.Get(c => c.Id==request.ExperienceLevelId,null, "",null,null);
+            var selectedExperienceLevel = experienceLevelList.FirstOrDefault();
+            if(selectedExperienceLevel is not null)
+                userProfileFound.ExperienceLevelId = request.ExperienceLevelId;
+            
+            var educationDegreeList = await _unitOfWork.EducationDegreeRepository.Get(c => c.Id==request.EducationDegreeId,null, "",null,null);
+            var selectedEducationDegree = educationDegreeList.FirstOrDefault();
+            if(selectedEducationDegree is not null)
+                userProfileFound.EducationDegreeId = request.EducationDegreeId;
+
             // confirm phone number pattern
             userProfileFound.MobilePhone = request.MobilePhone;
 
             userProfileFound.ShortDescription = request.ShortDescription;
+            // check above 18
             userProfileFound.DateOfBirth = new DateOnly(request.DateOfBirth.Year, request.DateOfBirth.Month, request.DateOfBirth.Day);
 
-            userProfileFound.SubjectCategoryId = request.SubjectCategoryId;
-            userProfileFound.ExperienceLevelId = request.ExperienceLevelId;
-            userProfileFound.EducationDegreeId = request.EducationDegreeId;
             userProfileFound.IsAvailable = request.IsAvailable;
             // if (userProfileFound.Subjects is null)
             //     userProfileFound.Subjects = new HashSet<Subject>();

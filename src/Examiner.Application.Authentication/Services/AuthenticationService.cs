@@ -27,6 +27,8 @@ public class AuthenticationService : IAuthenticationService
     private readonly ICodeService _codeService;
     private readonly IEmailService _emailService;
     private const int CODE_VALIDITY_DURATION = 24;
+    private const int DEFAULT_VALUE_FOR_LIST=1;
+    private const int MODERATE_EXPERIENCE=2;
 
     public AuthenticationService(
         IJwtTokenHandler jwtTokenHandler,
@@ -215,12 +217,18 @@ public class AuthenticationService : IAuthenticationService
                     IsSent = true,
                     ExpiresIn = (int)codeExpiryTimeStamp.Subtract(DateTime.Now).TotalSeconds
                 };
+                
+                var countryList = await _unitOfWork.CountryRepository.Get(null, null, "", null, null);
+                var defaultCountry = countryList.FirstOrDefault();
                 newUser.UserProfile = new UserProfile()
                 {
-                    UserId = newUser.Id
+                    UserId = newUser.Id,
+                    CountryId = (defaultCountry is not null) ? defaultCountry.Id : 0,
+                    ExperienceLevelId = MODERATE_EXPERIENCE, // refactor this later
+                    EducationDegreeId=DEFAULT_VALUE_FOR_LIST,
+                    SubjectCategoryId=DEFAULT_VALUE_FOR_LIST
                 };
                 // save user identity, profile & code only if we were able to send verification code 
-                // await _unitOfWork.CodeVerificationRepository.AddAsync(codeVerification);
                 await _unitOfWork.UserRepository.AddAsync(newUser);
                 await _unitOfWork.CompleteAsync();
 
